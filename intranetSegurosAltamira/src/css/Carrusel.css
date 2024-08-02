@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Grape+Nuts&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+.carrusel{
+    margin-top: 100px;
+}
+.divDegradado{
+    background-color: transparent;
+    background-image: linear-gradient(130deg, #003896 70%, #f48134 80%);
+}
+.imagenCarrusel{
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: .3;
+    transition:  .3s, border-radius .3s, opacity .3s;
+}
+.imagenCarruselGrande {
+    height: 480px;
+    max-height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
+
+@media (max-width: 240px) {
+    .imagenCarruselGrande {
+        width: 100%;    
+        height: auto;
+        max-height: 100%;
+    }
+}
+.caption1{
+    color: #fff !important;
+    font-family:  "Montserrat",Sans-serif;
+    font-size: 5vw; /* Ajusta el tamaño del texto según el ancho de la ventana */
+    text-align: center;
+    line-height: 80px;
+    text-shadow: 5px 5px 2px #003896;
+}
+@media (max-width: 240px) {
+    .caption1 {
+        font-size: 4vw; /* Ajusta el tamaño del texto para pantallas más pequeñas */
+    }
+}
+
+@media (max-width: 240px) {
+    .caption1 {
+        font-size: 5vw; /* Ajusta el tamaño del texto para pantallas muy pequeñas */
+    }
+}
+p{
+    color: #fff !important;
+    font-family: "Grape Nuts", Sans-serif;
+    font-size: 40px;
+    font-weight: 100;
+    line-height: 40px;
+}
+h1{
+    margin-left: 0%;
+}
