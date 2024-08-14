@@ -1,0 +1,11 @@
+.div-loading-bar{
+    display: flex;
+    justify-content: center;
+}
+.loading-bar{
+    
+    fill: rgb(0, 0, 255);
+    height: 100px !important;
+    width: 90px !important;
+    position: relative;
+}

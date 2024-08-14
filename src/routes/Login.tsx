@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { CSSTransition } from 'react-transition-group';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import '../css/Login.css';
 import { useAuth } from '../auth/AuthProvider';
 
@@ -71,7 +71,12 @@ function Login() {
                         </div>
                         <div className="mb-3">
                             <button type="submit" className="btn btn-primary w-100">Iniciar Sesión</button>
+                            
                         </div>
+                        <div className="mb-3">
+                            <Link to="/signup"> <button type="submit" className="btn btn-primary w-100">Registrate</button></Link>
+                        </div>
+                        
                     </div>
                 </div>
             </CSSTransition>

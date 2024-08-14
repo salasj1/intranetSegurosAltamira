@@ -11,7 +11,9 @@
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
     
 }
-
+.navbar .container {
+    margin-left: -1.5%;
+}
 .navbar-expand .navbar-nav {
     display: flex;
     flex-direction: row;
@@ -19,6 +21,7 @@
     flex-wrap: nowrap;
     /* justify-content: space-around; */
     width: 100%;
+   
 }
 
 #Navegador {
@@ -31,15 +34,17 @@
     height: 100px;
     background-color: #FAC7683D;
     flex-shrink: 0; /* Prevent the image from shrinking */
+    margin-right: 5px;
+    
 }
 
 .nav-link {
     font-size: 21px;
     flex-grow: 1; /* Añadido para permitir que los enlaces crezcan */
     white-space: nowrap; /* Evita que el texto se envuelva */
-    padding: 0 10px; /* Añade espacio alrededor del texto */
     margin: 0 5px; /* Añade espacio entre los enlaces */
-    
+    padding-left: 0 !important; 
+    padding-right:5px !important;
 }
 .navbar-nav a{
     font-weight:bold;
@@ -52,6 +57,7 @@
                 Cantarell,
                 "Helvetica Neue",
                 sans-serif;
+    font-size: 18px;
 }
 @media screen and (max-width: 500px) {
     .nav-link {
@@ -101,8 +107,10 @@ img {
 .user-info {
     display: flex;
     align-items: center;
-    margin-right: 1rem;
-    
+    width: 150px; /* Ajusta el ancho según tus necesidades */
+    word-wrap: break-word; /* Permite que las palabras se dividan y se ajusten a la siguiente línea */
+    white-space: normal; /* Permite el ajuste de línea */
+    margin-right: 8px;
 }
 .divHamburguesa{
     background-color: #003896;

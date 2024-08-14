@@ -1,39 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import '../css/TablaEmpresa.css';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useAuth } from '../auth/AuthProvider'; 
 
 library.add(faArrowDown, faArrowUp);
 
-interface MyData {
-  id: number;
-  año: number;
-  mes: number;
-  tipo: string;
-  [key: string]: number | string;
+interface Recibo {
+  reci_num: number;
+  cod_emp: string;
+  AÑIO: number;
+  Mes: string;
+  Contrato: string;
 }
 
 function TableEmpresa() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const { cod_emp } = useAuth(); 
+  const [searchReciNum, setSearchReciNum] = useState('');
+  const [searchAnio, setSearchAnio] = useState('');
+  const [searchMes, setSearchMes] = useState('');
+  const [searchContrato, setSearchContrato] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: '', direction: 'asc' });
+  const [data, setData] = useState<Recibo[]>([]);
+  const navigate = useNavigate(); // Usa useNavigate
 
-  const data: MyData[] = [
-    { id: 1, año: 2024, mes: 1, tipo: '1era Quincena' },
-    { id: 2, año: 2024, mes: 4, tipo: 'Vacaciones' },
-    { id: 3, año: 2023, mes: 6, tipo: '2da Quincena' },
-    { id: 4, año: 2023, mes: 12, tipo: '1era Quincena' },
-    { id: 5, año: 2022, mes: 7, tipo: 'Vacaciones' },
-    { id: 6, año: 2021, mes: 8, tipo: 'Utilidades' }
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      if (cod_emp) { 
+        try {
+          console.log(cod_emp);
+          const response = await axios.get(`/api/recibos/${cod_emp}`);
+          setData(response.data);
+        } catch (error) {
+          console.error('Error fetching data', error);
+        }
+      }
+    };
 
-  const sortedData = [...data].sort((a: MyData, b: MyData) => {
+    fetchData();
+  }, [cod_emp]); 
+
+  const sortedData = [...data].sort((a: Recibo, b: Recibo) => {
     if (sortConfig.key) {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
+      const aValue = a[sortConfig.key as keyof Recibo];
+      const bValue = b[sortConfig.key as keyof Recibo];
       if (aValue < bValue) {
         return sortConfig.direction === 'asc' ? -1 : 1;
       }
@@ -44,19 +59,11 @@ function TableEmpresa() {
     return 0;
   });
 
-  const nombresMeses = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-  ];
-
-  const obtenerNombreMes = (numeroMes: number) => {
-    return nombresMeses[numeroMes - 1];
-  };
-
   const filteredData = sortedData.filter(item =>
-    item.año.toString().includes(searchTerm) ||
-    obtenerNombreMes(item.mes).toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.tipo.toLowerCase().includes(searchTerm.toLowerCase())
+    item.reci_num.toString().includes(searchReciNum) &&
+    item.AÑIO.toString().includes(searchAnio) &&
+    item.Mes.toLowerCase().includes(searchMes.toLowerCase()) &&
+    item.Contrato.toLowerCase().includes(searchContrato.toLowerCase())
   );
 
   const requestSort = (key: string) => {
@@ -70,39 +77,70 @@ function TableEmpresa() {
   return (
     <>
       <div className="canvas">
-        <input
-          className='search'
-          type="text"
-          placeholder="Buscar..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ marginBottom: '10px', padding: '5px', width: '100%' }}
-        />
+        <h1>Recibo de Pago</h1>
         
         <Table striped bordered hover responsive>
           <thead>
+              <th>
+                  <input
+                      className='search'
+                      type="text"
+                      placeholder="Buscar por Número..."
+                      value={searchReciNum}
+                      onChange={(e) => setSearchReciNum(e.target.value)}
+                  />
+              </th>
+              <th>
+                  <input
+                      className='search'
+                      type="text"
+                      placeholder="Buscar por Año..."
+                      value={searchAnio}
+                      onChange={(e) => setSearchAnio(e.target.value)}
+                  />
+              </th>
+              <th>
+                  <input
+                      className='search'
+                      type="text"
+                      placeholder="Buscar por Mes..."
+                      value={searchMes}
+                      onChange={(e) => setSearchMes(e.target.value)}
+                  />
+              </th>
+              <th>
+                  <input
+                      className='search'
+                      type="text"
+                      placeholder="Buscar por Tipo..."
+                      value={searchContrato}
+                      onChange={(e) => setSearchContrato(e.target.value)}
+                  />
+              </th>
+          </thead>
+          <thead>
             <tr>
-              <th onClick={() => requestSort('id')}>
-                #
-                {sortConfig.key === 'id' && (
+              <th onClick={() => requestSort('reci_num')} className='titulo'>
+                Nº Recibo
+                {sortConfig.key === 'reci_num' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? 'arrow-down' : 'arrow-up'} />
                 )}
               </th>
-              <th onClick={() => requestSort('año')}>
+              <th onClick={() => requestSort('AÑIO')} className='titulo'>
                 Año
-                {sortConfig.key === 'año' && (
+                {sortConfig.key === 'AÑIO' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? 'arrow-down' : 'arrow-up'} />
                 )}
               </th>
-              <th onClick={() => requestSort('mes')}>
+              <th onClick={() => requestSort('Mes')} className='titulo'>
                 Mes
-                {sortConfig.key === 'mes' && (
+                {sortConfig.key === 'Mes' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? 'arrow-down' : 'arrow-up'} />
                 )}
               </th>
-              <th onClick={() => requestSort('tipo')}>
+              <th onClick={() => requestSort('Contrato')} className='titulo'>
                 Tipo de Recibo
-                {sortConfig.key === 'tipo' && (
+                {sortConfig.key === 'Contrato' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? 'arrow-down' : 'arrow-up'} />
                 )}
               </th>
@@ -111,15 +149,13 @@ function TableEmpresa() {
           </thead>
           <tbody>
             {filteredData.map(item => (
-              <tr key={item.id}>
-                <td>{item.id}</td>
-                <td>{item.año}</td>
-                <td>{obtenerNombreMes(item.mes)}</td>
-                <td>{item.tipo}</td>
+              <tr key={item.reci_num}>
+                <td>{item.reci_num}</td>
+                <td>{item.AÑIO}</td>
+                <td>{item.Mes}</td>
+                <td>{item.Contrato}</td>
                 <td>
-                  <Link to={"./" + item.key}>
-                    <Button variant="primary">Ver</Button>
-                  </Link>
+                  <Button variant="primary" onClick={() => navigate(`/RecibodePago/${item.reci_num}`)}>Ver</Button>
                 </td>
               </tr>
             ))}
@@ -131,75 +167,3 @@ function TableEmpresa() {
 }
 
 export default TableEmpresa;
-/* 
-export default TableEmpresa;{ useState } from 'react';
-import Table from "react-bootstrap/esm/Table";
-import Button from 'react-bootstrap/Button';
-import '../css/TablaEmpresa.css';
-
-function TableEmpresa() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortConfig, setSortConfig] = useState<{ key: DataKey; direction: 'asc' | 'desc' }>({ key: 'id', direction: 'asc' });
-
-  const data: { id: number; fecha: string; tipo: string; monto: string; }[] = [
-    { id: 1, fecha: 'Julio', tipo: 'Quincena', monto: '1000.00' },
-    { id: 2, fecha: 'Julio', tipo: 'Vacacionales', monto: '255.00' },
-    // Agrega más datos aquí si es necesario
-  ];
-
-  const sortedData = [...data].sort((a, b) => {
-    if (sortConfig.key) {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
-      if (aValue < bValue) {
-        return sortConfig.direction === 'asc' ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return sortConfig.direction === 'asc' ? 1 : -1;
-      }
-    }
-    return 0;
-  });
-
-  const filteredData = sortedData.filter(item =>
-    item.fecha.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.tipo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.monto.includes(searchTerm)
-  );
-
-  return (
-    <div className="table-responsive">
-      <input
-        type="text"
-        placeholder="Buscar..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ marginBottom: '10px', padding: '5px', width: '100%' }}
-      />
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Fecha</th>
-            <th>Tipo de Recibo</th>
-            <th>Monto (Bs.)</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredData.map(item => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
-              <td>{item.fecha}</td>
-              <td>{item.tipo}</td>
-              <td>{item.monto}</td>
-              <td><Button variant="primary">Primary</Button></td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </div>
-  );
-}
-
-export default TableEmpresa;*/ 

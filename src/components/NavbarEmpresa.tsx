@@ -47,9 +47,9 @@ function NavbarEmpresa() {
                                     <Navbar.Brand href="/notificaciones">
                                         <FontAwesomeIcon icon={["fas", "bell"]} style={{ color: "#ff7b00" }} />
                                     </Navbar.Brand>
-                                    <div className="divHamburguesa">
+                                    {/* <div className="divHamburguesa">
                                         <Hamburguesa />
-                                    </div>
+                                    </div> */}
                                     <Nav.Link onClick={handleLogout}>Cerrar Sesión</Nav.Link>
                                 </Nav>
                             </Nav>

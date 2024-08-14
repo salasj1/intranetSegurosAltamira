@@ -1,11 +1,13 @@
 import NavbarEmpresa from './components/NavbarEmpresa.tsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import TableEmpresa from './components/TableEmpresa.tsx';
+
 import Login from './routes/Login.tsx';
 import Home from './routes/Home.tsx';
 import ProtectedRoute from './routes/ProtectedRoute.tsx';
 import { AuthProvider } from './auth/AuthProvider.tsx';
 import Signup from './routes/Signup.tsx';
+import RecibodePago from './routes/RecibodePago.tsx';
+import RecibodePagoDetallado from './routes/RecibodePagoDetallado.tsx';
 
 function App() {
   return (
@@ -17,7 +19,8 @@ function App() {
           <Route path="/" element={<ProtectedRoute />}
           children={[
             <Route key="home" path="home" element={<Home />} />,
-            <Route key="RecibodePago" path="RecibodePago" element={<><NavbarEmpresa /><h1>Recibo de Pago</h1><TableEmpresa /></>} />,
+            <Route key="RecibodePago" path="RecibodePago" element={<RecibodePago/>} />,
+            <Route key="RecibodePagoDetallado" path="RecibodePago/:reci_num" element={<RecibodePagoDetallado/>} />, 
             <Route key="Prestaciones" path="Prestaciones" element={<><NavbarEmpresa /><h1>Movimientos de Prestaciones Sociales</h1></>} />,
             <Route key="SolicitarVacaciones" path="SolicitarVacaciones" element={<><NavbarEmpresa /><h1>Solicitar Vacaciones</h1></>} />,
             <Route key="AprobarVacaciones" path="AprobarVacaciones" element={<><NavbarEmpresa /><h1>Aprobar Vacaciones</h1></>} />,

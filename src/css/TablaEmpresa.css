@@ -1,33 +1,112 @@
 #root {
-    position: relative;
+    position: absolute;
     top: 0 !important;
     left: 0 !important;
     width: 100%;
-    
 }
+
 .canvas {
+    position: relative;
+    top: 125px;
     display: flex;
     flex-direction: column;
+    padding: 20px;
+    justify-content: center;
     align-items: center;
+    background-color:white ;
 }
-.search {
+.canvasBuscador{
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 25% !important;
-   margin-left: 50%;
+    margin-top: 10px;
+    margin-bottom: 25px; /* Añadido margen inferior para separación */
+    width: 50%;
 }
+.canvas h1 {
+    margin-left: -60%;
+    max-width: 100%; 
+    box-sizing: border-box; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+}
+.canvas h3{
+    position:relative;
+    margin-left: -60%;
+    max-width: 100%; 
+    box-sizing: border-box; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+}
+th {
+    text-align: center;
+    justify-content: flex-start;
+}
+
+th .search {
+    margin-top:10px ;
+    margin-bottom: 10px;
+    padding: 5px; 
+    width: 80%; 
+    background: rgb(59, 59, 59) !important;
+    border-color: rgb(59, 59, 59) !important;
+    border-radius: 2px;
+    color: white;
+}
+th .search::placeholder {
+    color: rgb(110,110,110)
+}
+
+
+td{
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
 .table-responsive {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 800px; /* Asegura que el contenedor ocupe el 100% del ancho */
+    width: 100%; 
+    max-width: 900px; 
+    margin-top: 10px;
+    flex-wrap: wrap;
 }
-
-
 
 .btn-primary {
     background-color: #007bff !important;
-    border-color: #007bff!important;
+    border-color: #007bff !important;
+}
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .canvas {
+        top: 100px;
+        padding: 15px;
+    }
+
+    .canvas h1 {
+        margin-left: 0;
+        
+    }
+
+    .search {
+        width: 75%;
+    }
+}
+
+@media (max-width: 480px) {
+    .canvas {
+        top: 75px;
+        padding: 10px;
+    }
+
+    .canvas h1 {
+        margin-left: 0;
+    }
+
+    .search {
+        width: 100%;
+    }
 }
