@@ -7,7 +7,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas, faBell } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAuth } from '../auth/AuthProvider';
-library.add(fas, faBell)
+import logoEmpresa from '../assets/logo-head.png';
+library.add(fas, faBell);
 import Hamburguesa from './Hamburguesa.tsx';
 
 function NavbarEmpresa() {
@@ -21,14 +22,14 @@ function NavbarEmpresa() {
             <div className='NavbarEmpresa'>
                 <Navbar bg="light" data-bs-theme="light" id="Navegador">
                     <Navbar.Brand className='imagenEmpresa' href="/home">
-                        <img src='https://www.segurosaltamira.com/wp-content/uploads/2024/03/logo-head.svg' alt="Logo Empresa" />
+                        <img src={logoEmpresa} alt="Logo Empresa" />
                     </Navbar.Brand>
                     <Container>
                         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                         <Navbar.Collapse id="responsive-navbar-nav">
                             <Nav className="me-auto">
                                 <Nav.Link href="/RecibodePago">Recibo de pago</Nav.Link>
-                                <Nav.Link href="/Prestaciones">Movimientos de Prestaciones Sociales</Nav.Link>
+                                <Nav.Link className='textoNavlink' href="/Prestaciones">Movimientos de Prestaciones Sociales</Nav.Link>
                                 <NavDropdown title="Vacaciones" id="navbarScrollingDropdown">
                                     <NavDropdown.Item href="/SolicitarVacaciones">Solicitar Vacaciones</NavDropdown.Item>
                                     <NavDropdown.Item href="/AprobarVacaciones">Aprobar Vacaciones</NavDropdown.Item>

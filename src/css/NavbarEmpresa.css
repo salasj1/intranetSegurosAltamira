@@ -11,6 +11,7 @@
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
     
 }
+
 .navbar .container {
     margin-left: -1.5%;
 }
@@ -26,17 +27,23 @@
 
 #Navegador {
     width: 100%;
+    padding-bottom: 0px;
+    padding-top: 0px;
 }
 
 .imagenEmpresa {
     position: relative;
-    width: 200px;
+    width: 150px;
     height: 100px;
     background-color: #FAC7683D;
     flex-shrink: 0; /* Prevent the image from shrinking */
-    margin-right: 5px;
+    padding-left: 50px;
+    
+    margin-left: -28px;
+    padding-right: 10px;
     
 }
+
 
 .nav-link {
     font-size: 21px;
@@ -44,7 +51,7 @@
     white-space: nowrap; /* Evita que el texto se envuelva */
     margin: 0 5px; /* Añade espacio entre los enlaces */
     padding-left: 0 !important; 
-    padding-right:5px !important;
+    padding-right:2px !important;
 }
 .navbar-nav a{
     font-weight:bold;
@@ -107,14 +114,19 @@ img {
 .user-info {
     display: flex;
     align-items: center;
-    width: 150px; /* Ajusta el ancho según tus necesidades */
+    width: 130px; /* Ajusta el ancho según tus necesidades */
     word-wrap: break-word; /* Permite que las palabras se dividan y se ajusten a la siguiente línea */
     white-space: normal; /* Permite el ajuste de línea */
-    margin-right: 8px;
+
 }
 .divHamburguesa{
     background-color: #003896;
     border-radius:  15px 5px ;
     height: 55px;
     width: 55px;
+}
+.textoNavlink{
+    text-wrap: wrap;
+    width: 368px;
+    font-size: 16px !important;
 }

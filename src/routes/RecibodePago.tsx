@@ -1,12 +1,12 @@
 import NavbarEmpresa from "../components/NavbarEmpresa"
-import TableEmpresa from "../components/TableEmpresa"
+import TableRecibodePago from "../components/TableRecibodePago"
 
 
 function RecibodePago() {
   return (
     <>
-    
-    <NavbarEmpresa /><TableEmpresa /></>
+    <NavbarEmpresa /><TableRecibodePago />
+    </>
   )
 }
 

@@ -19,7 +19,7 @@ interface Recibo {
   Contrato: string;
 }
 
-function TableEmpresa() {
+function TableRecibodePago() {
   const { cod_emp } = useAuth(); 
   const [searchReciNum, setSearchReciNum] = useState('');
   const [searchAnio, setSearchAnio] = useState('');
@@ -27,7 +27,7 @@ function TableEmpresa() {
   const [searchContrato, setSearchContrato] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: '', direction: 'asc' });
   const [data, setData] = useState<Recibo[]>([]);
-  const navigate = useNavigate(); // Usa useNavigate
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,10 +45,24 @@ function TableEmpresa() {
     fetchData();
   }, [cod_emp]); 
 
+  const monthNameToNumber = (monthName: string): number => {
+    const months = [
+      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+    return months.indexOf(monthName.toLowerCase()) + 1;
+  };
+
   const sortedData = [...data].sort((a: Recibo, b: Recibo) => {
     if (sortConfig.key) {
-      const aValue = a[sortConfig.key as keyof Recibo];
-      const bValue = b[sortConfig.key as keyof Recibo];
+      let aValue = a[sortConfig.key as keyof Recibo];
+      let bValue = b[sortConfig.key as keyof Recibo];
+
+      if (sortConfig.key === 'Mes') {
+        aValue = monthNameToNumber(a.Mes);
+        bValue = monthNameToNumber(b.Mes);
+      }
+
       if (aValue < bValue) {
         return sortConfig.direction === 'asc' ? -1 : 1;
       }
@@ -72,6 +86,10 @@ function TableEmpresa() {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
+  };
+
+  const handleViewClick = (reci_num: number) => {
+    navigate(`/RecibodePago/${reci_num}`);
   };
 
   return (
@@ -155,7 +173,7 @@ function TableEmpresa() {
                 <td>{item.Mes}</td>
                 <td>{item.Contrato}</td>
                 <td>
-                  <Button variant="primary" onClick={() => navigate(`/RecibodePago/${item.reci_num}`)}>Ver</Button>
+                  <Button variant="primary" onClick={() => handleViewClick(item.reci_num)}>Ver</Button>
                 </td>
               </tr>
             ))}
@@ -166,4 +184,4 @@ function TableEmpresa() {
   );
 }
 
-export default TableEmpresa;
+export default TableRecibodePago;
