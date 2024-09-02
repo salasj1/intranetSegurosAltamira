@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthProvider';
-import { Worker, Viewer, ScrollMode } from '@react-pdf-viewer/core';
-import { scrollModePlugin } from '@react-pdf-viewer/scroll-mode';
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+
 import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import { Button, Card, Alert, Form } from 'react-bootstrap';
 import { CSSTransition } from 'react-transition-group';
 import NavbarEmpresa from '../components/NavbarEmpresa';
 import generatePDF from '../components/FormatoRecibodePago';
+import styles from '../css/RecibodePagoDetallado.module.css';
 
 function RecibodePagoDetallado() {
   const { reci_num } = useParams<{ reci_num: string }>();
@@ -122,100 +123,111 @@ function RecibodePagoDetallado() {
     }
   };
 
-  const scrollModePluginInstance = scrollModePlugin();
+
   const zoomPluginInstance = zoomPlugin();
 
-  useEffect(() => {
-    scrollModePluginInstance.switchScrollMode(ScrollMode.Vertical);
-  }, []);
+  
 
   return (
     <>
       <NavbarEmpresa />
-      <div className="canvas">
-        <h1 style={{ textAlign: "center" }}>Recibo de Pago Nº {reciNum} </h1>
+      <div className={styles.canvas}>
+       
+        
+        <h1 className={styles.h1Recibo}>Recibo de Pago Nº {reciNum} </h1>
         <div style={{ width: "100%" }}>
           {isLoading ? (
             <h2>Cargando detalle PDF...</h2>
           ) : (
             <>
               {reciboNotFound ? (
-                <Alert variant='danger' style={{ fontSize: "29.5px", paddingInline: "75px" }}>
-                  Recibo no encontrado.
-                </Alert>
+                 <Card bg="primary" border="primary" className={styles.Tarjeta}>
+                        <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Ver PDF</Card.Header>
+                        <Card.Body className={styles['card-body-buttons']}>
+                        <Alert variant='danger' style={{ fontSize: "29.5px", paddingInline: "75px" }}>
+                          Recibo no encontrado.
+                        </Alert>
+                        </Card.Body>
+                        <Card.Header/>
+                  </Card> 
               ) : (
                 <>
                   {reciboData && isAuthorized ? (
                     <>
-                      <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`}>
+                      <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
                         {isPdfLoading && <h2>Cargando detalle PDF...</h2>}
-                        <div className="pdf-viewer-container">
+                        <div className={styles['pdf-viewer-container']}>
                           {pdfBlob && (
+                            <>
+                            <div className={styles.botonesZoom}>
+                              <zoomPluginInstance.ZoomIn>
+                                {({ onClick }) => (
+                                  <Button style={{ marginBottom: "2px",backgroundColor:"#013897" }} variant="secondary" onClick={onClick}>+</Button>
+                                )}
+                              </zoomPluginInstance.ZoomIn>
+                              <zoomPluginInstance.ZoomOut>
+                                {({ onClick }) => (
+                                  <Button style={{backgroundColor:"#013897" }} variant="secondary" onClick={onClick}>-</Button>
+                                )}
+                              </zoomPluginInstance.ZoomOut>
+                            </div>
                             <Viewer
                               fileUrl={URL.createObjectURL(pdfBlob)}
                               defaultScale={1}
                               onDocumentLoad={() => setIsPdfLoading(false)}
-                              plugins={[scrollModePluginInstance, zoomPluginInstance]}
+                              plugins={[ zoomPluginInstance]}
                             />
+                            </>
                           )}
                         </div>
                       </Worker>
-                      {!isPdfLoading ? (
-                        <div className='botonesZoom'>
-                          <zoomPluginInstance.ZoomIn>
-                            {({ onClick }) => (
-                              <Button style={{ marginBottom: "2px" }} variant="secondary" onClick={onClick}>+</Button>
-                            )}
-                          </zoomPluginInstance.ZoomIn>
-                          <zoomPluginInstance.ZoomOut>
-                            {({ onClick }) => (
-                              <Button variant="secondary" onClick={onClick}>-</Button>
-                            )}
-                          </zoomPluginInstance.ZoomOut>
-                        </div>
-                      ) : null}
-                      <Card bg="primary" border="primary" className='Tarjeta'>
+                      <Card bg="primary" border="primary" className={styles.Tarjeta}>
                         <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Ver PDF</Card.Header>
-                        <Card.Body className="card-body-buttons">
+                        <Card.Body className={styles['card-body-buttons']}>
                           {isPdfLoading ? (
                             <Alert variant='warning' style={{ fontSize: "24.5px", paddingInline: "148px" }}>
-                              Cargando detalle PDF...
-                            </Alert>
+                            Cargando detalle PDF...
+                          </Alert>
                           ) : (
-                            <>
-                              <CSSTransition
-                                in={showAlert}
-                                timeout={800}
-                                classNames="alert"
-                                unmountOnExit
-                              >
-                                <Alert variant='primary' style={{ fontSize: "24.5px" }}>
-                                  ¡Recibo de Pago generado exitosamente! Seleccione una opción para continuar.
-                                </Alert>
-                              </CSSTransition>
-                              <div className="button-group">
-                                <Button variant='light' onClick={handleDownload} id='pdf-botton-download'>Descargar</Button>
-                                <Button variant='warning' onClick={handleSendEmail} id='pdf-botton-download2'>Enviar al correo</Button>
-                              </div>
-                              <div className="button-group">
-                                <Form.Control
-                                  size="lg"
-                                  type="text"
-                                  placeholder="Escriba un correo"
-                                  value={correoSecundario}
-                                  onChange={(e) => setCorreoSecundario(e.target.value)}
-                                />
-                                <Button variant='warning' onClick={handleSendSecondaryEmail} id='pdf-botton-download3'>Enviar a un correo secundario</Button>
-                              </div>
-                            </>
+                          <>
+                            <CSSTransition
+                              in={showAlert}
+                              timeout={800}
+                              classNames={{
+                                enter: styles['alert-enter'],
+                                enterActive: styles['alert-enter-active'],
+                                exit: styles['alert-exit'],
+                                exitActive: styles['alert-exit-active'],
+                              }}
+                              unmountOnExit
+                            >
+                              <Alert variant='primary' style={{ fontSize: "24.5px" }}>
+                                ¡Recibo de Pago generado exitosamente! Seleccione una opción para continuar.
+                              </Alert>
+                            </CSSTransition>
+                            <div className={styles['button-group']}>
+                              <Button variant='light' onClick={handleDownload} className={styles['pdf-botton-download']}>Descargar</Button>
+                              <Button variant='warning' onClick={handleSendEmail} className={styles['pdf-botton-download2']}>Enviar al correo</Button>
+                            </div>
+                            <div className={styles['button-group']}>
+                              <Form.Control
+                                size="lg"
+                                type="text"
+                                placeholder="Escriba un correo"
+                                value={correoSecundario}
+                                onChange={(e) => setCorreoSecundario(e.target.value)}
+                              />
+                              <Button variant='warning' onClick={handleSendSecondaryEmail} className={styles['pdf-botton-download3']}>Enviar a un correo secundario</Button>
+                            </div>
+                          </>
                           )}
                         </Card.Body>
                       </Card>
                     </>
                   ) : (
-                    <Card bg="primary" border="primary" className='Tarjeta'>
+                    <Card bg="primary" border="primary" className={styles.Tarjeta}>
                       <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Ver PDF</Card.Header>
-                      <Card.Body className="card-body-buttons">
+                      <Card.Body className={styles['card-body-buttons']}>
                         <Alert variant='danger' style={{ fontSize: "29.5px", paddingInline: "75px" }}>
                           Recibo de pago no autorizado.
                         </Alert>

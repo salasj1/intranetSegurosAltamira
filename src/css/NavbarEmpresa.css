@@ -88,9 +88,13 @@
 
 .nav-link:active, .nav-link:focus {
     color: #ff7b00 !important;
-    outline: none;
+    
 }
 
+.nav-link.active {
+    color: #ff7b00 !important; 
+    font-weight: bold; 
+}
 .right-div {
     display: flex;
     flex-direction: column; 

@@ -8,7 +8,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAuth } from '../auth/AuthProvider'; 
-
+import { Form } from 'react-bootstrap';
 library.add(faArrowDown, faArrowUp);
 
 interface Recibo {
@@ -100,7 +100,7 @@ function TableRecibodePago() {
         <Table striped bordered hover responsive>
           <thead>
               <th>
-                  <input
+                  <Form.Control
                       className='search'
                       type="text"
                       placeholder="Buscar por Número..."
@@ -109,7 +109,7 @@ function TableRecibodePago() {
                   />
               </th>
               <th>
-                  <input
+                  <Form.Control
                       className='search'
                       type="text"
                       placeholder="Buscar por Año..."
@@ -118,7 +118,7 @@ function TableRecibodePago() {
                   />
               </th>
               <th>
-                  <input
+                  <Form.Control
                       className='search'
                       type="text"
                       placeholder="Buscar por Mes..."
@@ -127,7 +127,7 @@ function TableRecibodePago() {
                   />
               </th>
               <th>
-                  <input
+                  <Form.Control
                       className='search'
                       type="text"
                       placeholder="Buscar por Tipo..."
@@ -138,31 +138,31 @@ function TableRecibodePago() {
           </thead>
           <thead>
             <tr>
-              <th onClick={() => requestSort('reci_num')} className='titulo'>
+              <th id='headTable' onClick={() => requestSort('reci_num')} className='titulo'>
                 Nº Recibo
                 {sortConfig.key === 'reci_num' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? 'arrow-down' : 'arrow-up'} />
                 )}
               </th>
-              <th onClick={() => requestSort('AÑIO')} className='titulo'>
+              <th id='headTable' onClick={() => requestSort('AÑIO')} className='titulo'>
                 Año
                 {sortConfig.key === 'AÑIO' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? 'arrow-down' : 'arrow-up'} />
                 )}
               </th>
-              <th onClick={() => requestSort('Mes')} className='titulo'>
+              <th id='headTable' onClick={() => requestSort('Mes')} className='titulo'>
                 Mes
                 {sortConfig.key === 'Mes' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? 'arrow-down' : 'arrow-up'} />
                 )}
               </th>
-              <th onClick={() => requestSort('Contrato')} className='titulo'>
+              <th id='headTable' onClick={() => requestSort('Contrato')} className='titulo'>
                 Tipo de Recibo
                 {sortConfig.key === 'Contrato' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? 'arrow-down' : 'arrow-up'} />
                 )}
               </th>
-              <th></th>
+              <th id='headTable'></th>
             </tr>
           </thead>
           <tbody>

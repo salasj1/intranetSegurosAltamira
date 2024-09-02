@@ -1,5 +1,6 @@
 import { useContext, createContext, useState, useEffect } from "react";
 import axios from 'axios';
+import NavbarEmpresa from "../components/NavbarEmpresa";
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -116,8 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (loading) {
         return <>
-        
-        <h1>Cargando...</h1>
+        <NavbarEmpresa/>
         </>;
     }
 

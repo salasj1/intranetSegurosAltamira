@@ -1,0 +1,55 @@
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color-scheme: light dark;
+    /* color: rgba(255, 255, 255, 0.87); */
+     background-color: #ffffff !important; 
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+.Titulo{
+    position: relative;
+    top: 125px;
+}
+.canvasEmpleados {
+    background-color: white;
+}
+
+.containerEmpleados {
+    position: relative;
+    top: 150px;
+}
+
+.formRow {
+    margin-bottom: 15px;
+}
+
+.cardEmpleado {
+    width: 27rem;
+    margin-bottom: 15px;
+    margin-left: -10px;
+}
+
+.cardHeaderEmpleado {
+    color: white;
+    margin-bottom: -2px;
+}
+
+.cardBodyEmpleado {
+    background-color: white;
+}
+
+.cardTextEmpleado {
+    color: black;
+}
+
+.cardImgEmpleado {
+    width: 11%;
+    height: 11%;
+    margin-right: 10px;
+}

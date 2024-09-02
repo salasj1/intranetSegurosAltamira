@@ -17,6 +17,8 @@ function NavbarEmpresa() {
         auth.logout();
     };
 
+    const isActive = (path: string) => location.pathname.startsWith(path);
+
     return (
         <>
             <div className='NavbarEmpresa'>
@@ -28,9 +30,9 @@ function NavbarEmpresa() {
                         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                         <Navbar.Collapse id="responsive-navbar-nav">
                             <Nav className="me-auto">
-                                <Nav.Link href="/RecibodePago">Recibo de pago</Nav.Link>
-                                <Nav.Link className='textoNavlink' href="/Prestaciones">Movimientos de Prestaciones Sociales</Nav.Link>
-                                <NavDropdown title="Vacaciones" id="navbarScrollingDropdown">
+                                <Nav.Link href="/RecibodePago" className={isActive('/RecibodePago') ? 'active' : ''}>Recibo de pago</Nav.Link>
+                                <Nav.Link  href="/Prestaciones" className={isActive('/Prestaciones') ? 'active textoNavlink' : 'textoNavlink'}>Movimientos de Prestaciones Sociales</Nav.Link>
+                                <NavDropdown title="Vacaciones" id="navbarScrollingDropdown" >
                                     <NavDropdown.Item href="/SolicitarVacaciones">Solicitar Vacaciones</NavDropdown.Item>
                                     <NavDropdown.Item href="/AprobarVacaciones">Aprobar Vacaciones</NavDropdown.Item>
                                     <NavDropdown.Item href="/ProcesarVacaciones">Procesar Vacaciones</NavDropdown.Item>
@@ -40,8 +42,8 @@ function NavbarEmpresa() {
                                     <NavDropdown.Item href="/AprobarPermisos">Aprobar Permisos</NavDropdown.Item>
                                     <NavDropdown.Item href="/ProcesarPermisos">Procesar Permisos</NavDropdown.Item>
                                 </NavDropdown>
-                                <Nav.Link href="/ARC">ARC</Nav.Link>
-                                <Nav.Link href="/DirectorioEmpleados">Directorio de Empleados</Nav.Link>
+                                <Nav.Link href="/ARC" className={isActive('/ARC') ? 'active ' : ''}>ARC</Nav.Link>
+                                <Nav.Link href="/DirectorioEmpleados" className={isActive('/DirectorioEmpleados') ? 'active ' : ''}>Directorio de Empleados</Nav.Link>
                                 <Nav className="right-div">
                                     <div className="user-info">{auth.nombre_completo || 'Nombre completo'}</div>
                                     <div className="user-info">{auth.cargo_empleado || 'Cargo del Empleado'}</div>

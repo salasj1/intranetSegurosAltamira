@@ -1,6 +1,5 @@
-import NavbarEmpresa from './components/NavbarEmpresa.tsx';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './routes/Login.tsx';
 import Home from './routes/Home.tsx';
 import ProtectedRoute from './routes/ProtectedRoute.tsx';
@@ -10,8 +9,8 @@ import RecibodePago from './routes/RecibodePago.tsx';
 import RecibodePagoDetallado from './routes/RecibodePagoDetallado.tsx';
 import ARC from './routes/ARC.tsx';
 import Prestaciones from './routes/Prestaciones.tsx';
-import ARCDetallado from './routes/ARCDetallado.tsx';
-
+import DirectorioEmpleados from './routes/DirectorioEmpleados.tsx';
+import NavbarEmpresa from './components/NavbarEmpresa.tsx';
 function App() {
   return (
     <AuthProvider>
@@ -33,8 +32,7 @@ function App() {
             <Route key="AprobarPermisos" path="AprobarPermisos" element={<><NavbarEmpresa /><h1>Aprobar Permisos</h1></>} />,
             <Route key="ProcesarPermisos" path="ProcesarPermisos" element={<><NavbarEmpresa /><h1>Procesar Permisos</h1></>} />,
             <Route key="ARC" path="ARC" element={<ARC/>} />,
-            <Route key="ARCDetallado" path="ARC/:arc_num" element={<ARCDetallado/>} />,
-            <Route key="DirectorioEmpleados" path="DirectorioEmpleados" element={<><NavbarEmpresa /><h1>Directorio de Empleados</h1></>} />
+            <Route key="DirectorioEmpleados" path="DirectorioEmpleados" element={<DirectorioEmpleados/>} />
           ]}
         ></Route>
         </Routes>

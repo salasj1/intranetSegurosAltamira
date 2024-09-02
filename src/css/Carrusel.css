@@ -48,7 +48,7 @@
         font-size: 5vw; /* Ajusta el tamaño del texto para pantallas muy pequeñas */
     }
 }
-p{
+.carousel-caption p{
     color: #fff !important;
     font-family: "Grape Nuts", Sans-serif;
     font-size: 40px;
