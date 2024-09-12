@@ -15,6 +15,7 @@
 .Titulo{
     position: relative;
     top: 125px;
+    font-family: "Gotham", Sans-serif;
 }
 .canvasEmpleados {
     background-color: white;

@@ -73,6 +73,13 @@ function ARC() {
         if (result.success) {
             setShowAlert(true);
         }
+        if (result.success) {
+          alert('Correo enviado exitosamente');
+        } else {
+          alert('Error enviando el correo');
+          const responseData = await response.json();
+          console.error('Error enviando el correo secundario:', responseData.message);
+        }
     } catch (error) {
         console.error('Error sending ARC email:', error);
     } finally {
@@ -98,6 +105,13 @@ const handleSendSecondaryEmail = async () => {
         if (result.success) {
             setShowAlert(true);
         }
+        if (result.success) {
+          alert('Correo enviado exitosamente');
+        } else {
+          alert('Error enviando el correo');
+          const responseData = await response.json();
+          console.error('Error enviando el correo secundario:', responseData.message);
+        }
     } catch (error) {
         console.error('Error sending ARC email to secondary email:', error);
     } finally {
@@ -113,7 +127,6 @@ const handleSendSecondaryEmail = async () => {
       <NavbarEmpresa />
       <div className={styles.canvas}>
         <h1 style={{ textAlign: "center" }} className={styles.h1ARC}>Comprobante de Agente de Retención (ARC)</h1>
-        <div>
           <div className={styles.cajainput}>
             <Card className={styles.tarjeticaInput} bg='warning'>
               <Card.Body>
@@ -132,7 +145,7 @@ const handleSendSecondaryEmail = async () => {
             </Card>
           </div>
           {error ? (
-            <Card bg="primary" border="primary" className={styles.Tarjeta}>
+            <Card bg="danger" border="danger" className={styles.Tarjeta}>
               <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Lo sentimos</Card.Header>
               <Card.Body>
                 <Alert variant='danger' style={{ fontSize: "24.5px" }}>
@@ -202,7 +215,6 @@ const handleSendSecondaryEmail = async () => {
             </>
           ) : null}
         </div>
-      </div>
     </>
   );
 }

@@ -13,7 +13,7 @@
     padding: 20px;
     justify-content: center;
     align-items: center;
-    background-color:white ;
+    
     
 }
 .canvas .Tarjeta{
@@ -24,6 +24,7 @@
     width: 34.5%;
     border-radius: 3px;
     box-shadow: 0 3px 6px 0 rgba(0, 0, 0, .14);
+    animation: fadeInUp 1.5s;
 }
 .canvas .Tarjeta p{
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -45,14 +46,15 @@
     flex-wrap: wrap;
 }
 .pdf-viewer-container {
-    width: 629px !important;
-    left: -391px !important;
+    width: 700px !important;
+    left: -285px !important;
     height: 500px; 
     /* border: 1px solid #ccc; */
     position: relative;
     max-height: max-content;
     overflow: hidden;
     margin-top: 35px;
+    
 }
 .rpv-core__canvas-layer {
     direction: ltr;
@@ -106,10 +108,10 @@
     box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .05);
 }
 
-.pdf-botton-download:hover, .pdf-botton-download:active {
-    color: #f48134;
-    background-color: #fff;
-    border-color: #fff;
+.pdf-botton-download:hover, .pdf-botton-download:active, .pdf-botton-download:focus-visible {
+    color: #f48134 !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
 }
 
 .pdf-botton-download2 {
@@ -124,10 +126,10 @@
     box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .05);
 }
 
-.pdf-botton-download2:hover, .pdf-botton-download2:active {
-    color: #003896;
-    background-color: #fff;
-    border-color: #fff;
+.pdf-botton-download2:hover, .pdf-botton-download2:active, .pdf-botton-download2:focus-visible {
+    color: #003896 !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
 }
 
 .pdf-botton-download3 {
@@ -142,10 +144,10 @@
     box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .05);
 }
 
-.pdf-botton-download3:hover, .pdf-botton-download3:active {
-    color: #003896;
-    background-color: #fff;
-    border-color: #fff;
+.pdf-botton-download3:hover, .pdf-botton-download3:active, .pdf-botton-download3:focus-visible {
+    color: #003896 !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
 }
 
 @keyframes elementor-animation-bob {
@@ -208,6 +210,7 @@
     box-sizing: border-box; 
     text-overflow: ellipsis; 
     white-space: nowrap; 
+    font-family: "Gotham", Sans-serif;
 }
 .h1Recibo{
     margin-left: -50% !important;
@@ -246,14 +249,26 @@
 }
 .cajainput{
     position: relative;
-    left: -381px;
+    left: -345px;
     top: 24px;
 }
-.tarjeticaInput h4{
-    /* color:#003896; */
-}
+/* .tarjeticaInput h4{
+    color:#003896;
+} */
 .rpv-core__inner-pages {
     overflow: hidden;
     /* overflow-y: visible !important; */
     overflow-x: visible !important;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0,100%,0)
+    }
+
+    to {
+        opacity: 1;
+        transform: none
+    }
 }

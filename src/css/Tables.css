@@ -1,0 +1,33 @@
+.tableRecibo .table-responsive {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 900px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+.tablaAprobar .table-responsive {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    left: 25px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+.tablaAprobar{
+    animation:fadeInUp 1s;
+}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0,100%,0)
+    }
+
+    to {
+        opacity: 1;
+        transform: none
+    }
+}

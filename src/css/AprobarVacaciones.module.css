@@ -1,13 +1,6 @@
-#root {
-    position: absolute;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100%;
-}
-
 .canvas {
     position: relative;
-    top: 125px;
+    left: 20px;
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -15,6 +8,7 @@
     align-items: center;
     background-color: white;
 }
+
 .canvasBuscador {
     position: relative;
     display: flex;
@@ -24,22 +18,7 @@
     margin-bottom: 25px; /* Añadido margen inferior para separación */
     width: 50%;
 }
-.canvas h1 {
-    margin-left: -60%;
-    max-width: 100%;
-    box-sizing: border-box;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-family: "Gotham", Sans-serif;
-}
-.canvas h3 {
-    position: relative;
-    margin-left: -60%;
-    max-width: 100%;
-    box-sizing: border-box;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+
 th {
     text-align: center;
     justify-content: center;
@@ -49,6 +28,7 @@ th {
     border-top-width: 1px;
     border-bottom-width: 1px;
 }
+
 .table>:not(caption)>*>* {
     border-top-width: 1px;
     border-bottom-width: 1px;
@@ -62,32 +42,16 @@ th .search {
     border-color: rgb(59, 59, 59) !important;
     border-radius: 2px;
     color: white;
-    margin-left: auto; 
-    margin-right: auto; 
-    display: block; 
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translate3d(0,100%,0)
-    }
-
-    to {
-        opacity: 1;
-        transform: none
-    }
-}
-
-.tableRecibo{
-    animation-name: fadeInUp;
-    animation-duration: 1.25s;
+    margin-left: auto; /* Añadido para centrar horizontalmente */
+    margin-right: auto; /* Añadido para centrar horizontalmente */
+    display: block; /* Añadido para que margin auto funcione */
 }
 
 #headTable {
     background-color: #013897;
     color: white;
 }
+
 th .search::placeholder {
     color: rgb(110, 110, 110);
 }
@@ -98,50 +62,41 @@ td {
     text-align: center;
 }
 
-
-.tableresponsive2 {
-    max-width: 1250px !important;
+.tableresponsive {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1250px;
+    margin-top: 10px;
+    flex-wrap: wrap;
 }
+
 
 .btn-primary {
     background-color: #f48134 !important;
     border-color: rgb(244, 129, 52) !important;
 }
+
 /* Estilos responsivos */
 @media (max-width: 768px) {
-    .canvas {
-        top: 100px;
-        padding: 15px;
-    }
-
-    .canvas h1 {
-        margin-left: 0;
-    }
-
     .search {
         width: 75%;
     }
 }
 
 @media (max-width: 480px) {
-    .canvas {
-        top: 75px;
-        padding: 10px;
-    }
-
-    .canvas h1 {
-        margin-left: 0;
-    }
-
     .search {
         width: 100%;
     }
 }
+
 .acciones {
     display: flex;
     flex-direction: row;
     gap: 10px;
 }
+
 .form-container {
     border-radius: 2px !important;
 }

@@ -3,7 +3,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import '../css/NavbarEmpresa.css';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { library } from '@fortawesome/fontawesome-svg-core'
+import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas, faBell } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAuth } from '../auth/AuthProvider';
@@ -18,6 +18,15 @@ function NavbarEmpresa() {
     };
 
     const isActive = (path: string) => location.pathname.startsWith(path);
+    const isVacacionesActive = () => {
+        const path = location.pathname;
+        return path.startsWith('/SolicitarVacaciones') || path.startsWith('/AprobarVacaciones') || path.startsWith('/ProcesarVacaciones') ;
+    };
+    
+    const isPermisosActive = () => {
+        const path = location.pathname;
+        return path.startsWith('/SolicitarPermisos') || path.startsWith('/AprobarPermisos') || path.startsWith('/ProcesarPermisos') ;
+    };
 
     return (
         <>
@@ -31,28 +40,33 @@ function NavbarEmpresa() {
                         <Navbar.Collapse id="responsive-navbar-nav">
                             <Nav className="me-auto">
                                 <Nav.Link href="/RecibodePago" className={isActive('/RecibodePago') ? 'active' : ''}>Recibo de pago</Nav.Link>
-                                <Nav.Link  href="/Prestaciones" className={isActive('/Prestaciones') ? 'active textoNavlink' : 'textoNavlink'}>Movimientos de Prestaciones Sociales</Nav.Link>
-                                <NavDropdown title="Vacaciones" id="navbarScrollingDropdown" >
-                                    <NavDropdown.Item href="/SolicitarVacaciones">Solicitar Vacaciones</NavDropdown.Item>
-                                    <NavDropdown.Item href="/AprobarVacaciones">Aprobar Vacaciones</NavDropdown.Item>
-                                    <NavDropdown.Item href="/ProcesarVacaciones">Procesar Vacaciones</NavDropdown.Item>
+                                <Nav.Link href="/Prestaciones" className={isActive('/Prestaciones') ? 'active textoNavlink' : 'textoNavlink'}>Movimientos de Prestaciones Sociales</Nav.Link>
+                                <NavDropdown title="Vacaciones" id="navbarScrollingDropdown" className={isVacacionesActive() ? 'nav-dropdown-active' : ''}>
+                                    <NavDropdown.Item href="/SolicitarVacaciones" className='cuadroItem'>Solicitar Vacaciones</NavDropdown.Item>
+                                    {auth.tipo === 'Supervisor' || auth.RRHH === 1 ? (
+                                        <NavDropdown.Item href="/AprobarVacaciones" className='cuadroItem'>Aprobar Vacaciones</NavDropdown.Item>
+                                    ) : null}
+                                    {auth.RRHH === 1 ? (
+                                        <NavDropdown.Item href="/ProcesarVacaciones" className='cuadroItem'>Procesar Vacaciones</NavDropdown.Item>
+                                    ) : null}
                                 </NavDropdown>
-                                <NavDropdown title="Permisos" id="navbarScrollingDropdown">
-                                    <NavDropdown.Item href="/SolicitarPermisos">Solicitar Permisos</NavDropdown.Item>
-                                    <NavDropdown.Item href="/AprobarPermisos">Aprobar Permisos</NavDropdown.Item>
-                                    <NavDropdown.Item href="/ProcesarPermisos">Procesar Permisos</NavDropdown.Item>
+                                <NavDropdown title="Permisos" id="navbarScrollingDropdown" className={isPermisosActive() ? 'nav-dropdown-active' : ''}>
+                                    <NavDropdown.Item href="/SolicitarPermisos" className='cuadroItem'>Solicitar Permisos</NavDropdown.Item>
+                                    {auth.tipo === 'Supervisor' || auth.RRHH === 1 ? (
+                                        <NavDropdown.Item href="/AprobarPermisos" className='cuadroItem'>Aprobar Permisos</NavDropdown.Item>
+                                    ) : null}
+                                    {auth.RRHH === 1 ? (
+                                        <NavDropdown.Item href="/ProcesarPermisos" className='cuadroItem'>Procesar Permisos</NavDropdown.Item>
+                                    ) : null}
                                 </NavDropdown>
                                 <Nav.Link href="/ARC" className={isActive('/ARC') ? 'active ' : ''}>ARC</Nav.Link>
-                                <Nav.Link href="/DirectorioEmpleados" className={isActive('/DirectorioEmpleados') ? 'active ' : ''}>Directorio de Empleados</Nav.Link>
+                                <Nav.Link href="/DirectorioEmpleados" className={isActive('/DirectorioEmpleados') ? 'active' : ''}>Directorio de Empleados</Nav.Link>
                                 <Nav className="right-div">
                                     <div className="user-info">{auth.nombre_completo || 'Nombre completo'}</div>
                                     <div className="user-info">{auth.cargo_empleado || 'Cargo del Empleado'}</div>
                                     <Navbar.Brand href="/notificaciones">
                                         <FontAwesomeIcon icon={["fas", "bell"]} style={{ color: "#ff7b00" }} />
                                     </Navbar.Brand>
-                                    {/* <div className="divHamburguesa">
-                                        <Hamburguesa />
-                                    </div> */}
                                     <Nav.Link onClick={handleLogout}>Cerrar Sesión</Nav.Link>
                                 </Nav>
                             </Nav>

@@ -1,0 +1,74 @@
+#root {
+    position: absolute;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100%;
+}
+
+.canvas {
+    position: relative;
+    top: 125px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+.canvas h1 {
+    margin-left: -60%;
+    max-width: 100%; 
+    box-sizing: border-box; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+    font-family: "Gotham", Sans-serif;
+}
+
+.canvas h3 {
+    position: relative;
+
+    max-width: 100%; 
+    box-sizing: border-box; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+}
+
+.tableVacaciones{
+    animation:fadeInUp ;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .canvas {
+        top: 100px;
+        padding: 15px;
+    }
+
+    .canvas h1 {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .canvas {
+        top: 75px;
+        padding: 10px;
+    }
+
+    .canvas h1 {
+        margin-left: 0;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0,100%,0)
+    }
+
+    to {
+        opacity: 1;
+        transform: none
+    }
+}

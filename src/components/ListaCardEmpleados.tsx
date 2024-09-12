@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card, Container, Row, Col, Form } from 'react-bootstrap';
 import logoEmpresa from '../assets/icono.png';
-
+import styles from '../css/ListaCardEmpleados.module.css';
 
 interface Empleado {
   nombres: string;
@@ -20,6 +20,7 @@ const ListaCardEmpleados: React.FC = () => {
     departamento: '',
     correo: ''
   });
+  const [empleadosParaEliminar, setEmpleadosParaEliminar] = useState<number[]>([]);
 
   useEffect(() => {
     fetch('/api/empleados')
@@ -34,6 +35,14 @@ const ListaCardEmpleados: React.FC = () => {
       ...filtros,
       [name]: value
     });
+
+    // Añadir todos los empleados actuales a la lista de eliminación
+    setEmpleadosParaEliminar(empleados.map((_, index) => index));
+
+    // Después de la animación, actualizar los empleados filtrados
+    setTimeout(() => {
+      setEmpleadosParaEliminar([]);
+    }, 250); // Duración de la animación
   };
 
   const empleadosFiltrados = empleados.filter(empleado =>
@@ -157,7 +166,11 @@ const ListaCardEmpleados: React.FC = () => {
             <Row>
               {empleadosFiltrados.map((empleado, index) => (
                 <Col key={index} sm={12} md={6} lg={4}>
-                  <Card bg="primary" border="primary" className='cardEmpleado'>
+                  <Card
+                    bg="primary"
+                    border="primary"
+                    className={`${styles.cardEmpleado} ${empleadosParaEliminar.includes(index) ? styles.fadeOut : ''}`}
+                  >
                     <Card.Header>
                       <Card.Title className='cardHeaderEmpleado'>
                         <img src={logoEmpresa} alt="icono" className='cardImgEmpleado' />{`${empleado.nombres} ${empleado.apellidos}`}

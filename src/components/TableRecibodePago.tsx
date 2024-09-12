@@ -8,7 +8,8 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAuth } from '../auth/AuthProvider'; 
-import { Form } from 'react-bootstrap';
+import { Alert, AlertHeading, Form } from 'react-bootstrap';
+
 library.add(faArrowDown, faArrowUp);
 
 interface Recibo {
@@ -27,6 +28,7 @@ function TableRecibodePago() {
   const [searchContrato, setSearchContrato] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: '', direction: 'asc' });
   const [data, setData] = useState<Recibo[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate(); 
 
   useEffect(() => {
@@ -37,7 +39,8 @@ function TableRecibodePago() {
           const response = await axios.get(`/api/recibos/${cod_emp}`);
           setData(response.data);
         } catch (error) {
-          console.error('Error fetching data', error);
+          console.error('Error al cargar la informacion de los recibo de pago', error);
+          setError('Error al cargar la informacion de los recibo de pago');
         }
       }
     };
@@ -96,8 +99,11 @@ function TableRecibodePago() {
     <>
       <div className="canvas">
         <h1>Recibo de Pago</h1>
-        
-        <Table striped bordered hover responsive>
+        <br/>
+        {error && <Alert variant="danger" onClose={()=> setError(null)}  dismissible><AlertHeading>Error <hr/></AlertHeading>{error}</Alert>}
+        <br/>
+        <div className='tableRecibo'>
+        <Table striped bordered hover responsive >
           <thead>
               <th>
                   <Form.Control
@@ -179,6 +185,7 @@ function TableRecibodePago() {
             ))}
           </tbody>
         </Table>
+        </div>
       </div>
     </>
   );

@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Alert, Button, Form } from "react-bootstrap";
+import { Alert, AlertHeading, Button, Form } from "react-bootstrap";
 import axios from 'axios';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
@@ -18,6 +18,7 @@ function Prestaciones() {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const { cod_emp, fecha_ing, des_depart } = useAuth();
   const [correoSecundario, setCorreoSecundario] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPrestacionesData = async () => {
@@ -32,6 +33,7 @@ function Prestaciones() {
         setShowAlert(true);
       } catch (error) {
         console.error('Error fetching prestaciones data:', error);
+        setError("Error al cargar la informacion de los movimientos de las prestaciones");
         setIsLoading(false);
       }
     };
@@ -71,7 +73,7 @@ function Prestaciones() {
           alert('Correo enviado exitosamente');
         } else {
           alert('Error enviando el correo');
-          console.error('Error sending secondary email:', response.data.message);
+          console.error('Error enviando el correo secundario:', response.data.message);
         }
       } catch (error) {
         console.error('Error enviando el correo:', error);
@@ -107,9 +109,7 @@ function Prestaciones() {
     }
   };
 
-
   const zoomPluginInstance = zoomPlugin();
-
 
   return (
     <>
@@ -117,34 +117,45 @@ function Prestaciones() {
       <div className={styles.canvas}>
         <h1 style={{ textAlign: "center" }} className={styles.h1Prestaciones}>Movimientos de Prestaciones Sociales</h1>
         <div style={{ width: "100%" }}>
-          {prestacionesData ? (
+          {isLoading ? (
+            <h2>Cargando Detalle...</h2>
+          ) : prestacionesData && prestacionesData.length > 0 ? (
             <>
               <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
-                {isPdfLoading && <h2>Cargando detalle PDF...</h2>}
-                <div className={styles['pdf-viewer-container']}>
-                  {pdfBlob && (
-                    <>
-                      <div className={styles.botonesZoom}>
-                        <zoomPluginInstance.ZoomIn>
-                          {({ onClick }) => (
-                            <Button style={{ marginBottom: "2px",    backgroundColor:"#013897" }} variant="secondary" onClick={onClick}>+</Button>
-                          )}
-                        </zoomPluginInstance.ZoomIn>
-                        <zoomPluginInstance.ZoomOut>
-                          {({ onClick }) => (
-                            <Button style={{     backgroundColor:"#013897" }}variant="secondary" onClick={onClick}>-</Button>
-                          )}
-                        </zoomPluginInstance.ZoomOut>
-                      </div>
-                      <Viewer
-                        fileUrl={URL.createObjectURL(pdfBlob)}
-                        defaultScale={1}
-                        onDocumentLoad={() => setIsPdfLoading(false)}
-                        plugins={[zoomPluginInstance]}
-                      />
-                    </>
-                  )}
-                </div>
+                {error ? (
+                  <Alert variant="danger" onClose={() => setError(null)} dismissible>
+                    <AlertHeading>Error <hr /></AlertHeading>
+                    {error}
+                  </Alert>
+                ) : (
+                  <>
+                    {isPdfLoading && <h2>Cargando detalle PDF...</h2>}
+                    <div className={styles['pdf-viewer-container']}>
+                      {pdfBlob && (
+                        <>
+                          <div className={styles.botonesZoom}>
+                            <zoomPluginInstance.ZoomIn>
+                              {({ onClick }) => (
+                                <Button style={{ marginBottom: "2px", backgroundColor: "#013897" }} variant="secondary" onClick={onClick}>+</Button>
+                              )}
+                            </zoomPluginInstance.ZoomIn>
+                            <zoomPluginInstance.ZoomOut>
+                              {({ onClick }) => (
+                                <Button style={{ backgroundColor: "#013897" }} variant="secondary" onClick={onClick}>-</Button>
+                              )}
+                            </zoomPluginInstance.ZoomOut>
+                          </div>
+                          <Viewer
+                            fileUrl={URL.createObjectURL(pdfBlob)}
+                            defaultScale={1}
+                            onDocumentLoad={() => setIsPdfLoading(false)}
+                            plugins={[zoomPluginInstance]}
+                          />
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
               </Worker>
               <Card bg="primary" border="primary" className={styles.Tarjeta}>
                 <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Ver PDF</Card.Header>
@@ -190,7 +201,14 @@ function Prestaciones() {
               </Card>
             </>
           ) : (
-            <h2>Cargando Detalle...</h2>
+            <Card bg="danger" border="danger" className={styles.Tarjeta}>
+              <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Error</Card.Header>
+              <Card.Body>
+                <Alert variant='danger' style={{ fontSize: "24.5px" }}>
+                  No se encuentra algún movimiento de Prestaciones en este momento.
+                </Alert>
+              </Card.Body>
+            </Card>
           )}
         </div>
       </div>
