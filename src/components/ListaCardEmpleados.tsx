@@ -96,22 +96,7 @@ const ListaCardEmpleados: React.FC = () => {
         <Container className='containerEmpleados'>
           <Form>
             <Row className='formRow'>
-              <Col>
-                <Form.Group controlId="filtroNombre">
-                  <Form.Label>Nombre completo</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="nombre"
-                    value={filtros.nombre}
-                    onChange={handleFiltroChange as any}
-                  >
-                    <option value="">Seleccionar</option>
-                    {nombresUnicos.map((nombre, index) => (
-                      <option key={index} value={nombre}>{nombre}</option>
-                    ))}
-                  </Form.Control>
-                </Form.Group>
-              </Col>
+              
               <Col>
                 <Form.Group controlId="filtroDepartamento">
                   <Form.Label>Departamento</Form.Label>
@@ -124,6 +109,23 @@ const ListaCardEmpleados: React.FC = () => {
                     <option value="">Seleccionar</option>
                     {departamentosUnicos.map((departamento, index) => (
                       <option key={index} value={departamento}>{departamento}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group controlId="filtroNombre">
+                  <Form.Label>Nombre completo</Form.Label>
+                    <Form.Control
+                    as="select"
+                    name="nombre"
+                    value={filtros.nombre}
+                    onChange={handleFiltroChange as any}
+                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => setFiltros({ ...filtros, nombre: e.target.value })}
+                    >
+                    <option value="">Seleccionar</option>
+                    {nombresUnicos.map((nombre, index) => (
+                      <option key={index} value={nombre}>{nombre}</option>
                     ))}
                   </Form.Control>
                 </Form.Group>

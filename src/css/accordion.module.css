@@ -1,0 +1,97 @@
+
+
+.accordion {
+    width: 50%;
+    border: 1px solid #21252920;
+    animation: fadeInUp 1s;
+    border-radius: 0px;
+    --bs-accordion-bg: transparent;
+    --bs-accordion-active-bg: transparent;
+    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
+    --bs-accordion-border-radius: 0px;
+}
+
+.accordionItem {
+    background-color: #FAC7683D;
+}
+.botonSolicitar{
+    box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .05);
+}
+.botonSolicitar:hover,  .botonSolicitar:focus-visible {
+    color: #f48134 !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
+}
+.botonSolicitar:hover{
+    animation-name: elementor-animation-bob-float, elementor-animation-bob;
+    animation-duration: .3s, 1.5s;
+    animation-delay: 0s, .3s;
+    animation-timing-function: ease-out, ease-in-out;
+    animation-iteration-count: 1, infinite;
+    animation-fill-mode: forwards;
+    animation-direction: normal, alternate;
+}
+
+@keyframes elementor-animation-bob {
+    0% {
+        transform: translateY(-4px)
+    }
+
+    50% {
+        transform: translateY(-2px)
+    }
+
+    100% {
+        transform: translateY(-4px)
+    }
+}
+
+@keyframes elementor-animation-bob-float {
+    100% {
+        transform: translateY(-4px)
+    }
+}
+.cardHeader {
+
+    --bs-border-color-translucent: rgba(0, 0, 0, .175);
+}
+
+.cardBody {
+    background-color: antiquewhite;
+}
+
+.formGroup {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.formGroupMargin {
+    margin-right: 10px;
+}
+
+.formControl {
+    display: flex;
+    flex-direction: column;
+}
+
+.textArea {
+    height: 200px;
+    text-align: start;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}

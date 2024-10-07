@@ -101,20 +101,21 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       setSuccess(null);
       return;
     }
-
-    try {
-      const response = await axios.get(`/api/vacaciones/${cod_emp}`);
-      const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada');
-      if (hasRequest) {
-        setError('Ya tiene una solicitud de vacaciones pendiente.');
+    if(tipo==='solicitada'){
+      try {
+        const response = await axios.get(`/api/vacaciones/${cod_emp}`);
+        const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada');
+        if (hasRequest) {
+          setError('Ya tiene una solicitud de vacaciones pendiente.');
+          setSuccess(null);
+          return;
+        }
+      } catch (error) {
+        console.error('Error al verificar solicitudes previas:', error);
+        setError('Error al verificar solicitudes previas.');
         setSuccess(null);
         return;
       }
-    } catch (error) {
-      console.error('Error al verificar solicitudes previas:', error);
-      setError('Error al verificar solicitudes previas.');
-      setSuccess(null);
-      return;
     }
 
     try {
@@ -183,7 +184,13 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
             <div className="button-group">
               <Button variant="primary" onClick={() => handleSubmit('emitida')} style={hasPreviousRequest ? { width: "100%" } : {}}>Emitir</Button>
               {!hasPreviousRequest && (
+              <>
+                {(!fechaInicio || !fechaFin) ? (
+                <Button variant="warning" onClick={() => setError('Debe llenar todos los campos.')}>Solicitar</Button>
+                ) : (
                 <Button variant="warning" onClick={() => setShowConfirmModal(true)}>Solicitar</Button>
+                )}
+              </>
               )}
             </div>
           </Form>
@@ -196,6 +203,8 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
         handleConfirm={handleConfirmSolicitar}
         checkPreviousRequest={checkPreviousRequest}
         error={error}
+        fechaInicio={fechaInicio}
+        fechaFin={fechaFin}
       />
     </>
   );

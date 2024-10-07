@@ -72,7 +72,7 @@ function Signup() {
           {error && <div className="alert alert-danger">{error}</div>}
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
-              <label htmlFor="email" className="form-label">Correo Electrónico</label>
+              <label htmlFor="email" className="form-label">Correo Electrónico Empresarial</label>
               <input type="email" className="form-control" id="email" placeholder="Ingresa tu correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="mb-3">

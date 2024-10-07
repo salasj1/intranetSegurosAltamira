@@ -20,9 +20,22 @@ function ARC() {
   const [tempFechaARC, setTempFechaARC] = useState<string>(''); 
 
   useEffect(() => {
+    const isValidYear = /^\d{4}$/.test(fechaARC);
+    if (fechaARC && !isValidYear) {
+      setError('El dato escrito no es un año válido.');
+      setArcData(null);
+      setIsLoading(false);
+      return;
+    }
+
     if (cod_emp && fechaARC) {
       fetch(`/api/arc/${cod_emp}?fecha=${fechaARC}`)
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
         .then(data => {
           if (!data || data.length === 0) {
             setError('No se encontraron datos para la fecha seleccionada.');
@@ -139,14 +152,14 @@ const handleSendSecondaryEmail = async () => {
                     onChange={(e) => setTempFechaARC(e.target.value)}
                     placeholder="AAAA"
                   />    
-                  <Button variant='light' className={styles['pdf-botton-download']} onClick={() => { setFechaARC(tempFechaARC); setShowPdf(true); }}>Buscar</Button>
+                  <Button variant='light' className={styles['pdf-botton-download']} onClick={() => { setFechaARC(tempFechaARC); setIsPdfLoading(true); setShowPdf(true); }}>Buscar</Button>
                 </div>
               </Card.Body>
             </Card>
           </div>
           {error ? (
             <Card bg="danger" border="danger" className={styles.Tarjeta}>
-              <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Lo sentimos</Card.Header>
+              <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Error</Card.Header>
               <Card.Body>
                 <Alert variant='danger' style={{ fontSize: "24.5px" }}>
                   {error}

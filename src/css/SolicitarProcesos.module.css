@@ -39,9 +39,9 @@
 }
 
 /* Estilos responsivos */
-@media (max-width: 1160px) {
+@media (max-width: 768px) {
     .canvas {
-        top: 125px;
+        top: 100px;
         padding: 15px;
     }
 
@@ -56,6 +56,9 @@
         padding: 10px;
     }
 
+    .canvas h1 {
+        margin-left: 0;
+    }
 }
 
 @keyframes fadeInUp {

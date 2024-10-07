@@ -115,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem('RRHH', response.data.RRHH.toString());
                 return true;
             } else {
-                return response.data.message || 'Error desconocido'; // Devolver el mensaje de error del servidor o un mensaje por defecto
+                return response.data.message || 'Error desconocido'; 
             }
         } catch (error) {
             console.error('Error during signup:', error);

@@ -116,7 +116,7 @@ function Prestaciones() {
       <NavbarEmpresa />
       <div className={styles.canvas}>
         <h1 style={{ textAlign: "center" }} className={styles.h1Prestaciones}>Movimientos de Prestaciones Sociales</h1>
-        <div style={{ width: "100%" }}>
+        <div className={styles.divEspacio} style={{width:"100%"}}>
           {isLoading ? (
             <h2>Cargando Detalle...</h2>
           ) : prestacionesData && prestacionesData.length > 0 ? (

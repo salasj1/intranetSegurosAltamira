@@ -26,6 +26,35 @@
     box-shadow: 0 3px 6px 0 rgba(0, 0, 0, .14);
     animation: fadeInUp 1.5s;
 }
+@media (max-width:1400px) {
+    .canvas .Tarjeta{
+        left: 800px;
+    }
+    
+}
+@media (max-width:1300px) {
+    .canvas .Tarjeta{
+        left: 700px;
+    }
+    
+}
+
+@media (max-width: 1200px) {
+    .canvas .Tarjeta {
+       position: relative;
+       width: 523px;
+       top:35px;
+       left: 0%; 
+       margin-bottom: 50px;
+    }
+}
+@media (max-width:740px) {
+    .canvas .Tarjeta{
+        margin-bottom:50px ;
+    }
+}
+
+
 .canvas .Tarjeta p{
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     display: flex;
@@ -45,9 +74,21 @@
     /* align-content: center; */
     flex-wrap: wrap;
 }
+
+@media (max-width: 680px) {
+    .botonesZoom {
+     left:88%;
+    }
+}
+@media (max-width: 580px) {
+    .botonesZoom {
+     left:86%;
+    }
+}
+
 .pdf-viewer-container {
-    width: 700px !important;
-    left: -285px !important;
+    width: 700px ;
+    left: -285px ;
     height: 500px; 
     /* border: 1px solid #ccc; */
     position: relative;
@@ -56,6 +97,14 @@
     margin-top: 35px;
     
 }
+@media (max-width: 1200px) {
+    .pdf-viewer-container {
+        width: 100%;
+        left: 0px;
+    }
+}
+
+
 .rpv-core__canvas-layer {
     direction: ltr;
     left: 0;
@@ -212,6 +261,21 @@
     white-space: nowrap; 
     font-family: "Gotham", Sans-serif;
 }
+@media (max-width: 1200px) {
+    .canvas h1 {
+        margin-left: 0% !important; /* Centrar el elemento */
+        text-wrap: pretty;
+        font-size: 3rem; /* Reducir el tamaño de la fuente en pantallas más pequeñas */
+    }
+}
+
+@media (max-width: 480px) {
+    .canvas h1 {
+        margin: 0 !important; /* Centrar el elemento */
+        text-wrap: wrap; /* Permitir que el texto se ajuste al ancho del contenedor */
+        font-size: 1.5rem; /* Reducir aún más el tamaño de la fuente en pantallas muy pequeñas */
+    }
+}
 .h1Recibo{
     margin-left: -50% !important;
 }
@@ -251,6 +315,12 @@
     position: relative;
     left: -345px;
     top: 24px;
+    animation: fadeInUp 1.5s;
+}
+@media (max-width:1200px) {
+    .cajainput{
+        left: 0px !important;
+    }
 }
 /* .tarjeticaInput h4{
     color:#003896;

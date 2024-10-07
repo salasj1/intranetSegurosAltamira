@@ -198,3 +198,35 @@ img {
     color: #ff7b00 !important;
 }
 
+.permisos-lista {
+    position: absolute;
+    top: 60px;
+    right: 15%;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px 0px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: auto;
+    max-height: 400px;
+    overflow-y: auto;
+   
+}
+.permisos-lista::-webkit-scrollbar{
+    width: 0px;
+}
+
+.list-group-item{
+    background-color: #013897;
+    border: #013897;
+    
+    
+}
+.Notificaciones{
+    border-radius: 0px;
+}
+.notificacion{
+    
+    animation-name: fadeInUp2;
+    animation-duration: 0.5s;
+}

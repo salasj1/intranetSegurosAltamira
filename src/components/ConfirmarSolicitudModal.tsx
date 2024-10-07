@@ -5,15 +5,18 @@ interface ConfirmarSolicitudModalProps {
   show: boolean;
   handleClose: () => void;
   handleConfirm: () => void;
-  checkPreviousRequest: () => void; // Nueva prop
-  error: string | null; // Nueva prop para manejar errores
+  checkPreviousRequest: () => void; 
+  error: string | null;
+  vacacionID?: number; // Hacer vacacionID opcional
+  fechaInicio: string;
+  fechaFin: string;
 }
 
-const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show, handleClose, handleConfirm, checkPreviousRequest, error }) => {
+const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show, handleClose, handleConfirm, checkPreviousRequest, error, vacacionID, fechaInicio, fechaFin }) => {
   const handleConfirmAndCheck = () => {
     handleConfirm();
-    checkPreviousRequest(); // Llamar a la función después de confirmar
-    if (error!==null) {
+    checkPreviousRequest();
+    if (error !== null) {
       handleClose();
     }
   };
@@ -25,6 +28,13 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
       </Modal.Header>
       <Modal.Body>
         {error && <Alert variant="danger">{error}</Alert>}
+        <Alert variant="primary">
+          {vacacionID !== undefined && (
+            <p><strong>ID de Vacaciones:</strong> {vacacionID}</p>
+          )}
+            <p><strong>Fecha de Inicio:</strong> {new Date(fechaInicio).toLocaleDateString('es-ES')}</p>
+            <p><strong>Fecha de Fin:</strong> {new Date(fechaFin).toLocaleDateString('es-ES')}</p>
+        </Alert>
         ¿Está seguro de que desea solicitar estas vacaciones?
       </Modal.Body>
       <Modal.Footer>

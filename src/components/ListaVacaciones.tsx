@@ -29,7 +29,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [vacacionToSolicitar, setVacacionToSolicitar] = useState<Vacacion | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [vacacionToDelete, setVacacionToDelete] = useState<number | null>(null);
+  const [vacacionToDelete, setVacacionToDelete] = useState<Vacacion | null>(null);
   const [hasPreviousRequest, setHasPreviousRequest] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null); // Nuevo estado para manejar errores
 
@@ -84,15 +84,15 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
     setShowModal(true);
   };
 
-  const handleDelete = (vacacionID: number) => {
-    setVacacionToDelete(vacacionID);
+  const handleDelete = (vacacion: Vacacion) => {
+    setVacacionToDelete(vacacion);
     setShowDeleteModal(true);
   };
 
   const handleConfirmDelete = async () => {
     if (vacacionToDelete !== null) {
       try {
-        await axios.put(`/api/vacaciones/${vacacionToDelete}/delete`);
+        await axios.put(`/api/vacaciones/${vacacionToDelete.VacacionID}/delete`);
         fetchVacaciones();
       } catch (error) {
         console.error('Error eliminando vacaciones:', error);
@@ -111,9 +111,10 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
       const today = new Date();
       today.setHours(0, 0, 0, 0); 
 
-      const startDate = parseISO(vacacionToSolicitar.FechaInicio.toString());
-      const endDate = parseISO(vacacionToSolicitar.FechaFin.toString());
-
+      const startDate = addDays(parseISO(vacacionToSolicitar.FechaInicio.toString()),1);
+      const endDate = addDays(parseISO(vacacionToSolicitar.FechaFin.toString()),1);
+      console.log('startDate:', startDate);
+      console.log('endDate:', endDate);
       if (isBefore(startDate, today) && !isEqual(startDate, today)) {
         setError('La fecha de inicio no puede ser anterior a la fecha actual.');
         return;
@@ -255,7 +256,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
                     <Button variant="warning" onClick={() => handleEdit(item)}>
                         <FontAwesomeIcon icon={faEdit} />
                       </Button>
-                    <Button variant="danger" onClick={() => handleDelete(item.VacacionID)}>
+                    <Button variant="danger" onClick={() => handleDelete(item)}>
                       <FontAwesomeIcon icon={faTrash} />
                     </Button>
                   </div>
@@ -276,19 +277,29 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
         />
       )}
 
-      <ConfirmarSolicitudModal
-        show={showConfirmModal}
-        handleClose={() => setShowConfirmModal(false)}
-        handleConfirm={handleConfirmSolicitar}
-        checkPreviousRequest={checkPreviousRequest} // Pasar la función aquí
-        error={error} // Pasar el error aquí
-      />
+      {vacacionToSolicitar && (
+        <ConfirmarSolicitudModal
+          show={showConfirmModal}
+          handleClose={() => setShowConfirmModal(false)}
+          handleConfirm={handleConfirmSolicitar}
+          checkPreviousRequest={checkPreviousRequest}
+          error={error}
+          vacacionID={vacacionToSolicitar.VacacionID}
+          fechaInicio={format(addDays(parseISO(vacacionToSolicitar.FechaInicio.toString()), 1), 'dd/MM/yyyy')}
+          fechaFin={format(addDays(parseISO(vacacionToSolicitar.FechaFin.toString()), 1), 'dd/MM/yyyy')}
+        />
+      )}
 
-      <ConfirmarEliminacionModal
-        show={showDeleteModal}
-        handleClose={() => setShowDeleteModal(false)}
-        handleConfirm={handleConfirmDelete}
-      />
+      {vacacionToDelete && (
+        <ConfirmarEliminacionModal
+          show={showDeleteModal}
+          handleClose={() => setShowDeleteModal(false)}
+          handleConfirm={handleConfirmDelete}
+          vacacionID={vacacionToDelete.VacacionID}
+          fechaInicio={format(addDays(parseISO(vacacionToDelete.FechaInicio.toString()), 1), 'dd/MM/yyyy')}
+          fechaFin={format(addDays(parseISO(vacacionToDelete.FechaFin.toString()), 1), 'dd/MM/yyyy')}
+        />
+      )}
     </>
   );
 };

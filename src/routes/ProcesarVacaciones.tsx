@@ -18,16 +18,18 @@ export interface Vacacion {
     nombre_supervisor: string;
     nombres_supervisor: string;
     apellidos_supervisor: string;
+    ci: string;
 }
 
 function ProcesarVacaciones() {
-    const { cod_emp } = useAuth();
+    
     const [vacaciones, setVacaciones] = useState<Vacacion[]>([]);
     const [error, setError] = useState<string | null>(null);
 
     const fetchVacaciones = async () => {
         try {
             const response = await axios.get(`/api/vacacionesaprobadas`);
+            console.log(response.data);
             setVacaciones(response.data);
         } catch (error) {
             if (axios.isAxiosError(error)) {

@@ -30,6 +30,69 @@
     box-shadow: 0 3px 6px 0 rgba(0, 0, 0, .14);
     animation: fadeInUp 1.5s;
 }
+
+@media (max-width:1400px) {
+    
+    .canvas .Tarjeta{
+        left: 800px;
+
+    }
+    
+}
+@media (max-width:1300px) {
+    .canvas .Tarjeta{
+        left: 700px;
+    }
+    
+}
+
+@media (max-width: 1200px) {
+    .canvas .Tarjeta {
+       position: relative;
+       left:0%;
+       
+       width: 523px;
+       top:35px;
+       margin-bottom: 50px;
+    }
+}
+@media (max-width:740px) {
+    .canvas .Tarjeta{
+        margin-bottom:50px ;
+    }
+}
+
+/* @media (max-width: 915px) {
+    .canvas .Tarjeta {
+       position: relative;
+       width: 70%;
+       top:25px;
+       left: 15%; 
+    }
+}
+
+@media (max-width: 768px) {
+    .canvas .Tarjeta {
+       position: relative;
+       width: 70%;
+    }
+}
+
+@media (max-width: 680px) {
+    .canvas .Tarjeta {
+        position: relative;
+        width: 80%;
+        
+    }
+}
+@media (max-width: 650px) {
+    .canvas .Tarjeta {
+       position: relative;
+       width: 100%;
+       left:0%;
+       margin-bottom: 5%;
+    }
+} */
 .canvas .Tarjeta p{
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     display: flex;
@@ -49,6 +112,16 @@
     /* align-content: center; */
     flex-wrap: wrap;
 }
+@media (max-width: 680px) {
+    .botonesZoom {
+     left:88%;
+    }
+}
+@media (max-width: 580px) {
+    .botonesZoom {
+     left:86%;
+    }
+}
 .pdf-viewer-container {
     width: 50%;
     left: 1.5%;
@@ -59,6 +132,13 @@
     overflow: hidden;
     margin-top: 35px;
 }
+@media (max-width: 1200px) {
+    .pdf-viewer-container {
+        width: 100%;
+    }
+}
+
+
 .rpv-core__canvas-layer {
     direction: ltr;
     left: 0;
@@ -119,12 +199,16 @@
     box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .05);
 }
 
-.pdf-botton-download:hover, .pdf-botton-download:active, .pdf-botton-download:focus-visible {
+.pdf-botton-download:hover,  .pdf-botton-download:focus-visible {
     color: #f48134;
     background-color: #fff;
     border-color: #fff;
 }
-
+.pdf-botton-download:active{
+    color: #f48134 !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
+}
 .pdf-botton-download2 {
     font-family: "Gotham", Sans-serif;
     font-size: 22px;
@@ -137,12 +221,16 @@
     box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .05);
 }
 
-.pdf-botton-download2:hover, .pdf-botton-download2:active, .pdf-botton-download2:focus-visible{
+.pdf-botton-download2:hover, .pdf-botton-download2:focus-visible{
     color: #003896;
     background-color: #fff;
     border-color: #fff;
 }
-
+.pdf-botton-download2:active{
+    color: #003896 !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
+}
 .pdf-botton-download3 {
     font-family: "Gotham", Sans-serif;
     font-size: 22px;
@@ -155,10 +243,15 @@
     box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .05);
 }
 
-.pdf-botton-download3:hover, .pdf-botton-download3:active, .pdf-botton-download3:focus-visible {
+.pdf-botton-download3:hover, .pdf-botton-download3:focus-visible {
     color: #003896;
     background-color: #fff;
     border-color: #fff;
+}
+.pdf-botton-download3:active{
+    color: #003896 !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
 }
 
 @keyframes elementor-animation-bob {
@@ -217,13 +310,34 @@
     gap: 10px;
 }
 .canvas h1 {
-    
+    position: relative;
     max-width: 100%; 
     box-sizing: border-box; 
     text-overflow: ellipsis; 
     white-space: nowrap; 
     font-family: "Gotham", Sans-serif;
+    text-align: center; /* Centrar el texto horizontalmente */
+    width: 100%; /* Asegurar que el h1 ocupe el 100% del contenedor */
+    font-size: 3rem; /* Tamaño de fuente inicial */
+    left: 25px;
 }
+
+@media (max-width: 1200px) {
+    .canvas h1 {
+        margin-left: 0% !important; /* Centrar el elemento */
+        text-wrap: pretty;
+        font-size: 3rem; /* Reducir el tamaño de la fuente en pantallas más pequeñas */
+    }
+}
+
+@media (max-width: 480px) {
+    .canvas h1 {
+        margin: 0 !important; /* Centrar el elemento */
+        text-wrap: wrap; /* Permitir que el texto se ajuste al ancho del contenedor */
+        font-size: 1.5rem; /* Reducir aún más el tamaño de la fuente en pantallas muy pequeñas */
+    }
+}
+
 .h1Recibo{
     margin-left: -50% !important;
 }

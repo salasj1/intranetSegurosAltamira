@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Modal, Alert} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faArrowUp, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import styles from '../css/AprobarVacaciones.module.css';
@@ -28,6 +28,7 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
   const [showModal, setShowModal] = useState(false);
   const [selectedVacacion, setSelectedVacacion] = useState<Vacacion | null>(null);
   const [action, setAction] = useState<'approve' | 'reject'>('approve');
+  const [showAlreadyApprovedModal, setShowAlreadyApprovedModal] = useState(false);
 
   useEffect(() => {
     fetchVacaciones();
@@ -53,7 +54,7 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
     format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy').includes(searchFechaInicio) &&
     format(addDays(parseISO(item.FechaFin.toString()), 1), 'dd/MM/yyyy').includes(searchFechaFin) &&
     item.Estado.toLowerCase().includes(searchEstado.toLowerCase()) &&
-    item.cod_emp.toLowerCase().includes(searchCodEmp.toLowerCase()) &&
+    item.ci.toLowerCase().includes(searchCodEmp.toLowerCase()) &&
     item.apellidos.toLowerCase().includes(searchNombre.toLowerCase()) &&
     item.nombres.toLowerCase().includes(searchNombre.toLowerCase()) &&
     item.Estado.toLowerCase() !== 'borrado'
@@ -75,6 +76,12 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
 
   const handleConfirm = async () => {
     if (!selectedVacacion) return;
+
+    if (selectedVacacion.Estado.toLowerCase() === 'aprobada') {
+      setShowAlreadyApprovedModal(true);
+      setShowModal(false);
+      return;
+    }
 
     try {
       if (action === 'approve') {
@@ -168,43 +175,43 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
             <th id={styles.headTable} onClick={() => requestSort('VacacionID')} className='titulo'>
               ID Vacación
               {sortConfig.key === 'VacacionID' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
               )}
             </th>
-            <th id={styles.headTable} onClick={() => requestSort('cod_emp')} className='titulo'>
-              Código Empleado
-              {sortConfig.key === 'cod_emp' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+            <th id={styles.headTable} onClick={() => requestSort('ci')} className='titulo'>
+              Cédula
+              {sortConfig.key === 'ci' && (
+                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
               )}
             </th>
             <th id={styles.headTable} onClick={() => requestSort('nombres')} className='titulo'>
               Nombres
               {sortConfig.key === 'nombres' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
               )}
             </th>
             <th id={styles.headTable} onClick={() => requestSort('apellidos')} className='titulo'>
               Apellidos
               {sortConfig.key === 'apellidos' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
               )}
             </th>
             <th id={styles.headTable} onClick={() => requestSort('FechaInicio')} className='titulo'>
               Fecha Inicio
               {sortConfig.key === 'FechaInicio' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
               )}
             </th>
             <th id={styles.headTable} onClick={() => requestSort('FechaFin')} className='titulo'>
               Fecha Fin
               {sortConfig.key === 'FechaFin' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
               )}
             </th>
             <th id={styles.headTable} onClick={() => requestSort('Estado')} className='titulo'>
               Estado
               {sortConfig.key === 'Estado' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
               )}
             </th>
             <th>Acciones</th>
@@ -215,7 +222,7 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
           {filteredData.map(item => (
             <tr key={item.VacacionID}>
               <td>{item.VacacionID}</td>
-              <td>{item.cod_emp}</td>
+              <td>{item.ci}</td>
               <td>{item.nombres}</td>
               <td>{item.apellidos}</td>
               <td>{format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy')}</td>
@@ -251,7 +258,22 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
           fechaFin={format(addDays(parseISO(selectedVacacion.FechaFin.toString()), 1), 'dd/MM/yyyy')}
         />
       )}
-    
+      
+      <Modal show={showAlreadyApprovedModal} onHide={() => setShowAlreadyApprovedModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Vacaciones ya aprobadas</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Alert variant="warning">
+            Estas vacaciones ya fueron aprobadas anteriormente por otro supervisor.
+          </Alert>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowAlreadyApprovedModal(false)}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
