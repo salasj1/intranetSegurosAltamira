@@ -15,6 +15,10 @@ interface Permiso {
   ci: string;
   Titulo: string;
   descripcion: string;
+  nombres: string;
+  apellidos: string;
+  cod_emp: string;
+  Motivo: string;
 }
 
 interface ListaPermisosProps {
@@ -40,10 +44,14 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
     fetchPermisos();
   }, []);
 
+  useEffect(() => {
+    console.log('Permisos:', permisos);
+  }, [permisos]);
+
   const sortedData = [...permisos].sort((a, b) => {
     if (sortConfig.key) {
-      let aValue = a[sortConfig.key as keyof Permiso];
-      let bValue = b[sortConfig.key as keyof Permiso];
+      const aValue = a[sortConfig.key as keyof Permiso];
+      const bValue = b[sortConfig.key as keyof Permiso];
 
       if (aValue < bValue) {
         return sortConfig.direction === 'asc' ? -1 : 1;
@@ -56,13 +64,13 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
   });
 
   const filteredData = sortedData.filter(item =>
-    item.PermisosID.toString().includes(searchPermisosID) &&
-    format(addDays(parseISO(item.Fecha_inicio.toString()), 1), 'dd/MM/yyyy').includes(searchFechaInicio) &&
-    format(addDays(parseISO(item.Fecha_Fin.toString()), 1), 'dd/MM/yyyy').includes(searchFechaFin) &&
-    item.Estado.toLowerCase().includes(searchEstado.toLowerCase()) &&
-    item.ci.toLowerCase().includes(searchCodEmp.toLowerCase()) &&
-    item.Titulo.toLowerCase().includes(searchNombre.toLowerCase()) &&
-    item.Estado.toLowerCase() !== 'borrado'
+    item.PermisosID?.toString().includes(searchPermisosID) &&
+    format(addDays(parseISO(item.Fecha_inicio?.toString()), 1), 'dd/MM/yyyy').includes(searchFechaInicio) &&
+    format(addDays(parseISO(item.Fecha_Fin?.toString()), 1), 'dd/MM/yyyy').includes(searchFechaFin) &&
+    (typeof item.Estado === 'string' && item.Estado.toLowerCase().includes(searchEstado.toLowerCase())) &&
+    item.ci?.toLowerCase().includes(searchCodEmp.toLowerCase()) &&
+    item.Titulo?.toLowerCase().includes(searchNombre.toLowerCase()) &&
+    item.Estado?.toLowerCase() !== 'borrado'
   );
 
   const requestSort = (key: string) => {

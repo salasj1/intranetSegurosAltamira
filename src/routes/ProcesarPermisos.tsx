@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import ListaProcesarPermisos from "../components/ListaProcesarPermisos";
 import NavbarEmpresa from "../components/NavbarEmpresa";
-import { useAuth } from "../auth/AuthProvider";
+
 import axios from "axios";
 
 function ProcesarPermisos() {
   const [permisos, setPermisos] = useState([]);
-  const { cod_emp } = useAuth();
 
   const fetchPermisos = async () => {
     try {
-      const response = await axios.get(`/api/permisos/permisosAprobadosProcesados`);
+      const response = await axios.get(`/api/permisos/aprobadosProcesados`);
       setPermisos(response.data);
     } catch (error) {
       console.error('Error al obtener permisos:', error);
@@ -31,7 +30,9 @@ function ProcesarPermisos() {
         <br />
         <br />
         <br />
-        <h1>Aprobar Permisos</h1>
+        <h1>Procesar Permisos</h1>
+        <br />
+        <br />
         <ListaProcesarPermisos permisos={permisos} fetchPermisos={fetchPermisos} />
       </div>
     </>

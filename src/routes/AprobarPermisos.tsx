@@ -22,14 +22,8 @@ function AprobarPermisos() {
   return (
     <>
       <NavbarEmpresa />
-      <div className="container">
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
+      <div className="canvas">
         <h1>Aprobar Permisos</h1>
-        <br />
         <br />
         <ListaAprobacionPermisos permisos={permisos} fetchPermisos={fetchPermisos} />
       </div>

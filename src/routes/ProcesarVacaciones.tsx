@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../auth/AuthProvider";
+
 import ListaProcesarVacacaciones from "../components/ListaProcesarVacaciones";
 import NavbarEmpresa from "../components/NavbarEmpresa";
 import axios from "axios";
