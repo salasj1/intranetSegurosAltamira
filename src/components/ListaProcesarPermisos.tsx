@@ -1,24 +1,29 @@
 import { useEffect, useState } from 'react';
 import { Table, Form, Button } from 'react-bootstrap';
 import { useAuth } from '../auth/AuthProvider';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTimes, faArrowDown, faArrowUp, faEye } from '@fortawesome/free-solid-svg-icons';
 import { addDays, format, parseISO } from 'date-fns';
 import axios from 'axios';
-import styles from '../css/ListaAprobacionPermisos.module.css'; // Importar los estilos
+import styles from '../css/ListaAprobacionPermisos.module.css'; 
+
 import ModalConfirmacion from './ModalConfirmacion';
-import ModalDescripcion from './ModalDescripcion';
+
+import ModalDescripcionPermiso from './ModalDescripcionPermiso';
 
 interface Permiso {
   PermisosID: number;
+  cod_emp: string;
   Fecha_inicio: string;
   Fecha_Fin: string;
-  Estado: string;
-  ci: string;
   Titulo: string;
+  Motivo: string;
+  Estado: string | string[];
   descripcion: string;
+  ci: string;
   nombres: string;
   apellidos: string;
-  cod_emp: string;
-  Motivo: string;
 }
 
 interface ListaPermisosProps {
@@ -31,8 +36,12 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: '', direction: 'asc' });
   const [searchPermisosID, setSearchPermisosID] = useState('');
   const [searchNombre, setSearchNombre] = useState('');
+  const [searchApellido, setSearchApellido] = useState('');
   const [searchCodEmp, setSearchCodEmp] = useState('');
+  const [searchCi, setSearchCi] = useState('');
+  const [searchTitulo, setSearchTitulo] = useState('');
   const [searchFechaInicio, setSearchFechaInicio] = useState('');
+
   const [searchFechaFin, setSearchFechaFin] = useState('');
   const [searchEstado, setSearchEstado] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -45,7 +54,7 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
   }, []);
 
   useEffect(() => {
-    console.log('Permisos:', permisos);
+    console.log('Permisos:', permisos); // Verificar los datos recibidos
   }, [permisos]);
 
   const sortedData = [...permisos].sort((a, b) => {
@@ -63,15 +72,20 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
     return 0;
   });
 
-  const filteredData = sortedData.filter(item =>
-    item.PermisosID?.toString().includes(searchPermisosID) &&
-    format(addDays(parseISO(item.Fecha_inicio?.toString()), 1), 'dd/MM/yyyy').includes(searchFechaInicio) &&
-    format(addDays(parseISO(item.Fecha_Fin?.toString()), 1), 'dd/MM/yyyy').includes(searchFechaFin) &&
-    (typeof item.Estado === 'string' && item.Estado.toLowerCase().includes(searchEstado.toLowerCase())) &&
-    item.ci?.toLowerCase().includes(searchCodEmp.toLowerCase()) &&
-    item.Titulo?.toLowerCase().includes(searchNombre.toLowerCase()) &&
-    item.Estado?.toLowerCase() !== 'borrado'
-  );
+  const filteredData = sortedData.filter(item => {
+    const estadoString = Array.isArray(item.Estado) ? [...new Set(item.Estado)].join(' ') : item.Estado;
+    return (
+      item.PermisosID?.toString().includes(searchPermisosID) &&
+      format(addDays(parseISO(item.Fecha_inicio?.toString()), 1), 'dd/MM/yyyy').includes(searchFechaInicio) &&
+      format(addDays(parseISO(item.Fecha_Fin?.toString()), 1), 'dd/MM/yyyy').includes(searchFechaFin) &&
+      (typeof estadoString === 'string' && estadoString.toLowerCase().includes(searchEstado.toLowerCase())) &&
+      item.ci?.toLowerCase().includes(searchCi.toLowerCase()) &&
+      item.nombres?.toLowerCase().includes(searchNombre.toLowerCase()) &&
+      item.apellidos?.toLowerCase().includes(searchApellido.toLowerCase()) &&
+      item.Titulo?.toLowerCase().includes(searchTitulo.toLowerCase()) &&
+      estadoString?.toLowerCase() !== 'borrado'
+    );
+  });
 
   const requestSort = (key: string) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -112,6 +126,7 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
     }
   };
 
+
   return (
     <>
       <div className='tablaAprobar'>
@@ -132,8 +147,8 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
                   className={styles.search}
                   type="text"
                   placeholder="Buscar Cédula..."
-                  value={searchCodEmp}
-                  onChange={(e) => setSearchCodEmp(e.target.value)}
+                  value={searchCi}
+                  onChange={(e) => setSearchCi(e.target.value)}
                 />
               </th>
               <th>
@@ -143,6 +158,24 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
                   placeholder="Buscar Nombre..."
                   value={searchNombre}
                   onChange={(e) => setSearchNombre(e.target.value)}
+                />
+              </th>
+              <th>
+                <Form.Control
+                  className={styles.search}
+                  type="text"
+                  placeholder="Buscar Apellidos..."
+                  value={searchApellido}
+                  onChange={(e) => setSearchApellido(e.target.value)}
+                />
+              </th>
+              <th>
+                <Form.Control
+                  className={styles.search}
+                  type="text"
+                  placeholder="Buscar Título..."
+                  value={searchTitulo}
+                  onChange={(e) => setSearchTitulo(e.target.value)}
                 />
               </th>
               <th>
@@ -163,6 +196,7 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
                   onChange={(e) => setSearchFechaFin(e.target.value)}
                 />
               </th>
+              
               <th>
                 <Form.Control
                   className={styles.search}
@@ -172,27 +206,58 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
                   onChange={(e) => setSearchEstado(e.target.value)}
                 />
               </th>
+              <th></th>
             </tr>
           </thead>
           <thead>
             <tr>
               <th id={styles.headTable} onClick={() => requestSort('PermisosID')} className='titulo'>
                 ID Permiso
+                {sortConfig.key === 'PermisosID' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                )}
               </th>
               <th id={styles.headTable} onClick={() => requestSort('ci')} className='titulo'>
                 Cédula
+                {sortConfig.key === 'ci' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                )}
+              </th>
+              <th id={styles.headTable} onClick={() => requestSort('Nombre')} className='titulo'>
+                Nombre
+                {sortConfig.key === 'Nombre' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                )}
+              </th>
+              <th id={styles.headTable} onClick={() => requestSort('Apellido')} className='titulo'>
+                Apellido
+                {sortConfig.key === 'Apellido' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                )}
               </th>
               <th id={styles.headTable} onClick={() => requestSort('Titulo')} className='titulo'>
-                Nombre
+                Título
+                {sortConfig.key === 'Titulo' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                )}
               </th>
               <th id={styles.headTable} onClick={() => requestSort('Fecha_inicio')} className='titulo'>
                 Fecha Inicio
+                {sortConfig.key === 'Fecha_inicio' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                )}
               </th>
               <th id={styles.headTable} onClick={() => requestSort('Fecha_Fin')} className='titulo'>
                 Fecha Fin
+                {sortConfig.key === 'Fecha_Fin' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                )}
               </th>
               <th id={styles.headTable} onClick={() => requestSort('Estado')} className='titulo'>
                 Estado
+                {sortConfig.key === 'Estado' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                )}
               </th>
               <th id={styles.headTable} className='titulo'>
                 Acciones
@@ -204,14 +269,24 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
               <tr key={permiso.PermisosID}>
                 <td>{permiso.PermisosID}</td>
                 <td>{permiso.ci}</td>
+                <td>{permiso.nombres}</td>
+                <td>{permiso.apellidos}</td>
                 <td>{permiso.Titulo}</td>
                 <td>{format(addDays(parseISO(permiso.Fecha_inicio.toString()), 1), 'dd/MM/yyyy')}</td>
                 <td>{format(addDays(parseISO(permiso.Fecha_Fin.toString()), 1), 'dd/MM/yyyy')}</td>
-                <td>{permiso.Estado}</td>
-                <td className={styles.acciones}>
-                  <Button variant="primary" onClick={() => handleAction(permiso, 'approve')}>Aprobar</Button>
-                  <Button variant="danger" onClick={() => handleAction(permiso, 'reject')}>Rechazar</Button>
-                  <Button variant="info" onClick={() => handleLeerDescripcion(permiso)}>Ver</Button>
+                <td>{Array.isArray(permiso.Estado) ? [...new Set(permiso.Estado)].join(' ') : permiso.Estado}</td>
+                <td >
+                  <div className={styles.acciones}>
+                  <Button variant="primary" onClick={() => handleLeerDescripcion(permiso)}>
+                      <FontAwesomeIcon icon={faEye} color='white' />
+                    </Button>
+                    {permiso.Estado[0] === 'Aprobada' && (
+                    <>
+                      <Button variant="success" onClick={() => handleAction(permiso, 'approve')}><FontAwesomeIcon icon={faCheck} /></Button>
+                      <Button variant="danger" onClick={() => handleAction(permiso, 'reject')}><FontAwesomeIcon icon={faTimes} /></Button>
+                    </>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -219,10 +294,12 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
         </Table>
       </div>
       
-      <ModalDescripcion
+      <ModalDescripcionPermiso
         show={showDescripcion}
         onHide={() => setShowDescripcion(false)}
         permiso={selectedPermiso}
+        fetchPermisos={fetchPermisos}
+        context="procesar" 
       />
 
       <ModalConfirmacion

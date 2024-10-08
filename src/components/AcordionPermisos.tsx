@@ -30,7 +30,7 @@ function AcordionPermisos({ refresh }: AcordionPermisosProps) {
   useEffect(() => {
     const fetchPermisos = async () => {
       try {
-        const response = await axios.get(`/api/permisos/${cod_emp}`);
+        const response = await axios.get(`/api/permisos/id/${cod_emp}`);
         setPermisos(response.data);
       } catch (error) {
         console.error('Error al obtener permisos:', error);

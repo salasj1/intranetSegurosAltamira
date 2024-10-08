@@ -48,8 +48,8 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
 
   const sortedData = [...permisos].sort((a: Permiso, b: Permiso) => {
     if (sortConfig.key) {
-      let aValue = a[sortConfig.key as keyof Permiso];
-      let bValue = b[sortConfig.key as keyof Permiso];
+      const aValue = a[sortConfig.key as keyof Permiso];
+      const bValue = b[sortConfig.key as keyof Permiso];
 
       if (aValue < bValue) {
         return sortConfig.direction === 'asc' ? -1 : 1;
@@ -286,6 +286,7 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
         onHide={() => setShowDescripcion(false)}
         permiso={selectedPermiso}
         fetchPermisos={fetchPermisos}
+        context="aprobacion" // Pasar el contexto
       />
 
       <ModalConfirmacionPermiso

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import ListaProcesarPermisos from "../components/ListaProcesarPermisos";
 import NavbarEmpresa from "../components/NavbarEmpresa";
-
 import axios from "axios";
 
 function ProcesarPermisos() {
@@ -10,6 +9,7 @@ function ProcesarPermisos() {
   const fetchPermisos = async () => {
     try {
       const response = await axios.get(`/api/permisos/aprobadosProcesados`);
+      console.log('Permisos recibidos:', response.data); // Verificar los datos recibidos
       setPermisos(response.data);
     } catch (error) {
       console.error('Error al obtener permisos:', error);
@@ -23,16 +23,8 @@ function ProcesarPermisos() {
   return (
     <>
       <NavbarEmpresa />
-      
-      <div className="container">
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
+      <div className="canvas">
         <h1>Procesar Permisos</h1>
-        <br />
-        <br />
         <ListaProcesarPermisos permisos={permisos} fetchPermisos={fetchPermisos} />
       </div>
     </>
