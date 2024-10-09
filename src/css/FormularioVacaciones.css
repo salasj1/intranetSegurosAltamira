@@ -31,6 +31,9 @@
     color: #FFFFFF;
   }
 
+  .react-datepicker__calendar-icon {
+    pointer-events: none; /* Esto asegura que el icono no interfiera con el clic en el input */
+  }
 /* Estilo para el calendario */
 input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0) contrast(100%);

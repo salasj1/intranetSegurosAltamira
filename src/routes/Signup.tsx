@@ -42,8 +42,7 @@ function Signup() {
             setError(result as string); // Mostrar el mensaje de error del servidor
         }
     } catch (err) {
-        console.error('Error during signup:', err);
-        setError('Error en el registro');
+        console.error(err);
     }
 };
 

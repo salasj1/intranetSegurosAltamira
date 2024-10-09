@@ -4,8 +4,10 @@ import { useAuth } from '../auth/AuthProvider';
 import { Form, Button, Alert, Card, AlertHeading } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/FormularioVacaciones.css';
-import { isBefore, isEqual, parseISO } from 'date-fns';
 import ConfirmarSolicitudModal from './ConfirmarSolicitudModal';
+import DatePicker from "react-widgets/DatePicker";
+import 'react-widgets/styles.css';
+
 
 interface FormularioVacacionesProps {
   fetchVacaciones: () => void;
@@ -13,8 +15,8 @@ interface FormularioVacacionesProps {
 
 const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaciones }) => {
   const { cod_emp } = useAuth();
-  const [fechaInicio, setFechaInicio] = useState('');
-  const [fechaFin, setFechaFin] = useState('');
+  const [fechaInicio, setFechaInicio] = useState<string | null>(null);
+  const [fechaFin, setFechaFin] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [diasCausados, setDiasCausados] = useState<number | null>(null);
@@ -63,34 +65,34 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     const today = new Date();
     today.setHours(0, 0, 0, 0); 
 
-    const startDate = parseISO(fechaInicio);
-    const endDate = parseISO(fechaFin);
+    const startDate = fechaInicio ? new Date(fechaInicio) : null;
+    const endDate = fechaFin ? new Date(fechaFin) : null;
 
-    if (fechaInicio === '' || fechaFin === '') {
+    if (!fechaInicio || !fechaFin) {
       setError('Debe llenar todos los campos.');
       setSuccess(null); 
       return;
     }
 
-    if (isBefore(startDate, today) && !isEqual(startDate, today)) {
+    if (startDate && (startDate < today)) {
       setError('La fecha de inicio no puede ser anterior a la fecha actual.');
       setSuccess(null); 
       return;
     }
 
-    if (isBefore(endDate, today) && !isEqual(endDate, today)) {
+    if (endDate && (endDate < today)) {
       setError('La fecha de fin no puede ser anterior a la fecha actual.');
       setSuccess(null); 
       return;
     }
 
-    if (isBefore(endDate, startDate)) {
+    if (startDate && endDate && endDate < startDate) {
       setError('La fecha de fin no puede ser anterior a la fecha de inicio.');
       setSuccess(null); 
       return;
     }
 
-    if (diasHabiles !== null && diasHabiles < (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1) {
+    if (diasHabiles !== null && startDate && endDate && diasHabiles < (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1) {
       setError('No tiene suficientes días hábiles disponibles.');
       setSuccess(null);
       return;
@@ -166,19 +168,23 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
           <Form>
             <Form.Group controlId="fechaInicio">
               <Form.Label>Fecha Inicio:</Form.Label>
-              <Form.Control 
-                type="date" 
-                value={fechaInicio} 
-                onChange={(e) => setFechaInicio(e.target.value)} 
+              <DatePicker
+                placeholder="dd/mm/yy"
+                value={fechaInicio ? new Date(fechaInicio) : null}
+                onChange={(date: Date | null | undefined) => {
+                  setFechaInicio(date ? date.toISOString() : null);
+                }}
               />
               <br/>
             </Form.Group>
             <Form.Group controlId="fechaFin">
               <Form.Label>Fecha Fin:</Form.Label>
-              <Form.Control 
-                type="date" 
-                value={fechaFin} 
-                onChange={(e) => setFechaFin(e.target.value)} 
+              <DatePicker
+                placeholder='dd/mm/yyyy'
+                value={fechaFin ? new Date(fechaFin) : null}
+                onChange={(date: Date | null | undefined) => {
+                  setFechaFin(date ? date.toISOString() : null);
+                }}
               />
             </Form.Group>
             <div className="button-group">
@@ -206,8 +212,10 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
         fechaInicio={fechaInicio}
         fechaFin={fechaFin}
       />
+
     </>
   );
+
 };
 
 export default FormularioVacaciones;

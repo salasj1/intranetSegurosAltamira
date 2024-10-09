@@ -47,8 +47,11 @@ function ARC() {
           setIsLoading(false);
         })
         .catch(error => {
-          console.error('Error fetching ARC data:', error);
-          setError('Error al obtener los datos del ARC.');
+          if (error.message === 'Network response was not ok') {
+            setError('Error de conexion. Intentelo más tarde');
+          } else {
+            setError(error.message);
+          }
           setIsLoading(false);
         });
     }

@@ -8,8 +8,8 @@ interface ConfirmarSolicitudModalProps {
   checkPreviousRequest: () => void; 
   error: string | null;
   vacacionID?: number; // Hacer vacacionID opcional
-  fechaInicio: string;
-  fechaFin: string;
+  fechaInicio: string | null;
+  fechaFin: string | null;
 }
 
 const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show, handleClose, handleConfirm, checkPreviousRequest, error, vacacionID, fechaInicio, fechaFin }) => {
@@ -32,8 +32,8 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
           {vacacionID !== undefined && (
             <p><strong>ID de Vacaciones:</strong> {vacacionID}</p>
           )}
-            <p><strong>Fecha de Inicio:</strong> {new Date(fechaInicio).toLocaleDateString('es-ES')}</p>
-            <p><strong>Fecha de Fin:</strong> {new Date(fechaFin).toLocaleDateString('es-ES')}</p>
+            <p><strong>Fecha de Inicio:</strong> {fechaInicio ? new Date(fechaInicio).toLocaleDateString('es-ES') : 'N/A'}</p>
+            <p><strong>Fecha de Fin:</strong> {fechaFin ? new Date(fechaFin).toLocaleDateString('es-ES') : 'N/A'}</p>
         </Alert>
         ¿Está seguro de que desea solicitar estas vacaciones?
       </Modal.Body>

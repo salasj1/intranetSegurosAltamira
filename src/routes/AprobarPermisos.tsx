@@ -9,6 +9,7 @@ function AprobarPermisos() {
   const fetchPermisos = async () => {
     try {
       const response = await axios.get(`/api/permisos/supervisor/${cod_emp}`);
+      console.log('Permisos recibidos:', response.data);
       setPermisos(response.data);
     } catch (error) {
       console.error('Error al obtener permisos:', error);

@@ -31,9 +31,13 @@ function Prestaciones() {
         console.log("fecha_ing " + fecha_ing);
         setIsLoading(false);
         setShowAlert(true);
+        
       } catch (error) {
-        console.error('Error fetching prestaciones data:', error);
-        setError("Error al cargar la informacion de los movimientos de las prestaciones");
+        if ((error as any).message === "Failed to fetch data" && (error as any).response.status === 500) {
+          setError("Error de conexión. Inténtelo más tarde.");
+        } else {
+          setError("Error al cargar la información de los movimientos de las prestaciones");
+        }
         setIsLoading(false);
       }
     };
@@ -205,7 +209,7 @@ function Prestaciones() {
               <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Error</Card.Header>
               <Card.Body>
                 <Alert variant='danger' style={{ fontSize: "24.5px" }}>
-                  No se encuentra algún movimiento de Prestaciones en este momento.
+                  {error}
                 </Alert>
               </Card.Body>
             </Card>

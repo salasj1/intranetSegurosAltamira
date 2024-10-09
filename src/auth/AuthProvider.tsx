@@ -1,5 +1,5 @@
 import { useContext, createContext, useState, useEffect } from "react";
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import NavbarEmpresa from "../components/NavbarEmpresa";
 
 interface AuthContextType {
@@ -118,8 +118,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 return response.data.message || 'Error desconocido'; 
             }
         } catch (error) {
+            
             console.error('Error during signup:', error);
-            return 'Error en el registro';
+            const axiosError = error as AxiosError;
+            const errorMessage = (axiosError.response?.data as { message?: string })?.message;
+            return errorMessage || 'Error desconocido';
         }
     };
 

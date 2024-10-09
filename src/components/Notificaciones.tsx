@@ -29,7 +29,7 @@ const Notificaciones: React.FC = () => {
             if(auth.RRHH === 1) {
                 response = await axios.get(`/api/permisos/nuevos/${auth.cod_emp}`);
             } else if (auth.RRHH === 0 && auth.tipo === 'Empleado') {
-                response = await axios.get(`/api/permisos/${auth.cod_emp}`);
+                response = await axios.get(`/api/permisos/id/${auth.cod_emp}`);
             }
             if (response && Array.isArray(response.data)) {
                 setNewPermisos(response.data);
@@ -67,6 +67,7 @@ const Notificaciones: React.FC = () => {
 
     return (
         <>
+        
             <Button variant='light' onClick={() => setShowPermisos(!showPermisos)} className="mb-2">
                 <FontAwesomeIcon icon={["fas", "bell"]} style={{ color: "#ff7b00" }} />
             </Button>
@@ -118,8 +119,10 @@ const Notificaciones: React.FC = () => {
                                     )
                                 ))}
                                 {filteredPermisos.map((permiso, index) => (
-                                    (auth.cod_emp === permiso.cod_emp && (permiso.Estado === "Aprobada" || permiso.Estado === "Rechazada" || permiso.Estado === "Procesado")) && (
+                                    
+                                    ( auth.cod_emp === permiso.cod_emp && (permiso.Estado === "Aprobada" || permiso.Estado === "Rechazada" || permiso.Estado === "Procesada")) && (
                                         <ListGroup.Item key={index}>
+                                            
                                             <Toast className='notificacion' onClose={() => handleDiscard(permiso.PermisosID)}>
                                                 <Toast.Header closeButton={true}>
                                                     <img src={img1} className="rounded me-2" alt="" style={{ width: "20px" }} />
