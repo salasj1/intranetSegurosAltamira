@@ -50,7 +50,7 @@ function Prestaciones() {
       const pdf = generatePrestacionesPDF(prestacionesData);
       return pdf.output('blob');
     }
-    return null;
+    return 0;
   }, [prestacionesData]);
 
   const handleDownload = () => {
@@ -209,7 +209,7 @@ function Prestaciones() {
               <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Error</Card.Header>
               <Card.Body>
                 <Alert variant='danger' style={{ fontSize: "24.5px" }}>
-                  {error}
+                  {error ? error : "No hay Prestaciones registradas"}
                 </Alert>
               </Card.Body>
             </Card>

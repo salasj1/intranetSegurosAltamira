@@ -4,6 +4,7 @@ import logoEmpresa from '../assets/icono.png';
 import styles from '../css/ListaCardEmpleados.module.css';
 
 interface Empleado {
+  cod_emp: string;
   nombres: string;
   apellidos: string;
   des_depart: string;

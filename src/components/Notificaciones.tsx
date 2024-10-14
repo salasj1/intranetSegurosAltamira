@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Button, ListGroup, ListGroupItem, Toast } from 'react-bootstrap';
-import axios from 'axios';
+import { Badge, Button, ListGroup, ListGroupItem, Toast } from 'react-bootstrap';
 import img1 from '../assets/icono.webp';
 import { useAuth } from '../auth/AuthProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 
 interface Permiso {
     PermisosID: number;
@@ -14,10 +14,16 @@ interface Permiso {
     cod_emp: string;
 }
 
+interface DiscardedPermiso {
+    PermisosID: number;
+    Estado: string;
+}
+
 const Notificaciones: React.FC = () => {
     const [showPermisos, setShowPermisos] = useState(false);
-    const [discardedPermisos, setDiscardedPermisos] = useState<number[]>([]);
+    const [discardedPermisos, setDiscardedPermisos] = useState<DiscardedPermiso[]>([]);
     const [newPermisos, setNewPermisos] = useState<Permiso[]>([]);
+    const [notificationCount, setNotificationCount] = useState<number>(0);
     const auth = useAuth();
 
     const fetchNewPermisos = async () => {
@@ -55,21 +61,46 @@ const Notificaciones: React.FC = () => {
         }
     }, []);
 
-    const handleDiscard = (PermisosID: number) => {
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchNewPermisos();
+        }, 60000); // 1 minuto
+
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        const filteredPermisos = newPermisos.filter(permiso => {
+            const discarded = discardedPermisos.find(d => d.PermisosID === permiso.PermisosID);
+            return !discarded || discarded.Estado !== permiso.Estado;
+        });
+        setNotificationCount(filteredPermisos.length);
+    }, [newPermisos, discardedPermisos]);
+
+    const handleDiscard = (PermisosID: number, Estado: string) => {
         setDiscardedPermisos(prev => {
-            const updated = [...prev, PermisosID];
+            const updated = [...prev, { PermisosID, Estado }];
             localStorage.setItem('discardedPermisos', JSON.stringify(updated));
             return updated;
         });
     };
 
-    const filteredPermisos = newPermisos.filter(permiso => !discardedPermisos.includes(permiso.PermisosID));
+    const filteredPermisos = newPermisos.filter(permiso => {
+        const discarded = discardedPermisos.find(d => d.PermisosID === permiso.PermisosID);
+        return !discarded || discarded.Estado !== permiso.Estado;
+    });
 
     return (
         <>
-        
-            <Button variant='light' onClick={() => setShowPermisos(!showPermisos)} className="mb-2">
-                <FontAwesomeIcon icon={["fas", "bell"]} style={{ color: "#ff7b00" }} />
+            <Button variant='light' onClick={() => setShowPermisos(!showPermisos)} className="mb-2" style={{height:"50px"}}>
+                <FontAwesomeIcon icon={["fas", "bell"]} style={{ color: "#ff7b00", height:"30px"}} />
+                <h6 style={{position:"relative",top:"-42px", left:"16px"}}>
+                    {notificationCount > 0 && (
+                        <Badge pill bg="primary">
+                            {notificationCount}
+                        </Badge>
+                    )}
+                </h6>
             </Button>
             {showPermisos && (
                 <div className="permisos-lista">
@@ -83,7 +114,7 @@ const Notificaciones: React.FC = () => {
                                 {filteredPermisos.map((permiso, index) => (
                                     ((auth.tipo === "Supervisor") && permiso.Estado==="Pendiente") && (
                                         <ListGroup.Item key={index}>
-                                            <Toast className='notificacion' onClose={() => handleDiscard(permiso.PermisosID)}>
+                                            <Toast className='notificacion' onClose={() => handleDiscard(permiso.PermisosID, permiso.Estado)}>
                                                 <Toast.Header closeButton={true}>
                                                     <img src={img1} className="rounded me-2" alt="" style={{ width: "20px" }} />
                                                     <strong className="me-auto">{permiso.nombres + " " + permiso.apellidos}</strong>
@@ -102,7 +133,7 @@ const Notificaciones: React.FC = () => {
                                 {filteredPermisos.map((permiso, index) => (
                                     (auth.RRHH === 1 && permiso.Estado==="Aprobada") && (
                                         <ListGroup.Item key={index}>
-                                            <Toast className='notificacion' onClose={() => handleDiscard(permiso.PermisosID)}>
+                                            <Toast className='notificacion' onClose={() => handleDiscard(permiso.PermisosID, permiso.Estado)}>
                                                 <Toast.Header closeButton={true}>
                                                     <img src={img1} className="rounded me-2" alt="" style={{ width: "20px" }} />
                                                     <strong className="me-auto">{permiso.nombres + " " + permiso.apellidos}</strong>
@@ -119,11 +150,9 @@ const Notificaciones: React.FC = () => {
                                     )
                                 ))}
                                 {filteredPermisos.map((permiso, index) => (
-                                    
                                     ( auth.cod_emp === permiso.cod_emp && (permiso.Estado === "Aprobada" || permiso.Estado === "Rechazada" || permiso.Estado === "Procesada")) && (
                                         <ListGroup.Item key={index}>
-                                            
-                                            <Toast className='notificacion' onClose={() => handleDiscard(permiso.PermisosID)}>
+                                            <Toast className='notificacion' onClose={() => handleDiscard(permiso.PermisosID, permiso.Estado)}>
                                                 <Toast.Header closeButton={true}>
                                                     <img src={img1} className="rounded me-2" alt="" style={{ width: "20px" }} />
                                                     <strong className="me-auto">Solicitud de Permiso</strong>

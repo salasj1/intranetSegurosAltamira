@@ -72,7 +72,17 @@
 
 .formControl {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    gap:5px;
+}
+
+.errorText{
+    color: #58151c;
+    font-size: 12px;
+    background-color: #f8d7da;
+    border-color: #58151c;
+    border-radius: 5px;
+    padding:1%;
 }
 
 .textArea {

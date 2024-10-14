@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
+
 interface CustomToggleProps {
   children: ReactNode;
   eventKey: string;
@@ -52,17 +53,32 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     Fecha_Fin: '',
     Titulo: '',
     Motivo: '',
-    descripcion: ''
+    descripcion: '',
+    otroMotivo: '' // Nuevo campo para el motivo adicional
   });
   const [showModal, setShowModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertVariant, setAlertVariant] = useState<'success' | 'danger' | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
+  const [otroMotivoError, setOtroMotivoError] = useState<string | null>(null); // Nuevo estado para errores específicos de otroMotivo
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+
+    if (name === 'otroMotivo') {
+      const wordCount = value.trim().split(/\s+/).length;
+      if (wordCount > 3) {
+        setOtroMotivoError('El motivo no puede tener más de tres palabras');
+      } else if (value.length > 25) {
+        setOtroMotivoError('Mucha longitud');
+      } else {
+        setOtroMotivoError(null);
+      }
+    }
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
   };
 
@@ -72,8 +88,10 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
       Fecha_Fin: '',
       Titulo: '',
       Motivo: '',
-      descripcion: ''
+      descripcion: '',
+      otroMotivo: '' // Resetear el nuevo campo
     });
+    setOtroMotivoError(null); // Resetear el error específico de otroMotivo
   };
 
   const handleSubmit = async () => {
@@ -122,6 +140,14 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
       newErrors.push('El motivo es requerido');
     }
 
+    if (formData.Motivo === 'Otro' && !formData.otroMotivo) {
+      newErrors.push('El motivo adicional es requerido');
+    }
+
+    if (otroMotivoError) {
+      newErrors.push(otroMotivoError);
+    }
+
     if (newErrors.length > 0) {
       setErrors(newErrors);
     } else {
@@ -149,7 +175,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                   <ul>
                     {errors.map((error, index) => (
                       <li key={index}>{error}</li>
-                    ))}
+                    ))} 
                   </ul>
                 </Alert>
               )}
@@ -188,19 +214,36 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formSelect">
                   <Form.Label>Razon del Motivo</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="Motivo"
-                    value={formData.Motivo}
-                    onChange={handleChange}
-                    placeholder='Seleccione una opción'
-                  >
-                    <option value="" disabled hidden>Seleccione una opción</option>
-                    <option value="Familiar">Familiar</option>
-                    <option value="Academico">Académico</option>
-                    <option value="Salud">Salud</option>
-                    <option value="Otro">Otro</option>
-                  </Form.Control>
+                  <div className={style.formControl}>
+                    <Form.Control
+                      as="select"
+                      name="Motivo"
+                      value={formData.Motivo}
+                      onChange={handleChange}
+                      placeholder='Seleccione una opción'
+                    >
+                      <option value="" disabled hidden>Seleccione una opción</option>
+                      <option value="Familiar">Familiar</option>
+                      <option value="Academico">Académico</option>
+                      <option value="Salud">Salud</option>
+                      <option value="Otro">Otro</option>
+                    </Form.Control>
+                    {formData.Motivo === 'Otro' && (
+                      <>
+                        <Form.Control
+                          type="text"
+                          name="otroMotivo"
+                          placeholder="Escriba el motivo en tres palabras o menos"
+                          value={formData.otroMotivo}
+                          onChange={handleChange}
+                          className={style.otroMotivoInput}
+                        />
+                        {otroMotivoError && (
+                          <div className={style.errorText}>{otroMotivoError}</div>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formDescripcion">
                   <Form.Label>Descripción</Form.Label>
