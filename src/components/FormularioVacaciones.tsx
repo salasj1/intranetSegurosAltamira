@@ -169,7 +169,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
             <Form.Group controlId="fechaInicio">
               <Form.Label>Fecha Inicio:</Form.Label>
               <DatePicker
-                placeholder="dd/mm/yy"
+                placeholder="dd/mm/yyyy"
                 value={fechaInicio ? new Date(fechaInicio) : null}
                 onChange={(date: Date | null | undefined) => {
                   setFechaInicio(date ? date.toISOString() : null);

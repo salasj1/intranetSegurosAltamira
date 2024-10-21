@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import AutoTable from 'jspdf-autotable';
+
 import autoTable from 'jspdf-autotable';
 import ArialNarrowBase64 from '../fonts/ArialNarrow.Base64'; // Importa la cadena base64
 

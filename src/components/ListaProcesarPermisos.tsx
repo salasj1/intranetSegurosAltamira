@@ -112,7 +112,7 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
     try {
       if (action === 'approve') {
         await axios.put(`/api/permisos/${selectedPermiso.PermisosID}/process`, {
-          cod_supervisor: cod_emp
+          cod_RRHH: cod_emp
         });
       } else {
         await axios.put(`/api/permisos/${selectedPermiso.PermisosID}/reject`, {
