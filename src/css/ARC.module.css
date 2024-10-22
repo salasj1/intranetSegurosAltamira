@@ -18,7 +18,7 @@
 }
 .canvas .Tarjeta{
     position: absolute;
-    left: 900px;
+    left: 1000px;
     top: 125px;
     font-size: 30px;
     width: 34.5%;
@@ -28,13 +28,13 @@
 }
 @media (max-width:1400px) {
     .canvas .Tarjeta{
-        left: 800px;
+        left: 850px;
     }
     
 }
 @media (max-width:1300px) {
     .canvas .Tarjeta{
-        left: 700px;
+        left: 800px;
     }
     
 }
