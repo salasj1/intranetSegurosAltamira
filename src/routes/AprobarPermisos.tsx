@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import NavbarEmpresa from '../components/NavbarEmpresa';
 import ListaAprobacionPermisos from '../components/ListaAprobacionPermisos';
 import axios from 'axios'; 

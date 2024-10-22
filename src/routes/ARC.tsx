@@ -9,9 +9,9 @@ import styles from '../css/ARC.module.css';
 
 function ARC() {
   const [arcData, setArcData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [, setIsLoading] = useState<boolean>(true);
   const [isPdfLoading, setIsPdfLoading] = useState<boolean>(true);
-  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [, setShowAlert] = useState<boolean>(false);
   const [showPdf, setShowPdf] = useState<boolean>(false); 
   const [error, setError] = useState<string | null>(null);
   const { cod_emp } = useAuth();

@@ -3,7 +3,7 @@ import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { Vacacion } from '../routes/SolicitarVacaciones';
 import { format, parseISO, addDays } from 'date-fns';
-import { set } from 'lodash';
+
 
 interface EditarVacacionesModalProps {
   show: boolean;

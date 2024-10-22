@@ -6,8 +6,7 @@ import { ReactNode, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthProvider';
 import ConfirmModal from './ModalConfirmarSolicitarPermisos';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
 

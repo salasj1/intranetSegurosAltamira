@@ -9,7 +9,6 @@ import RecibodePagoDetallado from './routes/RecibodePagoDetallado.tsx';
 import ARC from './routes/ARC.tsx';
 import Prestaciones from './routes/Prestaciones.tsx';
 import DirectorioEmpleados from './routes/DirectorioEmpleados.tsx';
-import NavbarEmpresa from './components/NavbarEmpresa.tsx';
 import SolicitarVacaciones from './routes/SolicitarVacaciones.tsx';
 import AprobarVacaciones from './routes/AprobarVacaciones.tsx';
 import ProcesarPermisos from './routes/ProcesarPermisos.tsx';

@@ -37,7 +37,7 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
   const [searchPermisosID, setSearchPermisosID] = useState('');
   const [searchNombre, setSearchNombre] = useState('');
   const [searchApellido, setSearchApellido] = useState('');
-  const [searchCodEmp, setSearchCodEmp] = useState('');
+
   const [searchCi, setSearchCi] = useState('');
   const [searchTitulo, setSearchTitulo] = useState('');
   const [searchFechaInicio, setSearchFechaInicio] = useState('');

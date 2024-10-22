@@ -5,11 +5,9 @@ import '../css/NavbarEmpresa.css';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas, faBell } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAuth } from '../auth/AuthProvider';
 import logoEmpresa from '../assets/logo-head.png';
 library.add(fas, faBell);
-import Hamburguesa from './Hamburguesa.tsx';
 import Notificaciones from './Notificaciones.tsx'; // Importar el nuevo componente
 
 function NavbarEmpresa() {
