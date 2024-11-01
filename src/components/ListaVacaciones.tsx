@@ -40,7 +40,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
 
   const checkPreviousRequest = async () => {
     try {
-      const response = await axios.get(`/api/vacaciones/${cod_emp}`);
+      const response = await axios.get(`/api/vacaciones/id/${cod_emp}`);
       const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada' || vacacion.Estado === 'Aprobada');
       setHasPreviousRequest(hasRequest);
     } catch (error) {

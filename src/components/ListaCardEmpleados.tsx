@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Card, Container, Row, Col, Form } from 'react-bootstrap';
+import { Card, Container, Row, Col, Form, Button, Modal, Alert } from 'react-bootstrap';
+import axios from 'axios';
 import logoEmpresa from '../assets/icono.png';
 import styles from '../css/ListaCardEmpleados.module.css';
+import { useAuth } from '../auth/AuthProvider';
+import Select from 'react-select';
 
 interface Empleado {
   cod_emp: string;
@@ -11,9 +14,11 @@ interface Empleado {
   des_cargo: string;
   correo_e: string;
   nombre_completo: string;
+  tlf_oficina?: string;
 }
 
 const ListaCardEmpleados: React.FC = () => {
+  const { cod_emp: authCodEmp } = useAuth();
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [filtros, setFiltros] = useState({
     nombre: '',
@@ -22,6 +27,10 @@ const ListaCardEmpleados: React.FC = () => {
     correo: ''
   });
   const [empleadosParaEliminar, setEmpleadosParaEliminar] = useState<number[]>([]);
+  const [telefono, setTelefono] = useState<string>('');
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [selectedEmpleado, setSelectedEmpleado] = useState<Empleado | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/empleados')
@@ -30,8 +39,8 @@ const ListaCardEmpleados: React.FC = () => {
       .catch(error => console.error('Error fetching empleados:', error));
   }, []);
 
-  const handleFiltroChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
+  const handleFiltroChange = (selectedOption: any, actionMeta: any) => {
+    const { name, value } = actionMeta;
     setFiltros({
       ...filtros,
       [name]: value
@@ -44,6 +53,54 @@ const ListaCardEmpleados: React.FC = () => {
     setTimeout(() => {
       setEmpleadosParaEliminar([]);
     }, 250); // Duración de la animación
+  };
+
+  const handleTelefonoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTelefono(e.target.value);
+  };
+
+  const validatePhoneNumber = (phone: string) => {
+    const phoneRegex = /^02\d{2}-\d{7}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const handleTelefonoSubmit = async () => {
+    if (selectedEmpleado) {
+      if (!validatePhoneNumber(telefono)) {
+        setError('El número de teléfono debe tener el formato 02XX-XXXXXXX');
+        return;
+      }
+      try {
+        await axios.put(`/api/empleados/${selectedEmpleado.cod_emp}/telefono`, { tlf_oficina: telefono });
+        setEmpleados(empleados.map(emp => emp.cod_emp === selectedEmpleado.cod_emp ? { ...emp, tlf_oficina: telefono } : emp));
+        setTelefono('');
+        setShowModal(false);
+        setError(null);
+      } catch (error) {
+        console.error('Error actualizando el número de teléfono:', error);
+        setError('Error actualizando el número de teléfono');
+      }
+    }
+  };
+
+  const handleTelefonoDelete = async () => {
+    if (selectedEmpleado) {
+      try {
+        await axios.delete(`/api/empleados/${selectedEmpleado.cod_emp}/telefono`);
+        setEmpleados(empleados.map(emp => emp.cod_emp === selectedEmpleado.cod_emp ? { ...emp, tlf_oficina: '' } : emp));
+        setShowModal(false);
+        setError(null);
+      } catch (error) {
+        console.error('Error eliminando el número de teléfono:', error);
+        setError('Error eliminando el número de teléfono');
+      }
+    }
+  };
+
+  const handleEditClick = (empleado: Empleado) => {
+    setSelectedEmpleado(empleado);
+    setTelefono(empleado.tlf_oficina || '');
+    setShowModal(true);
   };
 
   const empleadosFiltrados = empleados.filter(empleado =>
@@ -101,66 +158,53 @@ const ListaCardEmpleados: React.FC = () => {
               <Col>
                 <Form.Group controlId="filtroDepartamento">
                   <Form.Label>Departamento</Form.Label>
-                  <Form.Control
-                    as="select"
+                  <Select
                     name="departamento"
-                    value={filtros.departamento}
-                    onChange={handleFiltroChange as any}
-                  >
-                    <option value="">Seleccionar</option>
-                    {departamentosUnicos.map((departamento, index) => (
-                      <option key={index} value={departamento}>{departamento}</option>
-                    ))}
-                  </Form.Control>
+                    value={filtros.departamento ? { label: filtros.departamento, value: filtros.departamento } : null}
+                    onChange={(selectedOption) => handleFiltroChange(selectedOption, { name: 'departamento', value: selectedOption?.value || '' })}
+                    options={departamentosUnicos.map(departamento => ({ label: departamento, value: departamento }))}
+                    isClearable
+                    placeholder="Seleccionar"
+                  />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group controlId="filtroNombre">
                   <Form.Label>Nombre completo</Form.Label>
-                    <Form.Control
-                    as="select"
+                  <Select
                     name="nombre"
-                    value={filtros.nombre}
-                    onChange={handleFiltroChange as any}
-                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => setFiltros({ ...filtros, nombre: e.target.value })}
-                    >
-                    <option value="">Seleccionar</option>
-                    {nombresUnicos.map((nombre, index) => (
-                      <option key={index} value={nombre}>{nombre}</option>
-                    ))}
-                  </Form.Control>
+                    value={filtros.nombre ? { label: filtros.nombre, value: filtros.nombre } : null}
+                    onChange={(selectedOption) => handleFiltroChange(selectedOption, { name: 'nombre', value: selectedOption?.value || '' })}
+                    options={nombresUnicos.map(nombre => ({ label: nombre, value: nombre }))}
+                    isClearable
+                    placeholder="Seleccionar"
+                  />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group controlId="filtroCargo">
                   <Form.Label>Cargo</Form.Label>
-                  <Form.Control
-                    as="select"
+                  <Select
                     name="cargo"
-                    value={filtros.cargo}
-                    onChange={handleFiltroChange as any}
-                  >
-                    <option value="">Seleccionar</option>
-                    {cargosUnicos.map((cargo, index) => (
-                      <option key={index} value={cargo}>{cargo}</option>
-                    ))}
-                  </Form.Control>
+                    value={filtros.cargo ? { label: filtros.cargo, value: filtros.cargo } : null}
+                    onChange={(selectedOption) => handleFiltroChange(selectedOption, { name: 'cargo', value: selectedOption?.value || '' })}
+                    options={cargosUnicos.map(cargo => ({ label: cargo, value: cargo }))}
+                    isClearable
+                    placeholder="Seleccionar"
+                  />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group controlId="filtroCorreo">
                   <Form.Label>Correo</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="correo"
-                    value={filtros.correo}
-                    onChange={handleFiltroChange as any}
-                  >
-                    <option value="">Seleccionar</option>
-                    {correosUnicos.map((correo, index) => (
-                      <option key={index} value={correo}>{correo}</option>
-                    ))}
-                  </Form.Control>
+                  <Select
+                  name="correo"
+                  value={filtros.correo ? { label: filtros.correo, value: filtros.correo } : null}
+                  onChange={(selectedOption) => handleFiltroChange(selectedOption, { name: 'correo', value: selectedOption?.value || '' })}
+                  options={correosUnicos.map(correo => ({ label: correo || 'No disponible', value: correo }))}
+                  isClearable
+                  placeholder="Seleccionar"
+                  />
                 </Form.Group>
               </Col>
             </Row>
@@ -184,7 +228,14 @@ const ListaCardEmpleados: React.FC = () => {
                         <strong>Cargo:</strong> {empleado.des_cargo}<br />
                         <strong>Departamento:</strong> {empleado.des_depart}<br />
                         <strong>Correo:</strong> {empleado.correo_e}<br />
-                        <strong>Teléfono:</strong>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <strong>Teléfono:</strong> {empleado.tlf_oficina || 'No disponible'}
+                        {empleado.cod_emp === authCodEmp && (
+                          <>
+                            <Button variant="primary" onClick={() => handleEditClick(empleado)}>Editar</Button>
+                          </>
+                        )}
+                        </div>
                       </Card.Text>
                     </Card.Body>
                   </Card>
@@ -194,6 +245,31 @@ const ListaCardEmpleados: React.FC = () => {
           )}
         </Container>
       </div>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Teléfono</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {error && <Alert variant="danger">{error}</Alert>}
+          <Form>
+            <Form.Group controlId="telefono">
+              <Form.Label>El telfono debe tener el siguiente formato: Ej 0212-1234567</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Actualizar teléfono"
+                value={telefono}
+                onChange={handleTelefonoChange}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>Cancelar</Button>
+          <Button variant="danger" onClick={handleTelefonoDelete}>Eliminar</Button>
+          <Button variant="success" onClick={handleTelefonoSubmit}>Actualizar</Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

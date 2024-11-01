@@ -27,7 +27,7 @@ function SolicitarVacaciones() {
   
   const fetchVacaciones = async () => {
     try {
-      const response = await axios.get(`/api/vacaciones/${cod_emp}`);
+      const response = await axios.get(`/api/vacaciones/id/${cod_emp}`);
       setVacaciones(response.data);
     } catch (error) {
       if (axios.isAxiosError(error)) {

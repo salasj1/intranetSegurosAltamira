@@ -1,0 +1,38 @@
+.canvas {
+    position: relative;
+    top: 125px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    
+    
+}
+.canvas h1 {
+    
+    max-width: 100%; 
+    box-sizing: border-box; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+    font-family: "Gotham", Sans-serif;
+}
+.h1Titulo{
+    margin-left: -10% !important;
+}
+@media (max-width: 1000px) {
+    .canvas h1 {
+        margin-left: 0% !important; /* Centrar el elemento */
+        text-wrap: pretty;
+        font-size: 3rem; /* Reducir el tamaño de la fuente en pantallas más pequeñas */
+        text-align: center;
+    }
+}
+
+@media (max-width: 800px) {
+    .canvas h1 {
+        margin: 5% !important; /* Centrar el elemento */
+        text-wrap: wrap; /* Permitir que el texto se ajuste al ancho del contenedor */
+        font-size: 2.8rem; /* Reducir aún más el tamaño de la fuente en pantallas muy pequeñas */
+    }
+}

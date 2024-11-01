@@ -15,6 +15,7 @@ import ProcesarPermisos from './routes/ProcesarPermisos.tsx';
 import ProcesarVacaciones from './routes/ProcesarVacaciones.tsx';
 import SolicitarPermisos from './routes/SolicitarPermisos.tsx';
 import AprobarPermisos from './routes/AprobarPermisos.tsx';
+import ControlAutorizacion from './routes/ControlAutorizacion.tsx';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route key="RecibodePago" path="RecibodePago" element={<RecibodePago/>} />,
             <Route key="RecibodePagoDetallado" path="RecibodePago/:reci_num" element={<RecibodePagoDetallado/>} />, 
             <Route key="Prestaciones" path="Prestaciones" element={<Prestaciones/>} />,
+            <Route key="ARC" path="ARC" element={<ARC/>} />,
             <Route key="PrestacionesDetallado" path="Prestaciones/:prest_num" element={<RecibodePagoDetallado/>} />,
             <Route key="SolicitarVacaciones" path="SolicitarVacaciones" element={<SolicitarVacaciones/>} />,
             <Route key="AprobarVacaciones" path="AprobarVacaciones" element={<AprobarVacaciones/>} />,
@@ -36,8 +38,8 @@ function App() {
             <Route key="SolicitarPermisos" path="SolicitarPermisos" element={<SolicitarPermisos/>} />,
             <Route key="AprobarPermisos" path="AprobarPermisos" element={<AprobarPermisos/>} />,
             <Route key="ProcesarPermisos" path="ProcesarPermisos" element={<ProcesarPermisos/>} />,
-            <Route key="ARC" path="ARC" element={<ARC/>} />,
-            <Route key="DirectorioEmpleados" path="DirectorioEmpleados" element={<DirectorioEmpleados/>} />
+            <Route key="DirectorioEmpleados" path="DirectorioEmpleados" element={<DirectorioEmpleados/>} />,
+            <Route key="ControlAutorizacion" path='ControlAutorizacion' element={<ControlAutorizacion />} />
           ]}
         ></Route>
         </Routes>

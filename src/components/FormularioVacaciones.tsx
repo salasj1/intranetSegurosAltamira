@@ -8,7 +8,6 @@ import ConfirmarSolicitudModal from './ConfirmarSolicitudModal';
 import DatePicker from "react-widgets/DatePicker";
 import 'react-widgets/styles.css';
 
-
 interface FormularioVacacionesProps {
   fetchVacaciones: () => void;
 }
@@ -24,10 +23,11 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
   const [diasHabiles, setDiasHabiles] = useState<number | null>(null);
   const [hasPreviousRequest, setHasPreviousRequest] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  const [fechaMaximaFin, setFechaMaximaFin] = useState<string | null>(null);
 
   const checkPreviousRequest = async () => {
     try {
-      const response = await axios.get(`/api/vacaciones/${cod_emp}`);
+      const response = await axios.get(`/api/vacaciones/id/${cod_emp}`);
       const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada' || vacacion.Estado === 'Aprobada');
       setHasPreviousRequest(hasRequest);
     } catch (error) {
@@ -61,6 +61,30 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     }
   }, [diasCausados, diasDisfrutados]);
 
+  const handleFechaInicioChange = async (date: Date | null | undefined) => {
+    if (date) {
+      setFechaInicio(date.toISOString());
+      if (diasHabiles !== null) {
+        try {
+          const response = await axios.get('/api/vacaciones/fechaMaximaFin', {
+            params: {
+              fechaInicio: date.toISOString(),
+              diasDisfrutar: diasHabiles
+            }
+          });
+          setFechaMaximaFin(response.data.fechaMaximaFin);
+          setError(null);
+        } catch (error) {
+          console.error('Error al calcular la fecha máxima de fin de vacaciones:', error);
+          setError('Error al calcular la fecha máxima de fin de vacaciones.');
+        }
+      }
+    } else {
+      setFechaInicio(null);
+      setFechaMaximaFin(null);
+    }
+  };
+
   const handleSubmit = async (tipo: string) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); 
@@ -70,6 +94,12 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
 
     if (!fechaInicio || !fechaFin) {
       setError('Debe llenar todos los campos.');
+      setSuccess(null); 
+      return;
+    }
+    console.log(fechaMaximaFin);
+    if (fechaMaximaFin && (fechaFin >fechaMaximaFin)){
+      setError('La fecha de fin no puede ser posterior a la fecha máxima de fin de vacaciones: ' + new Date( fechaMaximaFin).toLocaleDateString() + '.');
       setSuccess(null); 
       return;
     }
@@ -103,9 +133,10 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       setSuccess(null);
       return;
     }
+    
     if(tipo==='solicitada'){
       try {
-        const response = await axios.get(`/api/vacaciones/${cod_emp}`);
+        const response = await axios.get(`/api/vacaciones/id/${cod_emp}`);
         const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada');
         if (hasRequest) {
           setError('Ya tiene una solicitud de vacaciones pendiente.');
@@ -171,11 +202,16 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
               <DatePicker
                 placeholder="dd/mm/yyyy"
                 value={fechaInicio ? new Date(fechaInicio) : null}
-                onChange={(date: Date | null | undefined) => {
-                  setFechaInicio(date ? date.toISOString() : null);
-                }}
+                onChange={handleFechaInicioChange}
               />
-              <br/>
+              {fechaMaximaFin && (
+                <>
+                <br/>
+                <Alert variant="warning">
+                  Limite de fecha fin: {new Date(fechaMaximaFin).toLocaleDateString()}
+                </Alert>
+                </>
+              )}
             </Form.Group>
             <Form.Group controlId="fechaFin">
               <Form.Label>Fecha Fin:</Form.Label>
@@ -194,7 +230,13 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
                 {(!fechaInicio || !fechaFin) ? (
                 <Button variant="warning" onClick={() => setError('Debe llenar todos los campos.')}>Solicitar</Button>
                 ) : (
-                <Button variant="warning" onClick={() => setShowConfirmModal(true)}>Solicitar</Button>
+                <>
+                  {fechaMaximaFin && (new Date(fechaFin) > new Date(fechaMaximaFin)) ? (
+                    <Button variant="warning" onClick={() => setError('La fecha de fin no puede ser posterior a la fecha máxima de fin de vacaciones: ' + new Date( fechaMaximaFin).toLocaleDateString() + '.')}>Solicitar</Button>
+                  ):(
+                    <Button variant="warning" onClick={() => setShowConfirmModal(true)}>Solicitar</Button>
+                  )}
+                </>
                 )}
               </>
               )}
