@@ -16,6 +16,7 @@ import ProcesarVacaciones from './routes/ProcesarVacaciones.tsx';
 import SolicitarPermisos from './routes/SolicitarPermisos.tsx';
 import AprobarPermisos from './routes/AprobarPermisos.tsx';
 import ControlAutorizacion from './routes/ControlAutorizacion.tsx';
+import Chatbot from './routes/Chatbot.tsx';
 
 function App() {
   return (
@@ -39,7 +40,8 @@ function App() {
             <Route key="AprobarPermisos" path="AprobarPermisos" element={<AprobarPermisos/>} />,
             <Route key="ProcesarPermisos" path="ProcesarPermisos" element={<ProcesarPermisos/>} />,
             <Route key="DirectorioEmpleados" path="DirectorioEmpleados" element={<DirectorioEmpleados/>} />,
-            <Route key="ControlAutorizacion" path='ControlAutorizacion' element={<ControlAutorizacion />} />
+            <Route key="ControlAutorizacion" path='ControlAutorizacion' element={<ControlAutorizacion />} />,
+            <Route key="chatbot" path='chatbot' element={<Chatbot />} />
           ]}
         ></Route>
         </Routes>

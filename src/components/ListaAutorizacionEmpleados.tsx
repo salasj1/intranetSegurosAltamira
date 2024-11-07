@@ -6,7 +6,8 @@ import { faArrowDown, faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from "react";
 import { Empleado } from "../routes/ControlAutorizacion";
 import AgregarSupervisionModal from "./AgregarSupervisionModal";
-
+import ModalEditSupervision from "./ModalEditSupervision";
+import { FaPencilAlt } from "react-icons/fa";
 interface ListaVacacionesProps {
   empleados: Empleado[];
   fetchEmpleados: () => void;
@@ -23,6 +24,8 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
   const [searchTipo, setSearchTipo] = useState('');
   const [searchNomina, setSearchNomina] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [selectedEmpleado, setSelectedEmpleado] = useState<Empleado | null>(null);
 
   useEffect(() => {
     fetchEmpleados();
@@ -79,6 +82,26 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
     }
   };
 
+  const handleModifySupervision = async (ID_SUPERVISION: number, Tipo: string) => {
+    try {
+      await fetch('/api/empleados/supervision/Tipo', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ID_SUPERVISION, Tipo }),
+      });
+      fetchEmpleados();
+    } catch (error) {
+      console.error('Error modificando supervisión:', error);
+    }
+  };
+
+  const handleEditClick = (empleado: Empleado) => {
+    setSelectedEmpleado(empleado);
+    setShowModalEdit(true);
+  };
+
   return (
     <>
       <Button variant="primary" onClick={() => setShowModal(true)}>Agregar Nueva Supervisión</Button>
@@ -91,7 +114,7 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
       <div className='tablaAprobar'>
         <Table striped bordered hover responsive>
           <thead>
-            <tr>              
+            <tr>
               <th>
                 <Form.Control
                   className={styles.search}
@@ -169,7 +192,6 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
           </thead>
           <thead>
             <tr>
-              
               <th id={styles.headTable} onClick={() => requestSort('cedula_supervisor')} className='titulo' style={{ marginLeft: "5px" }}>
                 Cédula Supervisor
                 {sortConfig.key === 'cedula_supervisor' && (
@@ -218,7 +240,6 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft: "5px" }} />
                 )}
               </th>
-              
               <th>Acciones</th>
             </tr>
           </thead>
@@ -226,7 +247,7 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
           <tbody>
             {filteredData.map((item, index) => (
               <tr key={`${item.cod_emp}-${index}`}>
-                
+
                 <td>{item.cedula_supervisor}</td>
                 <td>{item.nombres_supervisor}</td>
                 <td>{item.apellidos_supervisor}</td>
@@ -236,13 +257,25 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
                 <td>{item.Tipo}</td>
                 <td>{item.Nomina}</td>
                 <td>
-                  {/* Aquí puedes añadir botones de acción */}
+                  <Button variant="primary" onClick={() => handleEditClick(item)}>
+                    <FaPencilAlt />
+                    </Button>
                 </td>
               </tr>
             ))}
           </tbody>
         </Table>
       </div>
+      {selectedEmpleado && (
+        <ModalEditSupervision
+          show={showModalEdit}
+          handleClose={() => setShowModalEdit(false)}
+          cod_supervisor={selectedEmpleado.cod_supervisor}
+          cod_emp={selectedEmpleado.cod_emp.toString()}
+          
+          handleEdit={handleModifySupervision}
+        />
+      )}
     </>
   );
 }

@@ -81,7 +81,7 @@ const AgregarSupervisionModal: React.FC<AgregarSupervisionModalProps> = ({ show,
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>Agregar Nueva Supervisión</Modal.Title>
       </Modal.Header>

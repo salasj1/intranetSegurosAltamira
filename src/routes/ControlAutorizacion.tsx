@@ -3,6 +3,7 @@ import ListaAutorizacionEmpleados from "../components/ListaAutorizacionEmpleados
 import NavbarEmpresa from "../components/NavbarEmpresa";
 import styles from '../css/ControlAutorizacion.module.css';
 export interface Empleado {
+  ID_SUPERVISION: number;
   cod_emp: number;
   cedula_empleado: string;
   nombres_empleado: string;
