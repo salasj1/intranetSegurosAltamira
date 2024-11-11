@@ -40,7 +40,7 @@ function App() {
             <Route key="AprobarPermisos" path="AprobarPermisos" element={<AprobarPermisos/>} />,
             <Route key="ProcesarPermisos" path="ProcesarPermisos" element={<ProcesarPermisos/>} />,
             <Route key="DirectorioEmpleados" path="DirectorioEmpleados" element={<DirectorioEmpleados/>} />,
-            <Route key="ControlAutorizacion" path='ControlAutorizacion' element={<ControlAutorizacion />} />,
+            <Route key="ControlSupervision" path='ControlSupervision' element={<ControlAutorizacion />} />,
             
           ]}
         ></Route>

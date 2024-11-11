@@ -97,7 +97,7 @@ function NavbarEmpresa() {
                                     {
                                         auth.RRHH === 1 ? (
                                             <Col>
-                                                <Nav.Link href="/ControlAutorizacion" className={isActive('/ControlAutorizacion') ? 'active textoNavlink' : 'textoNavlink'}>Control de Autorización</Nav.Link>
+                                                <Nav.Link href="/ControlSupervision" className={isActive('/ControlSupervision') ? 'active textoNavlink' : 'textoNavlink'}>Control de Supervisión</Nav.Link>
                                             </Col>
                                         ) : null
 

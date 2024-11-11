@@ -14,9 +14,13 @@ interface Supervisión {
     cod_emp: string;
     cedula_empleado: string;
     nombre_empleado: string;
+    departamento_empleado: string;
+    cargo_empleado: string;
     cod_supervisor: string;
     cedula_supervisor: string;
     nombre_supervisor: string;
+    departamento_supervisor: string;
+    cargo_supervisor: string;
     Tipo: string;
 }
 
@@ -80,12 +84,18 @@ const ModalEditSupervision: React.FC<EditarSupervisionModalProps> = ({ cod_emp, 
                     <h3>Supervisor</h3>
                     <p> <strong>Cédula: </strong>{supervision?.cedula_supervisor}</p>
                     <p><strong>Nombre: </strong>{supervision?.nombre_supervisor}</p>
+                    <p><strong>Departamento: </strong>{supervision?.departamento_supervisor}</p>
+                    <p><strong>Cargo: </strong>{supervision?.cargo_supervisor}</p>
                 </Alert>
                 <Alert variant="warning">
                     <h3>Supervisado</h3>
                     <p><strong>Cédula: </strong>{supervision?.cedula_empleado}</p>
                     <p><strong>Nombre: </strong>{supervision?.nombre_empleado}</p>
-                    <p><strong>Tipo</strong></p>
+                    <p><strong>Departamento: </strong>{supervision?.departamento_empleado}</p>
+                    <p><strong>Cargo: </strong>{supervision?.cargo_empleado}</p>
+                </Alert>
+                <Alert variant="secondary">
+                    <p><h3>Tipo</h3></p>
                     <FormControl
                         as="select"
                         value={tipo_supervision}

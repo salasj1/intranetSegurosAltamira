@@ -39,7 +39,7 @@ function ControlAutorizacion() {
     <>
       <div className={styles.canvas}>
       <NavbarEmpresa />
-      <h1 className={styles.h1Titulo}>Control de Autorización de los Empleados</h1>
+      <h1 className={styles.h1Titulo}>Control de Supervisión de los Empleados</h1>
       {error && <p>{error}</p>}
       <ListaAutorizacionEmpleados empleados={empleados} fetchEmpleados={fetchEmpleados} />
       </div>

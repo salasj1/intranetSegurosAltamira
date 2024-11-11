@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { Empleado } from "../routes/ControlAutorizacion";
 import AgregarSupervisionModal from "./AgregarSupervisionModal";
 import ModalEditSupervision from "./ModalEditSupervision";
-import { FaPencilAlt } from "react-icons/fa";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 interface ListaVacacionesProps {
   empleados: Empleado[];
   fetchEmpleados: () => void;
@@ -25,6 +25,7 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
   const [searchNomina, setSearchNomina] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
+  const [showModalDelete, setShowModalDelete] = useState(false);
   const [selectedEmpleado, setSelectedEmpleado] = useState<Empleado | null>(null);
 
   useEffect(() => {
@@ -97,6 +98,7 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
     }
   };
 
+  
   const handleEditClick = (empleado: Empleado) => {
     setSelectedEmpleado(empleado);
     setShowModalEdit(true);
@@ -257,9 +259,15 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
                 <td>{item.Tipo}</td>
                 <td>{item.Nomina}</td>
                 <td>
-                  <Button variant="primary" onClick={() => handleEditClick(item)}>
-                    <FaPencilAlt />
+                  <div className="d-flex justify-content-center gap-2">
+                    <Button variant="primary" onClick={() => handleEditClick(item)}>
+                      <FaPencilAlt />
+                      </Button>
+                    <Button variant="danger" /* onClick={() => handleDeleteClick(item)} */>
+                      <FaTrash />
                     </Button>
+                  </div>
+                  
                 </td>
               </tr>
             ))}
