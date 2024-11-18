@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import ListaAutorizacionEmpleados from "../components/ListaAutorizacionEmpleados";
 import NavbarEmpresa from "../components/NavbarEmpresa";
 import styles from '../css/ControlAutorizacion.module.css';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthProvider";
 export interface Empleado {
   ID_SUPERVISION: number;
   cod_emp: number;
@@ -19,7 +21,13 @@ export interface Empleado {
 function ControlAutorizacion() {
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [error, setError] = useState<string | null>(null);
-
+  const {  RRHH } = useAuth();
+  const navigate = useNavigate();
+    useEffect(() => {
+        if (RRHH !== 1 ) {
+        navigate('/home'); // Redirigir a la página de inicio si no tiene permisos
+        }
+    }, [RRHH,  navigate]);
   const fetchEmpleados = async () => {
     try {
       const response = await fetch('/api/empleados/control');

@@ -1,4 +1,4 @@
-import { Button, Form, Table } from "react-bootstrap";
+import { Alert, Button, Form, Table } from "react-bootstrap";
 import styles from '../css/AprobarVacaciones.module.css';
 import '../css/Tables.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,7 +7,9 @@ import { useEffect, useState } from "react";
 import { Empleado } from "../routes/ControlAutorizacion";
 import AgregarSupervisionModal from "./AgregarSupervisionModal";
 import ModalEditSupervision from "./ModalEditSupervision";
+import ModalDeleteSupervision from "./ModalDeleteSupervisor";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
+
 interface ListaVacacionesProps {
   empleados: Empleado[];
   fetchEmpleados: () => void;
@@ -27,7 +29,7 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [selectedEmpleado, setSelectedEmpleado] = useState<Empleado | null>(null);
-
+  const [error, setError] = useState<string | null>('');
   useEffect(() => {
     fetchEmpleados();
   }, []);
@@ -70,15 +72,24 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
 
   const handleSaveSupervision = async (supervisor: string, supervisados: string[], tipo: string) => {
     try {
-      await fetch('/api/empleados/supervision', {
+      const response=await fetch('/api/empleados/supervision', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ supervisor, supervisados, tipo }),
       });
+      setError('');
+      if(response.status===500){
+        setError('Error agregando supervisión');
+        console.error('Error agregando supervisión:', response);
+    
+        return;
+      }
+      console.log(error);
       fetchEmpleados();
     } catch (error) {
+      setError('Error agregando supervisión');
       console.error('Error agregando supervisión:', error);
     }
   };
@@ -98,10 +109,29 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
     }
   };
 
-  
+  const handleDeleteSupervision = async (ID_SUPERVISION: number) => {
+    try {
+      await fetch('/api/empleados/supervision', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ID_SUPERVISION }),
+      });
+      fetchEmpleados();
+    } catch (error) {
+      console.error('Error eliminando supervisión:', error);
+    }
+  };
+
   const handleEditClick = (empleado: Empleado) => {
     setSelectedEmpleado(empleado);
     setShowModalEdit(true);
+  };
+
+  const handleDeleteClick = (empleado: Empleado) => {
+    setSelectedEmpleado(empleado);
+    setShowModalDelete(true);
   };
 
   return (
@@ -114,6 +144,7 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
         empleadosLista={empleados}
       />
       <div className='tablaAprobar'>
+        {error && (<><br /><Alert variant="danger"  onClose={() => setError('')}  dismissible>{error}</Alert></>)}
         <Table striped bordered hover responsive>
           <thead>
             <tr>
@@ -249,7 +280,6 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
           <tbody>
             {filteredData.map((item, index) => (
               <tr key={`${item.cod_emp}-${index}`}>
-
                 <td>{item.cedula_supervisor}</td>
                 <td>{item.nombres_supervisor}</td>
                 <td>{item.apellidos_supervisor}</td>
@@ -262,12 +292,11 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
                   <div className="d-flex justify-content-center gap-2">
                     <Button variant="primary" onClick={() => handleEditClick(item)}>
                       <FaPencilAlt />
-                      </Button>
-                    <Button variant="danger" /* onClick={() => handleDeleteClick(item)} */>
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDeleteClick(item)}>
                       <FaTrash />
                     </Button>
                   </div>
-                  
                 </td>
               </tr>
             ))}
@@ -280,8 +309,16 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
           handleClose={() => setShowModalEdit(false)}
           cod_supervisor={selectedEmpleado.cod_supervisor}
           cod_emp={selectedEmpleado.cod_emp.toString()}
-          
           handleEdit={handleModifySupervision}
+        />
+      )}
+      {selectedEmpleado && (
+        <ModalDeleteSupervision
+          show={showModalDelete}
+          handleClose={() => setShowModalDelete(false)}
+          cod_supervisor={selectedEmpleado.cod_supervisor}
+          cod_emp={selectedEmpleado.cod_emp.toString()}
+          handleDelete={handleDeleteSupervision}
         />
       )}
     </>

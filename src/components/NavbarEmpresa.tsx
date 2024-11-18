@@ -9,7 +9,7 @@ import { useAuth } from '../auth/AuthProvider';
 import logoEmpresa from '../assets/logo-head.png';
 library.add(fas, faBell);
 import Notificaciones from './Notificaciones.tsx'; // Importar el nuevo componente
-import { Stack , Row, Col} from 'react-bootstrap';
+import {  Row, Col} from 'react-bootstrap';
 
 function NavbarEmpresa() {
     const auth = useAuth();
@@ -64,7 +64,7 @@ function NavbarEmpresa() {
                                                 <NavDropdown.Item href="/RecibodePago" className='cuadroItem'>Recibo de pago</NavDropdown.Item>
                                                 <NavDropdown.Item href="/Prestaciones" className='cuadroItem'>Prestaciones Sociales</NavDropdown.Item>
                                                 <NavDropdown.Item href="/ARC" className='cuadroItem'>Comprobante de Agente de Retención (ARC)</NavDropdown.Item>
-                                                <NavDropdown.Item href="/ConstanciaTrabajo" className='cuadroItem'>Constancia de Trabajo</NavDropdown.Item>
+                                                {/* <NavDropdown.Item href="/ConstanciaTrabajo" className='cuadroItem'>Constancia de Trabajo</NavDropdown.Item> */}
                                         </NavDropdown>
                                     </Col>
 

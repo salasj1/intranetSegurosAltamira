@@ -4,7 +4,8 @@ import ListaProcesarVacacaciones from "../components/ListaProcesarVacaciones";
 import NavbarEmpresa from "../components/NavbarEmpresa";
 import axios from "axios";
 import { Alert, AlertHeading } from "react-bootstrap";
-
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthProvider";
 export interface Vacacion {
     VacacionID: number;
     FechaInicio: Date;
@@ -25,7 +26,13 @@ function ProcesarVacaciones() {
     
     const [vacaciones, setVacaciones] = useState<Vacacion[]>([]);
     const [error, setError] = useState<string | null>(null);
-
+    const {  RRHH } = useAuth();
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (RRHH !== 1 ) {
+        navigate('/home'); 
+        }
+    }, [RRHH,  navigate]);
     const fetchVacaciones = async () => {
         try {
             const response = await axios.get(`/api/vacacionesaprobadas`);

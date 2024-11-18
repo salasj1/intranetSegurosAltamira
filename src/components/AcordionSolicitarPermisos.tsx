@@ -113,17 +113,21 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     e.preventDefault();
     const newErrors: string[] = [];
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Establecer la hora a 00:00:00 para comparar solo la fecha
+    today.setHours(0, 0, 0, 0); 
 
     if (!formData.Fecha_inicio) {
       newErrors.push('La fecha de inicio es requerida');
-    } else if (new Date(formData.Fecha_inicio+1) < today) {
+    }
+    
+    if (new Date(formData.Fecha_inicio+1) < today) {
       newErrors.push('La fecha de inicio no puede ser anterior a la fecha actual');
     }
 
     if (!formData.Fecha_Fin) {
       newErrors.push('La fecha de fin es requerida');
-    } else if (new Date(formData.Fecha_Fin) < today) {
+    }
+
+    if (new Date(formData.Fecha_Fin+1) < today) {
       newErrors.push('La fecha de fin no puede ser anterior a la fecha actual');
     }
 

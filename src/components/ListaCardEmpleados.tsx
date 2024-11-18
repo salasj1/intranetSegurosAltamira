@@ -39,7 +39,7 @@ const ListaCardEmpleados: React.FC = () => {
       .catch(error => console.error('Error fetching empleados:', error));
   }, []);
 
-  const handleFiltroChange = (selectedOption: any, actionMeta: any) => {
+  const handleFiltroChange = (_: any, actionMeta: any) => {
     const { name, value } = actionMeta;
     setFiltros({
       ...filtros,

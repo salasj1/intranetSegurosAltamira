@@ -33,7 +33,7 @@ function RecibodePagoDetallado() {
       }
 
       try {
-        const response = await axios.get(`/api/recibo/${reciNum}`);
+        const response = await axios.get(`/api/recibo/${reciNum}/${cod_emp}`); 
         
         const codEmpFromResponse = response.data[0].cod_emp.trim();
         const codEmpFromAuth = cod_emp.trim();

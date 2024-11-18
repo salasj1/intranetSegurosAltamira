@@ -23,17 +23,18 @@ interface ModalDescripcionPermisoProps {
   onHide: () => void;
   permiso: Permiso | null;
   fetchPermisos: () => void;
-  context: 'aprobacion' | 'procesar'; // Nueva prop para determinar el contexto
+  context: 'aprobacion' | 'procesar'; 
+  error: string | null; 
+  setError: (message: string) => void;
 }
 
-const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show, onHide, permiso, fetchPermisos, context }) => {
+const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show, onHide, permiso, fetchPermisos, context,error,setError }) => {
   const { cod_emp } = useAuth();
 
   if (!permiso) return null;
 
   const handleAction = async (action: 'approve' | 'reject') => {
     try {
-      console.log("Entro ",context);
       if (context === 'aprobacion') {
         if (action === 'approve') {
           console.log("Entro en aprobar",permiso.PermisosID);
@@ -59,10 +60,18 @@ const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show,
           });
         }
       }
+
       fetchPermisos();
       onHide();
     } catch (error) {
-      console.error(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso:`, error);
+      console.error(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso`);
+      if (axios.isAxiosError(error)) {
+        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso. Ya se encuentra ${action === 'approve' ? 'aprobado' : 'rechazado'}`);
+      } else if (error instanceof Error) {
+        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${error.message}`);
+      } else {
+        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${String(error)}`);
+      }
     }
   };
 
@@ -72,6 +81,7 @@ const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show,
         <Modal.Title>{permiso.Titulo}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+      {error && <Alert variant="danger">{error}</Alert>}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
           <Alert variant='primary' style={{ width: "75%" }}>
             <h3>Detalles del Permiso</h3>

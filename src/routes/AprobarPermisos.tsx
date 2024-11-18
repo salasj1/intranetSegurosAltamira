@@ -3,9 +3,16 @@ import NavbarEmpresa from '../components/NavbarEmpresa';
 import ListaAprobacionPermisos from '../components/ListaAprobacionPermisos';
 import axios from 'axios'; 
 import { useAuth } from '../auth/AuthProvider';
+import { useNavigate } from "react-router-dom";
 function AprobarPermisos() {
   const [permisos, setPermisos] = useState([]);
-  const { cod_emp } = useAuth();
+  const { cod_emp, tipo, RRHH } = useAuth();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (RRHH !== 1 && tipo !== 'Supervisor') {
+      navigate('/home'); // Redirigir a la página de inicio si no tiene permisos
+    }
+  }, [RRHH, tipo, navigate]);
   const fetchPermisos = async () => {
     try {
       const response = await axios.get(`/api/permisos/supervisor/${cod_emp}`);

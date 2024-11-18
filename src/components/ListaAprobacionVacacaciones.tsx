@@ -28,8 +28,8 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
   const [showModal, setShowModal] = useState(false);
   const [selectedVacacion, setSelectedVacacion] = useState<Vacacion | null>(null);
   const [action, setAction] = useState<'approve' | 'reject'>('approve');
-  const [showAlreadyApprovedModal, setShowAlreadyApprovedModal] = useState(false);
-
+  const [showAlreadyModal, setShowAlreadyModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     fetchVacaciones();
   }, []);
@@ -78,7 +78,7 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
     if (!selectedVacacion) return;
 
     if (selectedVacacion.Estado.toLowerCase() === 'aprobada') {
-      setShowAlreadyApprovedModal(true);
+      setShowAlreadyModal(true);
       setShowModal(false);
       return;
     }
@@ -92,15 +92,39 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
         await axios.put(`/api/vacaciones/${selectedVacacion.VacacionID}/reject`);
       }
       fetchVacaciones();
+      setError('');
       setShowModal(false);
     } catch (error) {
-      console.error(`Error ${action === 'approve' ? 'aprobando' : 'devolviendo'} vacaciones:`, error);
+   
+      if (axios.isAxiosError(error)) {
+        console.error('Error:', error);
+        const responseMessage = error.request?.response;
+        if (responseMessage) {
+          if (responseMessage.includes('ya ha sido aprobada')) {
+            setShowModal(false);
+            setShowAlreadyModal(true);
+          } else if (responseMessage.includes('ya ha sido rechazada')) {
+            setShowModal(false);
+            setShowAlreadyModal(true);
+            setAction('reject');
+            setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} vacaciones: ${responseMessage}`);
+          } else {
+            setShowModal(false);
+            setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} vacaciones: ${responseMessage}`);
+          }
+        } else {
+          setShowModal(false);
+          setError('Error desconocido al procesar la solicitud.');
+        }
+      
+    }
     }
   };
 
   return (
     <>
     <div className='tablaAprobar'>
+      
       <Table striped bordered hover responsive>
         <thead>
           <tr>
@@ -256,20 +280,22 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
           nombreEmpleado={`${selectedVacacion.nombres} ${selectedVacacion.apellidos}`}
           fechaInicio={format(addDays(parseISO(selectedVacacion.FechaInicio.toString()), 1), 'dd/MM/yyyy')}
           fechaFin={format(addDays(parseISO(selectedVacacion.FechaFin.toString()), 1), 'dd/MM/yyyy')}
+          error={error}
+          setError={setError}
         />
       )}
       
-      <Modal show={showAlreadyApprovedModal} onHide={() => setShowAlreadyApprovedModal(false)}>
+      <Modal show={showAlreadyModal} onHide={() => setShowAlreadyModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Vacaciones ya aprobadas</Modal.Title>
+          <Modal.Title>Vacaciones ya {action === 'approve' ? 'aprobadas' : 'rechazadas'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Alert variant="warning">
-            Estas vacaciones ya fueron aprobadas anteriormente por otro supervisor.
+            Estas vacaciones ya fueron {action === 'approve' ? 'aprobadas' : 'rechazadas'} anteriormente por otro supervisor. Cargue la página
           </Alert>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowAlreadyApprovedModal(false)}>
+          <Button variant="secondary" onClick={() => setShowAlreadyModal(false)}>
             Cerrar
           </Button>
         </Modal.Footer>

@@ -103,13 +103,15 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       setSuccess(null); 
       return;
     }
-
+    console.log(startDate);
+    console.log(today);
     if (startDate && (startDate < today)) {
       setError('La fecha de inicio no puede ser anterior a la fecha actual.');
       setSuccess(null); 
       return;
     }
-
+    console.log(endDate);
+    console.log(today);
     if (endDate && (endDate < today)) {
       setError('La fecha de fin no puede ser anterior a la fecha actual.');
       setSuccess(null); 
@@ -198,12 +200,29 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
           </div>
           <Form>
             <Form.Group controlId="fechaInicio">
-              <Form.Label>Fecha Inicio:</Form.Label>
-              <DatePicker
-                placeholder="dd/mm/yyyy"
-                value={fechaInicio ? new Date(fechaInicio) : null}
-                onChange={handleFechaInicioChange}
-              />
+                <Form.Label>Fecha Inicio:</Form.Label>
+                <DatePicker
+                  placeholder="dd/mm/yyyy"
+                  value={fechaInicio ? new Date(fechaInicio) : null}
+                  valueFormat={{day:"numeric", month: "numeric", year: "numeric" }}
+                  onChange={handleFechaInicioChange}
+                  min={new Date()}
+                  parse={(str) => {
+                    if (!str) return undefined; 
+                    const [day, month, year] = str.split('/').map(Number);
+                    const today = new Date();
+                    const parsedDate = new Date(
+                      year || today.getFullYear(),
+                      (month ? month - 1 : today.getMonth()),
+                      day
+                    );
+                    const startDate = fechaInicio ? new Date(fechaInicio) : today;
+                    if (parsedDate < startDate) {
+                      return startDate;
+                    }
+                    return parsedDate;
+                }}
+                />
               {fechaMaximaFin && (
                 <>
                 <br/>
@@ -213,13 +232,34 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
                 </>
               )}
             </Form.Group>
+            {!fechaMaximaFin && (
+              <br/>
+            )}
             <Form.Group controlId="fechaFin">
               <Form.Label>Fecha Fin:</Form.Label>
-              <DatePicker
+              <DatePicker 
                 placeholder='dd/mm/yyyy'
                 value={fechaFin ? new Date(fechaFin) : null}
                 onChange={(date: Date | null | undefined) => {
                   setFechaFin(date ? date.toISOString() : null);
+                }}
+                valueFormat={{day:"numeric", month: "numeric", year: "numeric" }}
+                min={fechaInicio ? new Date(fechaInicio) : new Date()}
+                max={fechaMaximaFin ? new Date(fechaMaximaFin) : undefined} 
+                parse={(str) => {
+                  if (!str) return undefined; 
+                  const [day, month, year] = str.split('/').map(Number);
+                  const today = new Date();
+                  const parsedDate = new Date(
+                    year || today.getFullYear(),
+                    (month ? month - 1 : today.getMonth()),
+                    day
+                  );
+                  const startDate = fechaInicio ? new Date(fechaInicio) : today;
+                  if (parsedDate < startDate) {
+                    return startDate;
+                  }
+                  return parsedDate;
                 }}
               />
             </Form.Group>

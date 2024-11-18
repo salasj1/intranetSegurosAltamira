@@ -42,6 +42,7 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
   const [selectedPermiso, setSelectedPermiso] = useState<Permiso | null>(null);
   const [action, setAction] = useState<'approve' | 'reject'>('approve');
   const [showDescripcion, setShowDescripcion] = useState(false);
+  const [error, setError] = useState<string | null>('');
   useEffect(() => {
     fetchPermisos();
   }, []);
@@ -90,11 +91,10 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
     setShowDescripcion(true);
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (setError: (message: string) => void) => {
     if (!selectedPermiso) return;
-    
+  
     try {
-      console.log("Entro ",cod_emp);
       if (action === 'approve') {
         await axios.put(`/api/permisos/${selectedPermiso.PermisosID}/approve`, {
           cod_supervisor: cod_emp
@@ -108,6 +108,13 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
       setShowModal(false);
     } catch (error) {
       console.error(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso:`, error);
+      if (axios.isAxiosError(error)) {
+        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${error.response?.data.message || error.message}`);
+      } else if (error instanceof Error) {
+        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${error.message}`);
+      } else {
+        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${String(error)}`);
+      }
     }
   };
 
@@ -286,7 +293,9 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
         onHide={() => setShowDescripcion(false)}
         permiso={selectedPermiso}
         fetchPermisos={fetchPermisos}
-        context="aprobacion" // Pasar el contexto
+        context="aprobacion" 
+        error={error}
+        setError={setError}
       />
 
       <ModalConfirmacionPermiso
@@ -295,6 +304,8 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
         onConfirm={handleConfirm}
         permiso={selectedPermiso}
         action={action}
+        error={error}
+        setError={setError}
       />
     </>
   );

@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Table, Form, Button } from 'react-bootstrap';
 import { useAuth } from '../auth/AuthProvider';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes, faArrowDown, faArrowUp, faEye } from '@fortawesome/free-solid-svg-icons';
 import { addDays, format, parseISO } from 'date-fns';
 import axios from 'axios';
 import styles from '../css/ListaAprobacionPermisos.module.css'; 
-
 import ModalConfirmacion from './ModalConfirmacion';
-
 import ModalDescripcionPermiso from './ModalDescripcionPermiso';
 
 interface Permiso {
@@ -37,17 +34,16 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
   const [searchPermisosID, setSearchPermisosID] = useState('');
   const [searchNombre, setSearchNombre] = useState('');
   const [searchApellido, setSearchApellido] = useState('');
-
   const [searchCi, setSearchCi] = useState('');
   const [searchTitulo, setSearchTitulo] = useState('');
   const [searchFechaInicio, setSearchFechaInicio] = useState('');
-
   const [searchFechaFin, setSearchFechaFin] = useState('');
   const [searchEstado, setSearchEstado] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectedPermiso, setSelectedPermiso] = useState<Permiso | null>(null);
   const [action, setAction] = useState<'approve' | 'reject'>('approve');
   const [showDescripcion, setShowDescripcion] = useState(false);
+  const [error, setError] = useState<string | null>('');
 
   useEffect(() => {
     fetchPermisos();
@@ -106,9 +102,9 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
     setShowDescripcion(true);
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (setError: (message: string) => void) => {
     if (!selectedPermiso) return;
-
+  
     try {
       if (action === 'approve') {
         await axios.put(`/api/permisos/${selectedPermiso.PermisosID}/process`, {
@@ -122,10 +118,16 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
       fetchPermisos();
       setShowModal(false);
     } catch (error) {
-      console.error(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso:`, error);
+      console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso`);
+      if (axios.isAxiosError(error)) {
+        setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${error.response?.data.message || error.message}`);
+      } else if (error instanceof Error) {
+        setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${error.message}`);
+      } else {
+        setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${String(error)}`);
+      }
     }
   };
-
 
   return (
     <>
@@ -196,7 +198,6 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
                   onChange={(e) => setSearchFechaFin(e.target.value)}
                 />
               </th>
-              
               <th>
                 <Form.Control
                   className={styles.search}
@@ -223,15 +224,15 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
                 )}
               </th>
-              <th id={styles.headTable} onClick={() => requestSort('Nombre')} className='titulo'>
-                Nombre
-                {sortConfig.key === 'Nombre' && (
+              <th id={styles.headTable} onClick={() => requestSort('nombres')} className='titulo'>
+                Nombres
+                {sortConfig.key === 'nombres' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
                 )}
               </th>
-              <th id={styles.headTable} onClick={() => requestSort('Apellido')} className='titulo'>
-                Apellido
-                {sortConfig.key === 'Apellido' && (
+              <th id={styles.headTable} onClick={() => requestSort('apellidos')} className='titulo'>
+                Apellidos
+                {sortConfig.key === 'apellidos' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
                 )}
               </th>
@@ -259,9 +260,7 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
                 )}
               </th>
-              <th id={styles.headTable} className='titulo'>
-                Acciones
-              </th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -275,16 +274,16 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
                 <td>{format(addDays(parseISO(permiso.Fecha_inicio.toString()), 1), 'dd/MM/yyyy')}</td>
                 <td>{format(addDays(parseISO(permiso.Fecha_Fin.toString()), 1), 'dd/MM/yyyy')}</td>
                 <td>{Array.isArray(permiso.Estado) ? [...new Set(permiso.Estado)].join(' ') : permiso.Estado}</td>
-                <td >
+                <td>
                   <div className={styles.acciones}>
-                  <Button variant="primary" onClick={() => handleLeerDescripcion(permiso)}>
+                    <Button variant="primary" onClick={() => handleLeerDescripcion(permiso)}>
                       <FontAwesomeIcon icon={faEye} color='white' />
                     </Button>
-                    {permiso.Estado[0] === 'Aprobada' && (
-                    <>
-                      <Button variant="success" onClick={() => handleAction(permiso, 'approve')}><FontAwesomeIcon icon={faCheck} /></Button>
-                      <Button variant="danger" onClick={() => handleAction(permiso, 'reject')}><FontAwesomeIcon icon={faTimes} /></Button>
-                    </>
+                    {permiso.Estado === 'Pendiente' && (
+                      <>
+                        <Button variant="success" onClick={() => handleAction(permiso, 'approve')}><FontAwesomeIcon icon={faCheck} /></Button>
+                        <Button variant="danger" onClick={() => handleAction(permiso, 'reject')}><FontAwesomeIcon icon={faTimes} /></Button>
+                      </>
                     )}
                   </div>
                 </td>
@@ -300,6 +299,8 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
         permiso={selectedPermiso}
         fetchPermisos={fetchPermisos}
         context="procesar" 
+        error={error}
+        setError={setError}
       />
 
       <ModalConfirmacion
@@ -308,6 +309,8 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
         onConfirm={handleConfirm}
         permiso={selectedPermiso}
         action={action}
+        error={error}
+        setError={setError} // Pasar setError como prop
       />
     </>
   );

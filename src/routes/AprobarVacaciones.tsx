@@ -4,7 +4,7 @@ import ListaAprobacionVacacaciones from "../components/ListaAprobacionVacacacion
 import NavbarEmpresa from "../components/NavbarEmpresa";
 import axios from "axios";
 import { Alert, AlertHeading } from "react-bootstrap";
-
+import { useNavigate } from "react-router-dom";
 export interface Vacacion {
   VacacionID: number;
   FechaInicio: Date;
@@ -19,9 +19,15 @@ export interface Vacacion {
 }
 
 function AprobarVacaciones() {
-  const { cod_emp } = useAuth();
+  const { cod_emp, tipo, RRHH } = useAuth();
   const [vacaciones, setVacaciones] = useState<Vacacion[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (RRHH !== 1 && tipo !== 'Supervisor') {
+      navigate('/home'); // Redirigir a la página de inicio si no tiene permisos
+    }
+  }, [RRHH, tipo, navigate]);
 
   const fetchVacaciones = async () => {
     try {

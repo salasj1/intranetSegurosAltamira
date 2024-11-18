@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Alert } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faArrowUp, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import styles from '../css/AprobarVacaciones.module.css';
@@ -31,6 +31,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
   const [selectedVacacion, setSelectedVacacion] = useState<Vacacion | null>(null);
   const [action, setAction] = useState<'approve' | 'reject'>('approve');
   const { cod_emp } = useAuth();
+  const [error, setError] = useState<string | null>('');
   useEffect(() => {
     fetchVacaciones();
   }, []);
@@ -92,6 +93,18 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
       fetchVacaciones();
     } catch (error) {
       console.error('Error procesando vacaciones:', error);
+      setError('Error procesando vacaciones');
+      if (axios.isAxiosError(error)) {
+        console.error('Error:', error);
+        if (error.request?.response === 'La vacación ya ha sido procesada') {
+          setError('Error procesando vacaciones: La vacación ya ha sido procesada');
+
+        }
+        if (error.response?.data.message === 'La vacación ya ha sido emitida') {
+          setError('Error procesando vacaciones: La vacación ya ha sido emitida');
+        }
+
+      }
     }
   };
 
@@ -107,15 +120,33 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
         await axios.put(`/api/vacaciones/${selectedVacacion.VacacionID}/reject`);
       }
       fetchVacaciones();
+      setError('');
       setShowModal(false);
+
     } catch (error) {
+      setShowModal(false);
       console.error(`Error ${action === 'approve' ? 'aprobando' : 'devolviendo'} vacaciones:`, error);
+      if (axios.isAxiosError(error)) {
+        
+        if (error.request?.response === 'La vacación ya ha sido procesada') {
+          setError(`Error ${action === 'approve' ? 'procesando' : 'devolviendo'} vacaciones: La vacación ya ha sido procesada`);
+        } else if (error.request?.response === 'La vacación ya ha sido rechazada') {
+          setError(`Error ${action === 'approve' ? 'procesando' : 'devolviendo'} vacaciones: La vacación ya ha sido rechazada`);
+        } else {
+          setError(`Error ${action === 'approve' ? 'procesando' : 'devolviendo'} vacaciones: ${error.message}`);
+        }
+      }
     }
   };
 
   return (
     <>
       <div className='tablaAprobar'>
+        {error && (
+          <Alert variant="danger" dismissible onClose={() => setError(null)}>
+            <strong>Error:</strong> {error}
+          </Alert>)
+        }
         <Table striped bordered hover responsive>
           <thead>
             <tr>
@@ -305,6 +336,8 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
           nombreEmpleado={`${selectedVacacion.nombres_empleado} ${selectedVacacion.apellidos_empleado}`}
           fechaInicio={format(addDays(parseISO(selectedVacacion.FechaInicio.toString()), 1), 'dd/MM/yyyy')}
           fechaFin={format(addDays(parseISO(selectedVacacion.FechaFin.toString()), 1), 'dd/MM/yyyy')}
+          error={error}
+          setError={setError}
         />
       )}
     </>

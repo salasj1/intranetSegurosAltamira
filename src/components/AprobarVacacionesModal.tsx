@@ -10,15 +10,21 @@ interface AprobarVacacionesModalProps {
   nombreEmpleado: string;
   fechaInicio: string;
   fechaFin: string;
+  error: string | null;
+  setError: (value: string | null) => void;
 }
 
-const AprobarVacacionesModal: React.FC<AprobarVacacionesModalProps> = ({ show, handleClose, handleConfirm, action, vacacionID, nombreEmpleado, fechaInicio, fechaFin }) => {
+const AprobarVacacionesModal: React.FC<AprobarVacacionesModalProps> = ({ show, handleClose, handleConfirm, action, vacacionID, nombreEmpleado, fechaInicio, fechaFin,error, setError }) => {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>{action === 'approve' ? 'Aprobar Vacaciones' : 'Devolver Vacaciones'}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>        
+      <Modal.Body>   
+        {error && <Alert variant="danger" onClose={() => setError(null)} dismissible>
+          <Alert.Heading>Error</Alert.Heading>
+          <p>{error}</p>
+        </Alert>}     
         <Alert variant={action==='approve'? "primary" : "secondary"}>
         <p><strong>ID de Vacaciones:</strong> {vacacionID}</p>
         <p><strong>Nombre del Empleado:</strong> {nombreEmpleado}</p>

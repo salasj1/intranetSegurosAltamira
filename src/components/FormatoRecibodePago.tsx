@@ -102,10 +102,10 @@ const generatePDF = (data: any) => {
       doc.setTextColor(0, 0, 0);
       doc.setFont('CalibriBold', 'bold');
       doc.setFontSize(10);
-      doc.text(`Cargo: `, posrecw - 160, posrecy3 + 15);
+      doc.text(`Cargo: `, posrecw - 185, posrecy3 + 15);
       doc.setFont('ArialNarrow', 'normal');
       doc.setFontSize(12);
-      doc.text(`${(data[0].des_cargo).toUpperCase() || 'N/A'}`, posrecw - 130, posrecy3 + 15);
+      doc.text(`${(data[0].des_cargo).toUpperCase() || 'N/A'}`, posrecw - 160, posrecy3 + 15);
       doc.setTextColor(0, 0, 0);
       doc.setFont('CalibriBold', 'bold');
       doc.setFontSize(10);
@@ -126,9 +126,9 @@ const generatePDF = (data: any) => {
       doc.setFont('ArialNarrow', 'normal');
       doc.text(`${data[0].fecha_ing ? formatDate(data[0].fecha_ing) : 'N/A'}`, posrecw / 2 - 30, posrecy3 + 30);
       doc.setFont('CalibriBold', 'bold');
-      doc.text(`Departamento `, posrecw - 160, posrecy3 + 30);
+      doc.text(`Departamento `, posrecw - 210, posrecy3 + 30);
       doc.setFont('ArialNarrow', 'normal');
-      doc.text(`${(data[0].Departamento).toUpperCase() || 'N/A'}`, posrecw - 100, posrecy3 + 30);
+      doc.text(`${(data[0].Departamento).toUpperCase() || 'N/A'}`, posrecw - 150, posrecy3 + 30);
 
       // TABLA DE DATOS
       const tableData = data.map((item: any) => {

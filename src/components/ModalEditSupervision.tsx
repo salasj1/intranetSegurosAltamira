@@ -1,4 +1,4 @@
-import { Alert, Col, FormControl, Modal, Row } from 'react-bootstrap';
+import { Alert, FormControl, Modal} from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 
 interface EditarSupervisionModalProps {
@@ -87,14 +87,14 @@ const ModalEditSupervision: React.FC<EditarSupervisionModalProps> = ({ cod_emp, 
                     <p><strong>Departamento: </strong>{supervision?.departamento_supervisor}</p>
                     <p><strong>Cargo: </strong>{supervision?.cargo_supervisor}</p>
                 </Alert>
-                <Alert variant="warning">
+                <Alert variant="primary">
                     <h3>Supervisado</h3>
                     <p><strong>Cédula: </strong>{supervision?.cedula_empleado}</p>
                     <p><strong>Nombre: </strong>{supervision?.nombre_empleado}</p>
                     <p><strong>Departamento: </strong>{supervision?.departamento_empleado}</p>
                     <p><strong>Cargo: </strong>{supervision?.cargo_empleado}</p>
                 </Alert>
-                <Alert variant="secondary">
+                <Alert variant="warning">
                     <p><h3>Tipo</h3></p>
                     <FormControl
                         as="select"
