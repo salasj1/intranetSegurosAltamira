@@ -16,6 +16,7 @@ const ModalDescripcion: React.FC<ModalDescripcionProps> = ({ show, onHide, permi
       <Modal.Body>
         <p><strong>ID Permiso:</strong> {permiso?.PermisosID}</p>
         <p><strong>Nombre:</strong> {permiso?.Titulo}</p>
+        
         <p><strong>Descripción:</strong> {permiso?.descripcion}</p>
       </Modal.Body>
       <Modal.Footer>

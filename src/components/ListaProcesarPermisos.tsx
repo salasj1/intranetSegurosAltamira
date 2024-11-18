@@ -21,6 +21,8 @@ interface Permiso {
   ci: string;
   nombres: string;
   apellidos: string;
+  departamento: string;
+  cargo: string;
 }
 
 interface ListaPermisosProps {
@@ -111,20 +113,20 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
           cod_RRHH: cod_emp
         });
       } else {
-        await axios.put(`/api/permisos/${selectedPermiso.PermisosID}/reject`, {
+        await axios.put(`/api/permisos/${selectedPermiso.PermisosID}/reject2`, {
           cod_supervisor: cod_emp
         });
       }
       fetchPermisos();
       setShowModal(false);
     } catch (error) {
-      console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso`);
+      console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso:`, error);
       if (axios.isAxiosError(error)) {
-        setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${error.response?.data.message || error.message}`);
-      } else if (error instanceof Error) {
-        setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${error.message}`);
+        console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso:`, error.response?.data);
+        setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${error.response?.data}`);
       } else {
-        setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${String(error)}`);
+        console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso:`, error);
+        setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${error}`);
       }
     }
   };
@@ -279,7 +281,7 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
                     <Button variant="primary" onClick={() => handleLeerDescripcion(permiso)}>
                       <FontAwesomeIcon icon={faEye} color='white' />
                     </Button>
-                    {permiso.Estado === 'Pendiente' && (
+                    {permiso.Estado[0] === 'Aprobada' && (
                       <>
                         <Button variant="success" onClick={() => handleAction(permiso, 'approve')}><FontAwesomeIcon icon={faCheck} /></Button>
                         <Button variant="danger" onClick={() => handleAction(permiso, 'reject')}><FontAwesomeIcon icon={faTimes} /></Button>
@@ -305,7 +307,7 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
 
       <ModalConfirmacion
         show={showModal}
-        onHide={() => setShowModal(false)}
+        onHide={() => { setShowModal(false); setError(''); }}
         onConfirm={handleConfirm}
         permiso={selectedPermiso}
         action={action}

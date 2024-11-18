@@ -16,6 +16,8 @@ export interface Vacacion {
   apellidos: string;
   cod_supervisor: string;
   ci:string;
+  departamento: string;
+  cargo: string;
 }
 
 function AprobarVacaciones() {

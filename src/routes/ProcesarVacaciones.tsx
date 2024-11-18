@@ -20,6 +20,8 @@ export interface Vacacion {
     nombres_supervisor: string;
     apellidos_supervisor: string;
     ci: string;
+    departamento: string;
+    cargo: string;
 }
 
 function ProcesarVacaciones() {

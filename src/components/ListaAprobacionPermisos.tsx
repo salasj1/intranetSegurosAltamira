@@ -22,6 +22,8 @@ interface Permiso {
   ci: string;
   nombres: string;
   apellidos: string;
+  departamento: string;
+  cargo: string;
 }
 
 interface ListaPermisosProps {
@@ -100,20 +102,19 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
           cod_supervisor: cod_emp
         });
       } else {
-        await axios.put(`/api/permisos/${selectedPermiso.PermisosID}/reject`, {
+        await axios.put(`/api/permisos/${selectedPermiso.PermisosID}/reject1`, {
           cod_supervisor: cod_emp
         });
       }
       fetchPermisos();
       setShowModal(false);
     } catch (error) {
-      console.error(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso:`, error);
       if (axios.isAxiosError(error)) {
-        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${error.response?.data.message || error.message}`);
-      } else if (error instanceof Error) {
-        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${error.message}`);
+        console.error(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso:`, error.response?.data);
+        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${error.response?.data}`);
       } else {
-        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${String(error)}`);
+        console.error(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso:`, error);
+        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${error}`);
       }
     }
   };
@@ -300,7 +301,7 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
 
       <ModalConfirmacionPermiso
         show={showModal}
-        onHide={() => setShowModal(false)}
+        onHide={() => { setShowModal(false); setError(''); }}
         onConfirm={handleConfirm}
         permiso={selectedPermiso}
         action={action}

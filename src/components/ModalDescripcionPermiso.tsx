@@ -16,6 +16,8 @@ interface Permiso {
   ci: string;
   nombres: string;
   apellidos: string;  
+  departamento: string;
+  cargo: string;
 }
 
 interface ModalDescripcionPermisoProps {
@@ -42,7 +44,7 @@ const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show,
             cod_supervisor: cod_emp
           });
         } else {
-          await axios.put(`/api/permisos/${permiso.PermisosID}/reject`, {
+          await axios.put(`/api/permisos/${permiso.PermisosID}/reject1`, {
             cod_supervisor: cod_emp
           });
         }
@@ -55,7 +57,7 @@ const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show,
             cod_supervisor: cod_emp
           });
         } else {
-          await axios.put(`/api/permisos/${permiso.PermisosID}/reject`, {
+          await axios.put(`/api/permisos/${permiso.PermisosID}/reject2`, {
             cod_supervisor: cod_emp
           });
         }
@@ -65,12 +67,9 @@ const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show,
       onHide();
     } catch (error) {
       console.error(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso`);
+      setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso. Cargue de nuevo la pagina.`);
       if (axios.isAxiosError(error)) {
-        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso. Ya se encuentra ${action === 'approve' ? 'aprobado' : 'rechazado'}`);
-      } else if (error instanceof Error) {
-        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${error.message}`);
-      } else {
-        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${String(error)}`);
+        console.error(error.response);
       }
     }
   };
@@ -81,15 +80,17 @@ const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show,
         <Modal.Title>{permiso.Titulo}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-      {error && <Alert variant="danger">{error}</Alert>}
+      {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
           <Alert variant='primary' style={{ width: "75%" }}>
             <h3>Detalles del Permiso</h3>
             <hr />
             <div style={{ display: "flex", justifyContent: "space-between", flexDirection: "column", gap: "5px" }}>
               <p style={{ fontSize: "18px", margin: "0" }}><strong>ID Permiso:</strong> {permiso.PermisosID}</p>
-              <p style={{ fontSize: "18px", margin: "0" }}><strong>C.I:</strong> {permiso.ci}</p>
+              <p style={{ fontSize: "18px", margin: "0" }}><strong>Cédula:</strong> {permiso.ci}</p>
               <p style={{ fontSize: "18px", margin: "0" }}><strong>Empleado:</strong> {permiso.nombres+" "+permiso.apellidos}</p>
+              <p style={{ fontSize: "18px", margin: "0" }}><strong>Departamento:</strong> {permiso.departamento}</p>
+              <p style={{ fontSize: "18px", margin: "0" }}><strong>Cargo:</strong> {permiso.cargo}</p>
               <p style={{ fontSize: "18px", margin: "0" }}><strong>Fecha Inicio:</strong> {format(addDays(parseISO(permiso.Fecha_inicio.toString()), 1), 'dd/MM/yyyy')}</p>
               <p style={{ fontSize: "18px", margin: "0" }}><strong>Fecha Fin:</strong> {format(addDays(parseISO(permiso.Fecha_Fin.toString()), 1), 'dd/MM/yyyy')}</p>
               <p style={{ fontSize: "18px", margin: "0" }}><strong>Motivo:</strong> {permiso.Motivo}</p>

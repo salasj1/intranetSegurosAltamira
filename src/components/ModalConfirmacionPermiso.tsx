@@ -10,7 +10,12 @@ interface Permiso {
   Titulo: string;
   Motivo: string;
   Estado: string;
+  ci: string;
+  nombres: string;
+  apellidos: string;
   descripcion: string;
+  departamento: string;
+  cargo: string;
 }
 
 interface ModalConfirmacionPermisoProps {
@@ -32,10 +37,13 @@ const ModalConfirmacionPermiso: React.FC<ModalConfirmacionPermisoProps> = ({ sho
         <Modal.Title>{action === 'approve' ? 'Aprobar Permiso' : 'Rechazar Permiso'}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {error && <Alert variant="danger">{error}</Alert>}
+        {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
         <Alert variant={action === 'approve' ? 'primary' : 'secondary'}>
           <p><strong>ID Permiso:</strong> {permiso.PermisosID}</p>
-          <p><strong>Empleado:</strong> {permiso.cod_emp}</p>
+          <p><strong>Cédula:</strong> {permiso.ci}</p>
+          <p><strong>Empleado:</strong> {permiso?.nombres +" "+ permiso?.apellidos}</p>
+          <p><strong>Departamento:</strong> {permiso?.departamento}</p>
+          <p><strong>Cargo:</strong> {permiso?.cargo}</p>
           <p><strong>Título:</strong> {permiso.Titulo}</p>
           <p><strong>Fecha Inicio:</strong> {format(addDays(parseISO(permiso.Fecha_inicio.toString()), 1), 'dd/MM/yyyy')}</p>
           <p><strong>Fecha Fin:</strong> {format(addDays(parseISO(permiso.Fecha_Fin.toString()), 1), 'dd/MM/yyyy')}</p>
