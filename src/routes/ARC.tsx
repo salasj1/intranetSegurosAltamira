@@ -7,6 +7,8 @@ import NavbarEmpresa from '../components/NavbarEmpresa';
 import generateARCPDF from '../components/FormatoARC';
 import styles from '../css/ARC.module.css';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 function ARC() {
   const [arcData, setArcData] = useState<any>(null);
   const [, setIsLoading] = useState<boolean>(true);
@@ -29,7 +31,7 @@ function ARC() {
     }
 
     if (cod_emp && fechaARC) {
-      fetch(`/api/arc/${cod_emp}?fecha=${fechaARC}`)
+      fetch(`${apiUrl}/arc/${cod_emp}?fecha=${fechaARC}`)
         .then(response => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -81,7 +83,7 @@ function ARC() {
         formData.append('cod_emp', cod_emp || '');
         formData.append('fecha', fechaARC);
 
-        const response = await fetch('/api/send-arc', {
+        const response = await fetch(`${apiUrl}/send-arc`, {
             method: 'POST',
             body: formData
         });
@@ -113,7 +115,7 @@ const handleSendSecondaryEmail = async () => {
         formData.append('correo_secundario', correoSecundario);
         formData.append('fecha', fechaARC);
 
-        const response = await fetch('/api/send-arc-secundario', {
+        const response = await fetch(`${apiUrl}/send-arc-secundario`, {
             method: 'POST',
             body: formData
         });

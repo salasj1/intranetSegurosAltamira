@@ -11,6 +11,8 @@ import { useAuth } from '../auth/AuthProvider';
 import NavbarEmpresa from '../components/NavbarEmpresa';
 import generatePrestacionesPDF from '../components/FormatoPrestaciones';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 function Prestaciones() {
   const [prestacionesData, setPrestacionesData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -24,7 +26,7 @@ function Prestaciones() {
     const fetchPrestacionesData = async () => {
       if (!cod_emp) return;
       try {
-        const response = await axios.get(`/api/prestaciones/${cod_emp}`);
+        const response = await axios.get(`${apiUrl}/prestaciones/${cod_emp}`);
         setPrestacionesData(response.data);
         console.log("cod_emp " + cod_emp);
         console.log("des_depart " + des_depart);
@@ -67,7 +69,7 @@ function Prestaciones() {
       formData.append('cod_emp', cod_emp ?? '');
 
       try {
-        const response = await axios.post('/api/send-prestaciones', formData, {
+        const response = await axios.post(`${apiUrl}/send-prestaciones}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -94,7 +96,7 @@ function Prestaciones() {
       formData.append('correo_secundario', correoSecundario);
 
       try {
-        const response = await axios.post('/api/send-prestaciones-secundario', formData, {
+        const response = await axios.post(`${apiUrl}/send-prestaciones-secundario}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }

@@ -6,6 +6,8 @@ import styles from '../css/ListaCardEmpleados.module.css';
 import { useAuth } from '../auth/AuthProvider';
 import Select from 'react-select';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 interface Empleado {
   cod_emp: string;
   nombres: string;
@@ -33,7 +35,7 @@ const ListaCardEmpleados: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/empleados')
+    fetch(`${apiUrl}/empleados`)
       .then(response => response.json())
       .then(data => setEmpleados(data))
       .catch(error => console.error('Error fetching empleados:', error));
@@ -71,7 +73,7 @@ const ListaCardEmpleados: React.FC = () => {
         return;
       }
       try {
-        await axios.put(`/api/empleados/${selectedEmpleado.cod_emp}/telefono`, { tlf_oficina: telefono });
+        await axios.put(`${apiUrl}/empleados/${selectedEmpleado.cod_emp}/telefono`, { tlf_oficina: telefono });
         setEmpleados(empleados.map(emp => emp.cod_emp === selectedEmpleado.cod_emp ? { ...emp, tlf_oficina: telefono } : emp));
         setTelefono('');
         setShowModal(false);
@@ -86,7 +88,7 @@ const ListaCardEmpleados: React.FC = () => {
   const handleTelefonoDelete = async () => {
     if (selectedEmpleado) {
       try {
-        await axios.delete(`/api/empleados/${selectedEmpleado.cod_emp}/telefono`);
+        await axios.delete(`${apiUrl}/empleados/${selectedEmpleado.cod_emp}/telefono`);
         setEmpleados(empleados.map(emp => emp.cod_emp === selectedEmpleado.cod_emp ? { ...emp, tlf_oficina: '' } : emp));
         setShowModal(false);
         setError(null);

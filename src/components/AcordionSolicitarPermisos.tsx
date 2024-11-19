@@ -9,7 +9,7 @@ import ConfirmModal from './ModalConfirmarSolicitarPermisos';
 
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
-
+const apiUrl = import.meta.env.VITE_API_URL;
 interface CustomToggleProps {
   children: ReactNode;
   eventKey: string;
@@ -95,7 +95,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
 
   const handleSubmit = async () => {
     try {
-      await axios.post('/api/permisos', { ...formData, cod_emp });
+      await axios.post(`${apiUrl}/permisos`, { ...formData, cod_emp });
       setAlertMessage('Permiso solicitado exitosamente');
       setAlertVariant('success');
       resetForm();

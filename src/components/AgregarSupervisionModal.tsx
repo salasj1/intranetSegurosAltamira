@@ -32,11 +32,11 @@ const AgregarSupervisionModal: React.FC<AgregarSupervisionModalProps> = ({ show,
   const [error, setError] = useState<string | null>(null);
   const [departamentoSupervisor, setDepartamentoSupervisor] = useState<string | null>(null);
   const [departamentoSupervisado, setDepartamentoSupervisado] = useState<string | null>(null);
-
+  const apiUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchEmpleados = async () => {
       try {
-        const response = await axios.get('/api/empleados');
+        const response = await axios.get(`${apiUrl}/empleados`);
         const empleadosData = response.data.map((empleado: any) => ({
           value: empleado.cod_emp,
           label: `${empleado.nombres} ${empleado.apellidos} - ${empleado.des_cargo}`,
@@ -51,7 +51,7 @@ const AgregarSupervisionModal: React.FC<AgregarSupervisionModalProps> = ({ show,
 
     const fetchTiposSupervision = async () => {
       try {
-        const response = await axios.get('/api/empleados/tipos-supervision');
+        const response = await axios.get(`${apiUrl}/empleados/tipos-supervision`);
         setTiposSupervision(response.data);
       } catch (error) {
         console.error('Error fetching tipos de supervision:', error);

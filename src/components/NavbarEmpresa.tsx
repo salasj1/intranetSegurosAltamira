@@ -10,12 +10,14 @@ import logoEmpresa from '../assets/logo-head.png';
 library.add(fas, faBell);
 import Notificaciones from './Notificaciones.tsx'; // Importar el nuevo componente
 import {  Row, Col} from 'react-bootstrap';
+import { Navigate } from 'react-router-dom';
 
 function NavbarEmpresa() {
     const auth = useAuth();
 
     const handleLogout = () => {
         auth.logout();
+        <Navigate to = '/'/>
     };
 
     const isActive = (path: string) => location.pathname.startsWith(path);
@@ -111,6 +113,7 @@ function NavbarEmpresa() {
                                                 <Notificaciones /> {/* Usar el nuevo componente */}
                                             </Navbar.Brand>
                                             <Nav.Link onClick={handleLogout}>Cerrar Sesión</Nav.Link>
+
                                         </Nav>
                                     </Col>
                             </Nav>

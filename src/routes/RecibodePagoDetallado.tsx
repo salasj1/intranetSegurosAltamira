@@ -22,7 +22,7 @@ function RecibodePagoDetallado() {
   const [reciboNotFound, setReciboNotFound] = useState<boolean>(false);
   const { cod_emp } = useAuth();
   const [correoSecundario, setCorreoSecundario] = useState<string>('');
-
+  const apiUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchReciboData = async () => {
       if (!cod_emp) {
@@ -33,7 +33,7 @@ function RecibodePagoDetallado() {
       }
 
       try {
-        const response = await axios.get(`/api/recibo/${reciNum}/${cod_emp}`); 
+        const response = await axios.get(`${apiUrl}/recibo/${reciNum}/${cod_emp}`); 
         
         const codEmpFromResponse = response.data[0].cod_emp.trim();
         const codEmpFromAuth = cod_emp.trim();
@@ -78,7 +78,7 @@ function RecibodePagoDetallado() {
       formData.append('cod_emp', cod_emp ?? '');
 
       try {
-        const response = await axios.post('/api/send-recibo', formData, {
+        const response = await axios.post(`${apiUrl}/send-recibo`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -105,7 +105,7 @@ function RecibodePagoDetallado() {
       formData.append('correo_secundario', correoSecundario);
 
       try {
-        const response = await axios.post('/api/send-recibo-secundario', formData, {
+        const response = await axios.post(`${apiUrl}/send-recibo-secundario`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }

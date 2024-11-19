@@ -11,6 +11,8 @@ import { format, parseISO, addDays } from 'date-fns';
 import AprobarVacacionesModal from './AprobarVacacionesModal';
 import { useAuth } from '../auth/AuthProvider';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 interface ListaVacacionesProps {
   vacaciones: Vacacion[];
   fetchVacaciones: () => void;
@@ -85,11 +87,11 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
 
     try {
       if (action === 'approve') {
-        await axios.put(`/api/vacaciones/${selectedVacacion.VacacionID}/approve`, {
+        await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/approve`, {
           cod_supervisor: cod_emp
         });
       } else {
-        await axios.put(`/api/vacaciones/${selectedVacacion.VacacionID}/reject`);
+        await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/reject`);
       }
       fetchVacaciones();
       setError('');

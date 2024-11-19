@@ -4,6 +4,8 @@ import NavbarEmpresa from "../components/NavbarEmpresa";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
+const apiUrl = import.meta.env.VITE_API_URL;
+
 function ProcesarPermisos() {
   const [permisos, setPermisos] = useState([]);
   const {  RRHH } = useAuth();
@@ -15,7 +17,7 @@ function ProcesarPermisos() {
     }, [RRHH,  navigate]);
   const fetchPermisos = async () => {
     try {
-      const response = await axios.get(`/api/permisos/aprobadosProcesados`);
+      const response = await axios.get(`${apiUrl}/permisos/aprobadosProcesados`);
       console.log('Permisos recibidos:', response.data); // Verificar los datos recibidos
       setPermisos(response.data);
     } catch (error) {

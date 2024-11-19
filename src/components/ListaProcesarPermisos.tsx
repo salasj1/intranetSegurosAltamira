@@ -9,6 +9,8 @@ import styles from '../css/ListaAprobacionPermisos.module.css';
 import ModalConfirmacion from './ModalConfirmacion';
 import ModalDescripcionPermiso from './ModalDescripcionPermiso';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 interface Permiso {
   PermisosID: number;
   cod_emp: string;
@@ -109,11 +111,11 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
   
     try {
       if (action === 'approve') {
-        await axios.put(`/api/permisos/${selectedPermiso.PermisosID}/process`, {
+        await axios.put(`${apiUrl}/permisos/${selectedPermiso.PermisosID}/process`, {
           cod_RRHH: cod_emp
         });
       } else {
-        await axios.put(`/api/permisos/${selectedPermiso.PermisosID}/reject2`, {
+        await axios.put(`${apiUrl}/permisos/${selectedPermiso.PermisosID}/reject2`, {
           cod_supervisor: cod_emp
         });
       }

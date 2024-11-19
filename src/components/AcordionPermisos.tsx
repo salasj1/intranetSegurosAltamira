@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useAuth } from '../auth/AuthProvider';
 import { format, parseISO, addDays } from 'date-fns';
 
+const apiUrl = import.meta.env.VITE_API_URL;
 interface Permiso {
   PermisosID: number;
   cod_emp: string;
@@ -30,7 +31,7 @@ function AcordionPermisos({ refresh }: AcordionPermisosProps) {
   useEffect(() => {
     const fetchPermisos = async () => {
       try {
-        const response = await axios.get(`/api/permisos/id/${cod_emp}`);
+        const response = await axios.get(`${apiUrl}/permisos/id/${cod_emp}`);
         setPermisos(response.data);
       } catch (error) {
         console.error('Error al obtener permisos:', error);

@@ -7,7 +7,7 @@ import '../css/FormularioVacaciones.css';
 import ConfirmarSolicitudModal from './ConfirmarSolicitudModal';
 import DatePicker from "react-widgets/DatePicker";
 import 'react-widgets/styles.css';
-
+const apiUrl = import.meta.env.VITE_API_URL;
 interface FormularioVacacionesProps {
   fetchVacaciones: () => void;
 }
@@ -27,7 +27,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
 
   const checkPreviousRequest = async () => {
     try {
-      const response = await axios.get(`/api/vacaciones/id/${cod_emp}`);
+      const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
       const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada' || vacacion.Estado === 'Aprobada');
       setHasPreviousRequest(hasRequest);
     } catch (error) {
@@ -38,7 +38,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
   useEffect(() => {
     const fetchDiasVacaciones = async () => {
       try {
-        const response = await axios.get(`/api/vacaciones/dias/${cod_emp}`);
+        const response = await axios.get(`${apiUrl}/vacaciones/dias/${cod_emp}`);
         const causados = response.data.causados;
         const disfrutados = response.data.disfrutados;
         setDiasCausados(causados);
@@ -66,7 +66,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       setFechaInicio(date.toISOString());
       if (diasHabiles !== null) {
         try {
-          const response = await axios.get('/api/vacaciones/fechaMaximaFin', {
+          const response = await axios.get(`${apiUrl}/vacaciones/fechaMaximaFin`, {
             params: {
               fechaInicio: date.toISOString(),
               diasDisfrutar: diasHabiles
@@ -138,7 +138,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     
     if(tipo==='solicitada'){
       try {
-        const response = await axios.get(`/api/vacaciones/id/${cod_emp}`);
+        const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
         const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada');
         if (hasRequest) {
           setError('Ya tiene una solicitud de vacaciones pendiente.');
@@ -154,7 +154,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     }
 
     try {
-      await axios.post('/api/vacaciones', {
+      await axios.post(`${apiUrl}//vacaciones`, {
         cod_emp,
         FechaInicio: fechaInicio,
         FechaFin: fechaFin,

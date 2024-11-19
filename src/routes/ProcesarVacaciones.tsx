@@ -6,6 +6,8 @@ import axios from "axios";
 import { Alert, AlertHeading } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
+
+const apiUrl = import.meta.env.VITE_API_URL;
 export interface Vacacion {
     VacacionID: number;
     FechaInicio: Date;
@@ -37,7 +39,7 @@ function ProcesarVacaciones() {
     }, [RRHH,  navigate]);
     const fetchVacaciones = async () => {
         try {
-            const response = await axios.get(`/api/vacacionesaprobadas`);
+            const response = await axios.get(`${apiUrl}/vacacionesaprobadas`);
             console.log(response.data);
             setVacaciones(response.data);
         } catch (error) {

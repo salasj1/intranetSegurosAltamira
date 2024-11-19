@@ -4,6 +4,9 @@ import ListaAprobacionPermisos from '../components/ListaAprobacionPermisos';
 import axios from 'axios'; 
 import { useAuth } from '../auth/AuthProvider';
 import { useNavigate } from "react-router-dom";
+
+const apiUrl = import.meta.env.VITE_API_URL;
+
 function AprobarPermisos() {
   const [permisos, setPermisos] = useState([]);
   const { cod_emp, tipo, RRHH } = useAuth();
@@ -15,7 +18,7 @@ function AprobarPermisos() {
   }, [RRHH, tipo, navigate]);
   const fetchPermisos = async () => {
     try {
-      const response = await axios.get(`/api/permisos/supervisor/${cod_emp}`);
+      const response = await axios.get(`${apiUrl}/permisos/supervisor/${cod_emp}`);
       setPermisos(response.data);
     } catch (error) {
       console.error('Error al obtener permisos:', error);

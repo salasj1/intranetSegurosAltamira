@@ -1,6 +1,8 @@
 import { Alert, Modal } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 interface EliminarSupervisionModalProps {
     show: boolean;
     cod_supervisor: string;
@@ -32,7 +34,7 @@ const ModalDeleteSupervisor: React.FC<EliminarSupervisionModalProps> = ({ cod_em
         const fetchSupervision = async () => {
             console.log(cod_emp, cod_supervisor);
             try {
-                const response = await fetch(`/api/empleados/supervision?cod_emp=${cod_emp}&cod_supervisor=${cod_supervisor}`, {
+                const response = await fetch(`${apiUrl}/empleados/supervision?cod_emp=${cod_emp}&cod_supervisor=${cod_supervisor}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

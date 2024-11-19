@@ -45,6 +45,7 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
   const [action, setAction] = useState<'approve' | 'reject'>('approve');
   const [showDescripcion, setShowDescripcion] = useState(false);
   const [error, setError] = useState<string | null>('');
+  const apiUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
     fetchPermisos();
   }, []);
@@ -98,11 +99,11 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
   
     try {
       if (action === 'approve') {
-        await axios.put(`/api/permisos/${selectedPermiso.PermisosID}/approve`, {
+        await axios.put(`${apiUrl}/permisos/${selectedPermiso.PermisosID}/approve`, {
           cod_supervisor: cod_emp
         });
       } else {
-        await axios.put(`/api/permisos/${selectedPermiso.PermisosID}/reject1`, {
+        await axios.put(`${apiUrl}/permisos/${selectedPermiso.PermisosID}/reject1`, {
           cod_supervisor: cod_emp
         });
       }

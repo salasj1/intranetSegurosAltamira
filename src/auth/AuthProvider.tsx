@@ -2,6 +2,7 @@ import { useContext, createContext, useState, useEffect } from "react";
 import axios, { AxiosError } from 'axios';
 import NavbarEmpresa from "../components/NavbarEmpresa";
 
+const apiUrl = import.meta.env.VITE_API_URL;
 interface AuthContextType {
     isAuthenticated: boolean;
     nombre_completo: string | null;
@@ -64,8 +65,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const login = async (usuario: string, password: string) => {
+        
         try {
-            const response = await axios.post('/api/login', { username: usuario, password });
+            const response = await axios.post(`${apiUrl}/login`, { username: usuario, password });
             if (response.data.success) {
                 setIsAuthenticated(true);
                 setNombreCompleto(response.data.nombre_completo);
@@ -95,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const signup = async (email: string, usuario: string, password: string, confirmPassword: string): Promise<string | true> => {
         try {
-            const response = await axios.post('/api/signup', { email, username: usuario, password, confirmPassword });
+            const response = await axios.post(`${apiUrl}/signup`, { email, username: usuario, password, confirmPassword });
             if (response.data.success) {
                 setIsAuthenticated(true);
                 setNombreCompleto(response.data.nombre_completo);

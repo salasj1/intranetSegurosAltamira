@@ -18,6 +18,8 @@ export interface Empleado {
   Nomina: string;
 }
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 function ControlAutorizacion() {
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +32,7 @@ function ControlAutorizacion() {
     }, [RRHH,  navigate]);
   const fetchEmpleados = async () => {
     try {
-      const response = await fetch('/api/empleados/control');
+      const response = await fetch(`${apiUrl}/empleados/control`);
       const data = await response.json();
       setEmpleados(data);
     } catch (error) {

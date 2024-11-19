@@ -18,7 +18,7 @@ import AprobarPermisos from './routes/AprobarPermisos.tsx';
 import ControlAutorizacion from './routes/ControlAutorizacion.tsx';
 
 
-function App() {
+ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>

@@ -10,6 +10,8 @@ import ModalEditSupervision from "./ModalEditSupervision";
 import ModalDeleteSupervision from "./ModalDeleteSupervisor";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 interface ListaVacacionesProps {
   empleados: Empleado[];
   fetchEmpleados: () => void;
@@ -72,7 +74,7 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
 
   const handleSaveSupervision = async (supervisor: string, supervisados: string[], tipo: string) => {
     try {
-      const response=await fetch('/api/empleados/supervision', {
+      const response=await fetch(`${apiUrl}/empleados/supervision`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +98,7 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
 
   const handleModifySupervision = async (ID_SUPERVISION: number, Tipo: string) => {
     try {
-      await fetch('/api/empleados/supervision/Tipo', {
+      await fetch(`${apiUrl}/empleados/supervision/Tipo`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +113,7 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
 
   const handleDeleteSupervision = async (ID_SUPERVISION: number) => {
     try {
-      await fetch('/api/empleados/supervision', {
+      await fetch(`${apiUrl}/empleados/supervision`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

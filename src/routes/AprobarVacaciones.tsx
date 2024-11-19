@@ -5,6 +5,9 @@ import NavbarEmpresa from "../components/NavbarEmpresa";
 import axios from "axios";
 import { Alert, AlertHeading } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export interface Vacacion {
   VacacionID: number;
   FechaInicio: Date;
@@ -19,7 +22,6 @@ export interface Vacacion {
   departamento: string;
   cargo: string;
 }
-
 function AprobarVacaciones() {
   const { cod_emp, tipo, RRHH } = useAuth();
   const [vacaciones, setVacaciones] = useState<Vacacion[]>([]);
@@ -33,7 +35,7 @@ function AprobarVacaciones() {
 
   const fetchVacaciones = async () => {
     try {
-      const response = await axios.get(`/api/vacaciones/supervisor/${cod_emp}`);
+      const response = await axios.get(`${apiUrl}/vacaciones/supervisor/${cod_emp}`);
       setVacaciones(response.data);
     } catch (error) {
       if (axios.isAxiosError(error)) {

@@ -5,6 +5,8 @@ import { useAuth } from '../auth/AuthProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 interface Permiso {
     PermisosID: number;
     Titulo: string;
@@ -30,12 +32,12 @@ const Notificaciones: React.FC = () => {
         try {
             let response;
             if (auth.tipo === 'Supervisor') {
-                response = await axios.get(`/api/permisos/notificacion/Supervisor/${auth.cod_emp}`);
+                response = await axios.get(`${apiUrl}/permisos/notificacion/Supervisor/${auth.cod_emp}`);
             } 
             if(auth.RRHH === 1) {
-                response = await axios.get(`/api/permisos/nuevos/${auth.cod_emp}`);
+                response = await axios.get(`${apiUrl}/permisos/nuevos/${auth.cod_emp}`);
             } else if (auth.RRHH === 0 && auth.tipo === 'Empleado') {
-                response = await axios.get(`/api/permisos/id/${auth.cod_emp}`);
+                response = await axios.get(`${apiUrl}/permisos/id/${auth.cod_emp}`);
             }
             if (response && Array.isArray(response.data)) {
                 setNewPermisos(response.data);

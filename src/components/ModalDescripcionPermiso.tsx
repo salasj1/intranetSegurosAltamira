@@ -4,6 +4,8 @@ import { format, addDays, parseISO } from 'date-fns';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthProvider';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 interface Permiso {
   PermisosID: number;
   cod_emp: string;
@@ -40,11 +42,11 @@ const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show,
       if (context === 'aprobacion') {
         if (action === 'approve') {
           console.log("Entro en aprobar",permiso.PermisosID);
-          await axios.put(`/api/permisos/${permiso.PermisosID}/approve`, {
+          await axios.put(`${apiUrl}/permisos/${permiso.PermisosID}/approve`, {
             cod_supervisor: cod_emp
           });
         } else {
-          await axios.put(`/api/permisos/${permiso.PermisosID}/reject1`, {
+          await axios.put(`${apiUrl}/permisos/${permiso.PermisosID}/reject1`, {
             cod_supervisor: cod_emp
           });
         }
@@ -53,11 +55,11 @@ const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show,
         console.log("Entro en procesar",permiso.PermisosID);
         if (action === 'approve') {
           console.log("Entro en procesar",permiso.PermisosID);
-          await axios.put(`/api/permisos/${permiso.PermisosID}/process`, {
+          await axios.put(`${apiUrl}/permisos/${permiso.PermisosID}/process`, {
             cod_supervisor: cod_emp
           });
         } else {
-          await axios.put(`/api/permisos/${permiso.PermisosID}/reject2`, {
+          await axios.put(`${apiUrl}/permisos/${permiso.PermisosID}/reject2`, {
             cod_supervisor: cod_emp
           });
         }

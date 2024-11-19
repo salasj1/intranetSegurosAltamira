@@ -16,6 +16,8 @@ interface ListaVacacionesProps {
   fetchVacaciones: () => void;
 }
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVacaciones }) => {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: '', direction: 'asc' });
   const [searchVacacionID, setSearchVacacionID] = useState('');
@@ -84,7 +86,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
 
   const handleProcess = async (vacacion: Vacacion) => {
     try {
-      await axios.put(`/api/vacaciones/${vacacion.VacacionID}/process`, {
+      await axios.put(`${apiUrl}/vacaciones/${vacacion.VacacionID}/process`, {
         cod_RRHH: cod_emp,
         sCod_emp: vacacion.cod_emp,
         sdDesde: vacacion.FechaInicio,
@@ -113,11 +115,11 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
 
     try {
       if (action === 'approve') {
-        await axios.put(`/api/vacaciones/${selectedVacacion.VacacionID}/approve`, {
+        await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/approve`, {
           cod_supervisor: cod_emp
         });
       } else {
-        await axios.put(`/api/vacaciones/${selectedVacacion.VacacionID}/reject`);
+        await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/reject`);
       }
       fetchVacaciones();
       setError('');

@@ -12,6 +12,8 @@ import { Vacacion } from '../routes/SolicitarVacaciones';
 import { format, parseISO, addDays, isBefore, isEqual } from 'date-fns';
 import { useAuth } from '../auth/AuthProvider';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 interface ListaVacacionesProps {
   vacaciones: Vacacion[];
   fetchVacaciones: () => void;
@@ -40,7 +42,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
 
   const checkPreviousRequest = async () => {
     try {
-      const response = await axios.get(`/api/vacaciones/id/${cod_emp}`);
+      const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
       const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada' || vacacion.Estado === 'Aprobada');
       setHasPreviousRequest(hasRequest);
     } catch (error) {
@@ -92,7 +94,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
   const handleConfirmDelete = async () => {
     if (vacacionToDelete !== null) {
       try {
-        await axios.put(`/api/vacaciones/${vacacionToDelete.VacacionID}/delete`);
+        await axios.put(`${apiUrl}/vacaciones/${vacacionToDelete.VacacionID}/delete`);
         fetchVacaciones();
       } catch (error) {
         console.error('Error eliminando vacaciones:', error);
@@ -131,7 +133,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
       }
 
       try {
-        const response = await axios.get(`/api/vacaciones/${cod_emp}`);
+        const response = await axios.get(`${apiUrl}/vacaciones/${cod_emp}`);
         const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada');
         if (hasRequest) {
           setError('Ya tiene una solicitud de vacaciones pendiente.');
@@ -144,7 +146,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
       }
 
       try {
-        await axios.put(`/api/vacaciones/${vacacionToSolicitar.VacacionID}/solicitar`);
+        await axios.put(`${apiUrl}/vacaciones/${vacacionToSolicitar.VacacionID}/solicitar`);
         fetchVacaciones();
         setHasPreviousRequest(true); // Actualizar el estado después de confirmar la solicitud
         setError(null); // Limpiar el error si la solicitud es exitosa

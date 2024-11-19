@@ -4,6 +4,7 @@ import { CSSTransition } from 'react-transition-group';
 import { Link, Navigate } from 'react-router-dom';
 import '../css/Login.css';
 import { useAuth } from '../auth/AuthProvider';
+import axios from 'axios';
 
 function Login() {
     const [inProp, setInProp] = useState(false);
@@ -13,15 +14,28 @@ function Login() {
     const auth = useAuth();
     const nodeRef = useRef(null);
     const [actionExecuted, setActionExecuted] = useState(false);
- 
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const apiUrl = import.meta.env.VITE_API_URL;
+            const response = await axios.get(apiUrl);
+            console.log(response.data);
+        };
+        fetchData();
+    }, []);
 
     useEffect(() => {
         setInProp(true);
+
     }, []);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
+            // Usar la variable de entorno para la URL del backend
+            const apiUrl = import.meta.env.VITE_API_URL;
+            const response = await axios.post(`${apiUrl}/login`, { username: usuario, password });
+            console.log(response?.data);
             const success = await auth.login(usuario, password);
             if (!success) {
                 setError('Usuario o contraseña incorrectos');
@@ -46,7 +60,6 @@ function Login() {
     if (auth.isAuthenticated) {
         return <Navigate to="/home" />;
     }
-    
 
     return (
         <form onSubmit={handleSubmit}>
@@ -71,12 +84,10 @@ function Login() {
                         </div>
                         <div className="mb-3">
                             <button type="submit" className="btn btn-primary w-100">Iniciar Sesión</button>
-                            
                         </div>
                         <div className="mb-3">
                             <Link to="/signup"> <button type="submit" className="btn btn-primary w-100">Registrate</button></Link>
                         </div>
-                        
                     </div>
                 </div>
             </CSSTransition>

@@ -11,7 +11,7 @@ import { useAuth } from '../auth/AuthProvider';
 import { Alert, AlertHeading, Form } from 'react-bootstrap';
 
 library.add(faArrowDown, faArrowUp);
-
+const apiUrl = import.meta.env.VITE_API_URL;
 interface Recibo {
   reci_num: number;
   cod_emp: string;
@@ -30,13 +30,13 @@ function TableRecibodePago() {
   const [data, setData] = useState<Recibo[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate(); 
-
+  
   useEffect(() => {
     const fetchData = async () => {
       if (cod_emp) { 
         try {
           console.log(cod_emp);
-          const response = await axios.get(`/api/recibos/${cod_emp}`);
+          const response = await axios.get(`${apiUrl}/recibos/${cod_emp}`);
           setData(response.data);
         } catch (error) {
           console.error('Error al cargar la informacion de los recibo de pago', error);

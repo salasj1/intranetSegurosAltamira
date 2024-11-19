@@ -3,8 +3,7 @@ import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { Vacacion } from '../routes/SolicitarVacaciones';
 import { format, parseISO, addDays } from 'date-fns';
-
-
+const apiUrl = import.meta.env.VITE_API_URL;
 interface EditarVacacionesModalProps {
   show: boolean;
   handleClose: () => void;
@@ -17,7 +16,7 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
   const [fechaFin, setFechaFin] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-
+  
   useEffect(() => {
     if (vacacion) {
       setFechaInicio(format(addDays(parseISO(vacacion.FechaInicio.toString()), 1), 'yyyy-MM-dd'));
@@ -33,7 +32,7 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
 
     try {
       // Enviar las fechas originales sin el día extra al endpoint
-      await axios.put(`/api/vacaciones/${vacacion?.VacacionID}`, {
+      await axios.put(`${apiUrl}/vacaciones/${vacacion?.VacacionID}`, {
         FechaInicio: format(parseISO(fechaInicio), 'yyyy-MM-dd'),
         FechaFin: format(parseISO(fechaFin), 'yyyy-MM-dd')
       });
