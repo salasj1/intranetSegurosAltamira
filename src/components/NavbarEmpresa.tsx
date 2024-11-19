@@ -71,7 +71,7 @@ function NavbarEmpresa() {
                                     </Col>
 
                                     <Col>
-                                        <NavDropdown title="Solicitudes" className={isSolicitudesActive() ? 'nav-dropdown-active' : ''}>
+                                        <NavDropdown title="Procesos" className={isSolicitudesActive() ? 'nav-dropdown-active' : ''}>
                                             <NavDropdown title="Vacaciones" id="submenu" className={ isSolicitudesActive() ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu' } drop='end'>
                                                 <NavDropdown.Item href="/SolicitarVacaciones" className='cuadroItem '>Solicitar Vacaciones</NavDropdown.Item>
                                                 {auth.tipo === 'Supervisor' || auth.RRHH === 1 ? (

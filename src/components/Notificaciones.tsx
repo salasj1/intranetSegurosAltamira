@@ -64,9 +64,10 @@ const Notificaciones: React.FC = () => {
     }, []);
 
     useEffect(() => {
+        fetchNewPermisos();
         const interval = setInterval(() => {
             fetchNewPermisos();
-        }, 60000); // 1 minuto
+        }, 60000); 
 
         return () => clearInterval(interval);
     }, []);

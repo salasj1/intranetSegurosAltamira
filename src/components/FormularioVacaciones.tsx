@@ -154,7 +154,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     }
 
     try {
-      await axios.post(`${apiUrl}//vacaciones`, {
+      await axios.post(`${apiUrl}/vacaciones`, {
         cod_emp,
         FechaInicio: fechaInicio,
         FechaFin: fechaFin,
