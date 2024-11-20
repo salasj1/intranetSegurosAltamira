@@ -35,13 +35,16 @@ function RecibodePagoDetallado() {
       try {
         const response = await axios.get(`${apiUrl}/recibo/${reciNum}/${cod_emp}`); 
         
+        
         const codEmpFromResponse = response.data[0].cod_emp.trim();
+        
         const codEmpFromAuth = cod_emp.trim();
-
+        
         if (codEmpFromResponse !== codEmpFromAuth) {
           setIsAuthorized(false);
         } else {
-          setReciboData(response.data);
+            response.data[0].cod_emp = response.data[0].cod_emp.substring(3);
+            setReciboData(response.data);
           setShowAlert(true);
         }
         setIsLoading(false);

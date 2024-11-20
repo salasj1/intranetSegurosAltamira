@@ -63,8 +63,11 @@ const ModalDeleteSupervisor: React.FC<EliminarSupervisionModalProps> = ({ cod_em
 
     const handleConfirmDelete = async () => {
         try {
-            await handleDelete(supervision?.ID_SUPERVISION || 0);
+            if (supervision) {
+                handleDelete(supervision.ID_SUPERVISION);
+            }
             handleClose();
+            
         } catch (error) {
             console.error('Error deleting supervision:', error);
             setError('Error al eliminar la supervision');

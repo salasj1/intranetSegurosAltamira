@@ -49,13 +49,13 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
   };
 
   return (
-    <Modal show={show} onHide={handleClose} style={{ position: "fixed" }}>
+    <Modal show={show} onHide={() => { handleClose(); }} style={{ position: "fixed" }}>
       <Modal.Header closeButton>
         <Modal.Title>Editar Vacaciones</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {success && <Alert variant="success">{success}</Alert>}
-        {error && <Alert variant="danger">{error}</Alert>}
+        {success && <Alert variant="success"onClose={() => {setSuccess('')}} dismissible >{success}</Alert>}
+        {error && <Alert variant="danger" onClose={() => {setError('')}} dismissible>{error}</Alert>}
         <Form>
           <Form.Group controlId="fechaInicio">
             <Form.Label>Fecha Inicio:</Form.Label>

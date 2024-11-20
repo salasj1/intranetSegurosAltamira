@@ -9,15 +9,16 @@ import AgregarSupervisionModal from "./AgregarSupervisionModal";
 import ModalEditSupervision from "./ModalEditSupervision";
 import ModalDeleteSupervision from "./ModalDeleteSupervisor";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
+import axios from "axios";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-interface ListaVacacionesProps {
+interface ListaEmpleadosProps {
   empleados: Empleado[];
   fetchEmpleados: () => void;
 }
 
-const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados, fetchEmpleados }) => {
+const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, fetchEmpleados }) => {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: '', direction: 'asc' });
   const [searchCedula, setSearchCedula] = useState('');
   const [searchNombre, setSearchNombre] = useState('');
@@ -73,6 +74,20 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
   });
 
   const handleSaveSupervision = async (supervisor: string, supervisados: string[], tipo: string) => {
+
+    const existingSupervisions = empleados.filter(empleado => 
+      empleado.cod_supervisor === supervisor && 
+      supervisados.includes(empleado.cod_emp.toString()) && 
+      `${empleado.Tipo}` === tipo
+    );
+
+    if (existingSupervisions.length > 0) {
+      const supervisorName = existingSupervisions[0].nombres_supervisor + " " + existingSupervisions[0].apellidos_supervisor;
+      const supervisadosNames = existingSupervisions.map(empleado => empleado.nombres_empleado + " " + empleado.apellidos_empleado).join(',\n');
+      setError(`Existe una supervisión de este tipo registrada para el supervisor ${supervisorName} con los supervisados:\n${supervisadosNames.replace(/,/g, ',\n')}`);
+      return;
+    }
+    
     try {
       const response=await fetch(`${apiUrl}/empleados/supervision`, {
         method: 'POST',
@@ -85,14 +100,19 @@ const ListaAutorizacionEmpleados: React.FC<ListaVacacionesProps> = ({ empleados,
       if(response.status===500){
         setError('Error agregando supervisión');
         console.error('Error agregando supervisión:', response);
-    
-        return;
       }
+      
       console.log(error);
       fetchEmpleados();
     } catch (error) {
       setError('Error agregando supervisión');
       console.error('Error agregando supervisión:', error);
+      if (axios.isAxiosError(error)) {
+        if (error.message==='Network Error'){
+          setError('Error de red');
+          console.error('Error de red:', error);
+        }
+      }
     }
   };
 

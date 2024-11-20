@@ -95,6 +95,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
 
   const handleSubmit = async () => {
     try {
+
       await axios.post(`${apiUrl}/permisos`, { ...formData, cod_emp });
       setAlertMessage('Permiso solicitado exitosamente');
       setAlertVariant('success');
@@ -118,7 +119,8 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     if (!formData.Fecha_inicio) {
       newErrors.push('La fecha de inicio es requerida');
     }
-    
+    console.log(new Date(formData.Fecha_inicio+1));
+    console.log(new Date(today));
     if (new Date(formData.Fecha_inicio+1) < today) {
       newErrors.push('La fecha de inicio no puede ser anterior a la fecha actual');
     }

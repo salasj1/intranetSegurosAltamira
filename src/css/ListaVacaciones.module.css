@@ -30,7 +30,7 @@ th .search {
     width: 80%;
     border-color: rgb(59, 59, 59) !important;
     border-radius: 2px;
-    color: white;
+    color: rgb(59, 59, 59);
     margin-left: auto; /* Añadido para centrar horizontalmente */
     margin-right: auto; /* Añadido para centrar horizontalmente */
     display: block; /* Añadido para que margin auto funcione */

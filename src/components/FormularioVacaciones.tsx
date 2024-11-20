@@ -97,21 +97,19 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       setSuccess(null); 
       return;
     }
-    console.log(fechaMaximaFin);
+    
     if (fechaMaximaFin && (fechaFin >fechaMaximaFin)){
       setError('La fecha de fin no puede ser posterior a la fecha máxima de fin de vacaciones: ' + new Date( fechaMaximaFin).toLocaleDateString() + '.');
       setSuccess(null); 
       return;
     }
-    console.log(startDate);
-    console.log(today);
+    
     if (startDate && (startDate < today)) {
       setError('La fecha de inicio no puede ser anterior a la fecha actual.');
       setSuccess(null); 
       return;
     }
-    console.log(endDate);
-    console.log(today);
+    
     if (endDate && (endDate < today)) {
       setError('La fecha de fin no puede ser anterior a la fecha actual.');
       setSuccess(null); 
@@ -164,6 +162,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       setFechaInicio('');
       setFechaFin('');
       setSuccess(`Vacaciones ${tipo} exitosamente`);
+      setFechaMaximaFin(null);
       setError(null);
       fetchVacaciones(); 
       if (tipo === 'solicitada') {
@@ -291,6 +290,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
         handleConfirm={handleConfirmSolicitar}
         checkPreviousRequest={checkPreviousRequest}
         error={error}
+        setError={setError}
         fechaInicio={fechaInicio}
         fechaFin={fechaFin}
       />

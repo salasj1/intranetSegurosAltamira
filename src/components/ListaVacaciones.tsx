@@ -133,7 +133,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
       }
 
       try {
-        const response = await axios.get(`${apiUrl}/vacaciones/${cod_emp}`);
+        const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
         const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada');
         if (hasRequest) {
           setError('Ya tiene una solicitud de vacaciones pendiente.');
@@ -148,8 +148,8 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
       try {
         await axios.put(`${apiUrl}/vacaciones/${vacacionToSolicitar.VacacionID}/solicitar`);
         fetchVacaciones();
-        setHasPreviousRequest(true); // Actualizar el estado después de confirmar la solicitud
-        setError(null); // Limpiar el error si la solicitud es exitosa
+        setHasPreviousRequest(true); 
+        setError(null); 
       } catch (error) {
         console.error('Error solicitando vacaciones:', error);
         setError('Error solicitando vacaciones');
@@ -159,7 +159,11 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
   };
 
   const handleCloseModal = () => {
-    setShowModal(false);
+    console.log(error);
+    if (error!==null) {
+      setShowModal(false);
+    }
+    
     fetchVacaciones();
   };
 
@@ -286,6 +290,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
           handleConfirm={handleConfirmSolicitar}
           checkPreviousRequest={checkPreviousRequest}
           error={error}
+          setError={setError}
           vacacionID={vacacionToSolicitar.VacacionID}
           fechaInicio={format(addDays(parseISO(vacacionToSolicitar.FechaInicio.toString()), 1), 'dd/MM/yyyy')}
           fechaFin={format(addDays(parseISO(vacacionToSolicitar.FechaFin.toString()), 1), 'dd/MM/yyyy')}

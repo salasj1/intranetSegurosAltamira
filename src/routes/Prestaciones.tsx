@@ -18,7 +18,7 @@ function Prestaciones() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isPdfLoading, setIsPdfLoading] = useState<boolean>(true);
   const [showAlert, setShowAlert] = useState<boolean>(false);
-  const { cod_emp, fecha_ing, des_depart } = useAuth();
+  const { cod_emp} = useAuth();
   const [correoSecundario, setCorreoSecundario] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
@@ -26,11 +26,11 @@ function Prestaciones() {
     const fetchPrestacionesData = async () => {
       if (!cod_emp) return;
       try {
+        console.log("cod_emp antes " + cod_emp);
         const response = await axios.get(`${apiUrl}/prestaciones/${cod_emp}`);
+        response.data[0].cod_emp = response.data[0].cod_emp.substring(3);
         setPrestacionesData(response.data);
-        console.log("cod_emp " + cod_emp);
-        console.log("des_depart " + des_depart);
-        console.log("fecha_ing " + fecha_ing);
+        
         setIsLoading(false);
         setShowAlert(true);
         
