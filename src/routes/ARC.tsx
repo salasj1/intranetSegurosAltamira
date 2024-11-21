@@ -224,7 +224,7 @@ const handleSendSecondaryEmail = async () => {
                           value={correoSecundario}
                           onChange={(e) => setCorreoSecundario(e.target.value)}
                         />
-                        <Button variant='warning' className={styles['pdf-botton-download3']} onClick={handleSendSecondaryEmail}>Enviar a un correo secundario</Button>
+
                       </div>
                     </>
                   )}

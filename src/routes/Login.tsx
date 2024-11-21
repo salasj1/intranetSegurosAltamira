@@ -38,13 +38,20 @@ function Login() {
             console.log(response?.data);
             const success = await auth.login(usuario, password);
             if (!success) {
-                setError('Usuario o contraseña incorrectos');
+                console.log("RESPUESTAS "+response.data.message);   
+                setError(response.data.message);
             }
         } catch (err) {
-            if (err instanceof SyntaxError) {
-                setError('Error en la respuesta del servidor. No es un JSON válido.');
+            console.error(err);
+            if (axios.isAxiosError(err)) {
+                if (err.response?.status === 401) {
+                    setError(err.response.data.message);
+                }
+                if (err.response?.status === 500) {
+                    setError('Error en el servidor, por favor intenta más tarde');
+                }
             } else {
-                setError('Error desconocido.');
+                console.error(err);
             }
         }
     };

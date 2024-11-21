@@ -82,13 +82,14 @@ const generatePrestacionesPDF = (data: any) => {
       item.interes
     ]);
 
+    
     // Calcular totales
-    const totalPrestacionesAcumuladas = data.reduce((acc: number, item: any) => acc + item.sueldo_integral, 0);
-    const totalPrestacionesNetas = data.reduce((acc: number, item: any) => acc + item.neto_prestaciones, 0);
+    const totalPrestacionesAcumuladas = data.reduce((acc: number, item: any) => acc + item.antiguedad_mensual, 0);
     const totalInteres = data.reduce((acc: number, item: any) => acc + item.interes, 0);
     const totalAnticiposOtorgados = data.reduce((acc: number, item: any) => acc + item.Adelantos, 0);
-    const totalDisponibles = totalPrestacionesNetas * 0.75;
 
+    const totalPrestacionesNetas = totalPrestacionesAcumuladas+totalAnticiposOtorgados;
+    const totalDisponibles = totalPrestacionesNetas * 0.75;
     autoTable(doc, {
       head: [['Año', 'Mes', 'Sueldo Mensual', 'Sueldo Diario', 'Alicuota Bono Vac', 'Salario Integral', 'Días Prest.', 'Antigüedad Mensual', 'Anticipos Otorgados', 'Neto Prestaciones', 'Tasa', 'Monto Interés']],
       body: tableData,
@@ -110,8 +111,6 @@ const generatePrestacionesPDF = (data: any) => {
       }
     });
 
-    //Total de movimientos
-   
     // Agregar página nueva
     doc.addPage();
 

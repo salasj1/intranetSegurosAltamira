@@ -20,10 +20,11 @@ function RecibodePagoDetallado() {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [isAuthorized, setIsAuthorized] = useState<boolean>(true);
   const [reciboNotFound, setReciboNotFound] = useState<boolean>(false);
-  const { cod_emp } = useAuth();
+  const { cod_emp, email} = useAuth();
   const [correoSecundario, setCorreoSecundario] = useState<string>('');
   const apiUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
+    console.log('EMAIL ' + email);
     const fetchReciboData = async () => {
       if (!cod_emp) {
         console.error('cod_emp es null');
@@ -33,18 +34,15 @@ function RecibodePagoDetallado() {
       }
 
       try {
-        const response = await axios.get(`${apiUrl}/recibo/${reciNum}/${cod_emp}`); 
-        
-        
+        const response = await axios.get(`${apiUrl}/recibo/${reciNum}/${cod_emp}`);
         const codEmpFromResponse = response.data[0].cod_emp.trim();
-        
         const codEmpFromAuth = cod_emp.trim();
-        
+
         if (codEmpFromResponse !== codEmpFromAuth) {
           setIsAuthorized(false);
         } else {
-            response.data[0].cod_emp = response.data[0].cod_emp.substring(3);
-            setReciboData(response.data);
+          response.data[0].cod_emp = response.data[0].cod_emp.substring(3);
+          setReciboData(response.data);
           setShowAlert(true);
         }
         setIsLoading(false);
@@ -56,7 +54,7 @@ function RecibodePagoDetallado() {
     };
 
     fetchReciboData();
-  }, [reciNum, cod_emp]);
+  }, [reciNum, cod_emp, email]);
 
   const pdfBlob = useMemo(() => {
     if (reciboData) {
@@ -136,7 +134,7 @@ function RecibodePagoDetallado() {
       <NavbarEmpresa />
       <div className={styles.canvas}>
        
-        
+      
         <h1 className={styles.h1Recibo}>Recibo de Pago Nº {reciNum} </h1>
         <div style={{ width: "100%" }}>
           {isLoading ? (
@@ -210,7 +208,7 @@ function RecibodePagoDetallado() {
                             </CSSTransition>
                             <div className={styles['button-group']}>
                               <Button variant='light' onClick={handleDownload} className={styles['pdf-botton-download']}>Descargar</Button>
-                              <Button variant='warning' onClick={handleSendEmail} className={styles['pdf-botton-download2']}>Enviar al correo</Button>
+                                <Button variant='warning' onClick={handleSendEmail} className={styles['pdf-botton-download2']} style={{ display: 'none' }}>Enviar al correo</Button>
                             </div>
                             <div className={styles['button-group']}>
                               <Form.Control
@@ -218,9 +216,11 @@ function RecibodePagoDetallado() {
                                 type="text"
                                 placeholder="Escriba un correo"
                                 value={correoSecundario}
+                                defaultValue={email}
                                 onChange={(e) => setCorreoSecundario(e.target.value)}
                               />
-                              <Button variant='warning' onClick={handleSendSecondaryEmail} className={styles['pdf-botton-download3']}>Enviar a un correo secundario</Button>
+                            
+                              <Button variant='warning' onClick={handleSendSecondaryEmail} className={styles['pdf-botton-download3']}>Enviar el correo</Button>
                             </div>
                           </>
                           )}

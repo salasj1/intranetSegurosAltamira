@@ -199,7 +199,7 @@ function Prestaciones() {
                           value={correoSecundario}
                           onChange={(e) => setCorreoSecundario(e.target.value)}
                         />
-                        <Button variant='warning' onClick={handleSendSecondaryEmail} className={styles['pdf-botton-download3']}>Enviar a un correo secundario</Button>
+                        
                       </div>
                     </>
                   )}

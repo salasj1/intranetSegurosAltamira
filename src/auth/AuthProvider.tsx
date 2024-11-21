@@ -12,6 +12,7 @@ interface AuthContextType {
     des_depart: string | null;
     tipo: string | null;
     RRHH: number | null;
+    email: string  | '';
     login: (usuario: string, password: string) => Promise<boolean | undefined>;
     signup: (email: string, usuario: string, password: string, confirmPassword: string) => Promise<string | boolean | undefined>;
     logout: () => void;
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextType>({
     des_depart: null,
     tipo: null,
     RRHH: null,
+    email: '',
     login: async () => false,
     signup: async () => false,
     logout: () => {}
@@ -41,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [tipo, setTipo] = useState<string | null>(null);
     const [RRHH, setRRHH] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
-
+    const [email, setEmail] = useState<string | ''>('');
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const storedNombreCompleto = localStorage.getItem('nombre_completo');
@@ -51,7 +53,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const storedDesDepart = localStorage.getItem('des_depart');
         const storedTipo = localStorage.getItem('tipo');
         const storedRRHH = localStorage.getItem('RRHH');
-        if (storedToken && storedNombreCompleto && storedCargoEmpleado && storedCodEmp && storedFechaIng && storedDesDepart && storedTipo && storedRRHH) {
+        const storedEmail = localStorage.getItem('email'); 
+        if (storedToken && storedNombreCompleto && storedCargoEmpleado && storedCodEmp && storedFechaIng && storedDesDepart && storedTipo && storedRRHH && storedEmail) {
             setIsAuthenticated(true);
             setNombreCompleto(storedNombreCompleto);
             setCargoEmpleado(storedCargoEmpleado);
@@ -60,12 +63,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setDesDepart(storedDesDepart);
             setTipo(storedTipo);
             setRRHH(parseInt(storedRRHH));
+            setEmail(storedEmail); 
         }
         setLoading(false);
     }, []);
 
     const login = async (usuario: string, password: string) => {
-        
         try {
             const response = await axios.post(`${apiUrl}/login`, { username: usuario, password });
             if (response.data.success) {
@@ -77,6 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setDesDepart(response.data.des_depart);
                 setTipo(response.data.tipo);
                 setRRHH(response.data.RRHH);
+                setEmail(response.data.email); // Asegúrate de que este valor se está estableciendo
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('nombre_completo', response.data.nombre_completo);
                 localStorage.setItem('cargo_empleado', response.data.des_cargo);
@@ -85,6 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem('des_depart', response.data.des_depart);
                 localStorage.setItem('tipo', response.data.tipo);
                 localStorage.setItem('RRHH', response.data.RRHH.toString());
+                localStorage.setItem('email', response.data.email); // Asegúrate de que este valor se está almacenando
                 return true;
             } else {
                 return false;
@@ -107,6 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setDesDepart(response.data.des_depart);
                 setTipo(response.data.tipo);
                 setRRHH(response.data.RRHH);
+                setEmail(response.data.email);
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('nombre_completo', response.data.nombre_completo);
                 localStorage.setItem('cargo_empleado', response.data.des_cargo);
@@ -115,6 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem('des_depart', response.data.des_depart);
                 localStorage.setItem('tipo', response.data.tipo);
                 localStorage.setItem('RRHH', response.data.RRHH.toString());
+                localStorage.setItem('email', response.data.email);
                 return true;
             } else {
                 return response.data.message || 'Error desconocido'; 
@@ -137,6 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setDesDepart(null);
         setTipo(null);
         setRRHH(null);
+        setEmail('');
         localStorage.removeItem('token');
         localStorage.removeItem('nombre_completo');
         localStorage.removeItem('cargo_empleado');
@@ -145,6 +153,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('des_depart');
         localStorage.removeItem('tipo');
         localStorage.removeItem('RRHH');
+        localStorage.removeItem('email');
     };
 
     if (loading) {
@@ -152,7 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, nombre_completo, cargo_empleado, cod_emp, fecha_ing, des_depart, tipo, RRHH, login, signup, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, nombre_completo, cargo_empleado, cod_emp, fecha_ing, des_depart, tipo, RRHH,email, login, signup, logout }}>
             {children}
         </AuthContext.Provider>
     );
