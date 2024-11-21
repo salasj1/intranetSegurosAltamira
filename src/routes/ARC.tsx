@@ -214,7 +214,6 @@ const handleSendSecondaryEmail = async () => {
                       </Alert>
                       <div className={styles['button-group']}>
                         <Button variant='light' className={styles['pdf-botton-download']} onClick={handleDownload}>Descargar</Button>
-                        <Button variant='warning' className={styles['pdf-botton-download2']} onClick={handleSendEmail}>Enviar al correo</Button>
                       </div>
                       <div className={styles['button-group']}>
                         <Form.Control
@@ -224,7 +223,7 @@ const handleSendSecondaryEmail = async () => {
                           value={correoSecundario}
                           onChange={(e) => setCorreoSecundario(e.target.value)}
                         />
-
+                        <Button variant='warning' className={styles['pdf-botton-download3']} onClick={handleSendSecondaryEmail}>Enviar al correo </Button>
                       </div>
                     </>
                   )}

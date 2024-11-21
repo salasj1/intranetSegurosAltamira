@@ -189,7 +189,7 @@ function Prestaciones() {
                       </CSSTransition>
                       <div className={styles['button-group']}>
                         <Button variant='light' onClick={handleDownload} className={styles['pdf-botton-download']}>Descargar</Button>
-                        <Button variant='warning' onClick={handleSendEmail} className={styles['pdf-botton-download2']}>Enviar al correo</Button>
+                        
                       </div>
                       <div className={styles['button-group']}>
                         <Form.Control
@@ -199,7 +199,7 @@ function Prestaciones() {
                           value={correoSecundario}
                           onChange={(e) => setCorreoSecundario(e.target.value)}
                         />
-                        
+                        <Button variant='warning' onClick={handleSendSecondaryEmail} className={styles['pdf-botton-download3']}>Enviar al correo</Button>
                       </div>
                     </>
                   )}

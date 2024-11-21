@@ -220,7 +220,7 @@ function RecibodePagoDetallado() {
                                 onChange={(e) => setCorreoSecundario(e.target.value)}
                               />
                             
-                              <Button variant='warning' onClick={handleSendSecondaryEmail} className={styles['pdf-botton-download3']}>Enviar el correo</Button>
+                              <Button variant='warning' onClick={handleSendSecondaryEmail} className={styles['pdf-botton-download3']}>Enviar al correo</Button>
                             </div>
                           </>
                           )}
