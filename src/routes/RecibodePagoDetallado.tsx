@@ -20,6 +20,7 @@ function RecibodePagoDetallado() {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [isAuthorized, setIsAuthorized] = useState<boolean>(true);
   const [reciboNotFound, setReciboNotFound] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const { cod_emp, email} = useAuth();
   const [correoSecundario, setCorreoSecundario] = useState<string>('');
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -48,6 +49,13 @@ function RecibodePagoDetallado() {
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching recibo data:', error);
+        if (axios.isAxiosError(error) ) {
+          if(error.response?.status === 500)
+            setError('Error al obtener los datos. Intentelo más tarde');
+          else {
+            setError('Error de conexion. Intentelo más tarde');
+          }
+        }
         setReciboNotFound(true);
         setIsLoading(false);
       }
@@ -55,6 +63,10 @@ function RecibodePagoDetallado() {
 
     fetchReciboData();
   }, [reciNum, cod_emp, email]);
+
+  useEffect(() => {
+    setCorreoSecundario(email || ''); // Inicializar con el valor de email o una cadena vacía
+  }, [email]);
 
   const pdfBlob = useMemo(() => {
     if (reciboData) {
@@ -143,10 +155,9 @@ function RecibodePagoDetallado() {
             <>
               {reciboNotFound ? (
                  <Card bg="primary" border="primary" className={styles.Tarjeta}>
-                        <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Ver PDF</Card.Header>
+                        <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Error</Card.Header>
                         <Card.Body className={styles['card-body-buttons']}>
-                        <Alert variant='danger' style={{ fontSize: "29.5px", paddingInline: "75px" }}>
-                          Recibo no encontrado.
+                        <Alert variant='danger' style={{ fontSize: "29.5px", paddingInline: "75px" }}>     
                         </Alert>
                         </Card.Body>
                         <Card.Header/>
@@ -211,17 +222,15 @@ function RecibodePagoDetallado() {
                                 <Button variant='warning' onClick={handleSendEmail} className={styles['pdf-botton-download2']} style={{ display: 'none' }}>Enviar al correo</Button>
                             </div>
                             <div className={styles['button-group']}>
-                              <Form.Control
-                                size="lg"
-                                type="text"
-                                placeholder="Escriba un correo"
-                                value={correoSecundario}
-                                defaultValue={email}
-                                onChange={(e) => setCorreoSecundario(e.target.value)}
-                              />
-                            
-                              <Button variant='warning' onClick={handleSendSecondaryEmail} className={styles['pdf-botton-download3']}>Enviar al correo</Button>
-                            </div>
+                            <Form.Control
+                              size="lg"
+                              type="text"
+                              placeholder="Escriba un correo"
+                              value={correoSecundario} // Usar solo correoSecundario
+                              onChange={(e) => setCorreoSecundario(e.target.value)} // Manejar el cambio de valor
+                            />
+                            <Button variant='warning' onClick={handleSendSecondaryEmail} className={styles['pdf-botton-download3']}>Enviar al correo</Button>
+                          </div>
                           </>
                           )}
                         </Card.Body>

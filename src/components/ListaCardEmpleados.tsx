@@ -157,7 +157,7 @@ const ListaCardEmpleados: React.FC = () => {
           <Form>
             <Row className='formRow'>
               
-              <Col>
+              <Col >
                 <Form.Group controlId="filtroDepartamento">
                   <Form.Label>Departamento</Form.Label>
                   <Select
@@ -170,7 +170,7 @@ const ListaCardEmpleados: React.FC = () => {
                   />
                 </Form.Group>
               </Col>
-              <Col>
+              <Col xs={3}>
                 <Form.Group controlId="filtroNombre">
                   <Form.Label>Nombre completo</Form.Label>
                   <Select
@@ -183,7 +183,7 @@ const ListaCardEmpleados: React.FC = () => {
                   />
                 </Form.Group>
               </Col>
-              <Col>
+              <Col >
                 <Form.Group controlId="filtroCargo">
                   <Form.Label>Cargo</Form.Label>
                   <Select
@@ -196,7 +196,7 @@ const ListaCardEmpleados: React.FC = () => {
                   />
                 </Form.Group>
               </Col>
-              <Col>
+              <Col xs={4}>
                 <Form.Group controlId="filtroCorreo">
                   <Form.Label>Correo</Form.Label>
                   <Select

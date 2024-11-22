@@ -18,7 +18,7 @@ function Prestaciones() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isPdfLoading, setIsPdfLoading] = useState<boolean>(true);
   const [showAlert, setShowAlert] = useState<boolean>(false);
-  const { cod_emp} = useAuth();
+  const { cod_emp, email} = useAuth();
   const [correoSecundario, setCorreoSecundario] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
@@ -47,6 +47,9 @@ function Prestaciones() {
     fetchPrestacionesData();
   }, [cod_emp]);
 
+  useEffect(() => {
+    setCorreoSecundario(email || ''); // Inicializar con el valor de email o una cadena vacía
+  }, [email]);
   const pdfBlob = useMemo(() => {
     if (prestacionesData) {
       const pdf = generatePrestacionesPDF(prestacionesData);
@@ -88,6 +91,7 @@ function Prestaciones() {
     }
   };
 
+  
   const handleSendSecondaryEmail = async () => {
     if (prestacionesData && pdfBlob && correoSecundario) {
       const formData = new FormData();
@@ -189,16 +193,17 @@ function Prestaciones() {
                       </CSSTransition>
                       <div className={styles['button-group']}>
                         <Button variant='light' onClick={handleDownload} className={styles['pdf-botton-download']}>Descargar</Button>
-                        
+                        <Button variant='warning' onClick={handleSendEmail} className={styles['pdf-botton-download2']} style={{ display: 'none' }}>Enviar al correo</Button>
                       </div>
                       <div className={styles['button-group']}>
-                        <Form.Control
-                          size="lg"
-                          type="text"
-                          placeholder="Escriba un correo"
-                          value={correoSecundario}
-                          onChange={(e) => setCorreoSecundario(e.target.value)}
-                        />
+                      <Form.Control
+                        size="lg"
+                        type="text"
+                        placeholder="Escriba un correo"
+                        value={correoSecundario} 
+                        onChange={(e) => setCorreoSecundario(e.target.value)} 
+                      />
+                      
                         <Button variant='warning' onClick={handleSendSecondaryEmail} className={styles['pdf-botton-download3']}>Enviar al correo</Button>
                       </div>
                     </>

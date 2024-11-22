@@ -16,7 +16,7 @@ function ARC() {
   const [, setShowAlert] = useState<boolean>(false);
   const [showPdf, setShowPdf] = useState<boolean>(false); 
   const [error, setError] = useState<string | null>(null);
-  const { cod_emp } = useAuth();
+  const { cod_emp, email } = useAuth();
   const [correoSecundario, setCorreoSecundario] = useState<string>('');
   const [fechaARC, setFechaARC] = useState<string>('');
   const [tempFechaARC, setTempFechaARC] = useState<string>(''); 
@@ -49,15 +49,23 @@ function ARC() {
           setIsLoading(false);
         })
         .catch(error => {
+          console.error(error)
           if (error.message === 'Network response was not ok') {
             setError('Error de conexion. Intentelo más tarde');
+          } else if (error.message === 'Failed to fetch') {
+            setError('Error al obtener los datos. Intentelo más tarde');
           } else {
+
             setError(error.message);
           }
           setIsLoading(false);
         });
     }
   }, [cod_emp, fechaARC]);
+
+  useEffect(() => {
+    setCorreoSecundario(email || ''); // Inicializar con el valor de email o una cadena vacía
+  }, [email]);
 
   const pdfBlob = useMemo(() => {
     if (arcData) {
@@ -214,15 +222,16 @@ const handleSendSecondaryEmail = async () => {
                       </Alert>
                       <div className={styles['button-group']}>
                         <Button variant='light' className={styles['pdf-botton-download']} onClick={handleDownload}>Descargar</Button>
+                        <Button variant='warning' onClick={handleSendEmail} className={styles['pdf-botton-download2']} style={{ display: 'none' }}>Enviar al correo</Button>
                       </div>
                       <div className={styles['button-group']}>
-                        <Form.Control
-                          size="lg"
-                          type="text"
-                          placeholder="Escriba un correo"
-                          value={correoSecundario}
-                          onChange={(e) => setCorreoSecundario(e.target.value)}
-                        />
+                      <Form.Control
+                        size="lg"
+                        type="text"
+                        placeholder="Escriba un correo"
+                        value={correoSecundario} 
+                        onChange={(e) => setCorreoSecundario(e.target.value)} 
+                      />
                         <Button variant='warning' className={styles['pdf-botton-download3']} onClick={handleSendSecondaryEmail}>Enviar al correo </Button>
                       </div>
                     </>

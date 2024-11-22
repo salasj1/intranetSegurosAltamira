@@ -229,7 +229,7 @@ const generatePDF = (data: any) => {
       doc.rect(10, finalY + 10, 230, 70);
       doc.setFontSize(11);
       doc.setFont('CalibriBold', 'bold');
-      doc.text(`Recibí Conforme:`, 20, finalY + 100);
+      doc.text(`Recib  Conforme:`, 20, finalY + 100);
       doc.setFont('ArialNarrow', 'bold');
       doc.text(`í`, 41, finalY + 100);
       doc.line(90, finalY + 98, 240, finalY + 98);
