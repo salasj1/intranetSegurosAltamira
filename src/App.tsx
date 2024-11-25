@@ -16,7 +16,7 @@ import ProcesarVacaciones from './routes/ProcesarVacaciones.tsx';
 import SolicitarPermisos from './routes/SolicitarPermisos.tsx';
 import AprobarPermisos from './routes/AprobarPermisos.tsx';
 import ControlAutorizacion from './routes/ControlAutorizacion.tsx';
-
+import ChangePasswordVerify from './routes/ChangePasswordVerify.tsx';
 
  function App() {
   return (
@@ -25,6 +25,7 @@ import ControlAutorizacion from './routes/ControlAutorizacion.tsx';
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/change-password-verify" element={<ChangePasswordVerify />} />
           <Route path="/" element={<ProtectedRoute />}
           children={[
             <Route key="home" path="home" element={<Home />} />,
