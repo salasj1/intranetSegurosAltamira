@@ -145,7 +145,7 @@ function RecibodePagoDetallado() {
     <>
       <NavbarEmpresa />
       <div className={styles.canvas}>
-       
+        {error && <Alert variant='danger'>{error}</Alert>}
       
         <h1 className={styles.h1Recibo}>Recibo de Pago Nº {reciNum} </h1>
         <div style={{ width: "100%" }}>
