@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
-import { Link } from "react-router-dom"
+
 import { CSSTransition } from 'react-transition-group';
 
 export interface Usuario {
@@ -11,6 +11,7 @@ export interface Usuario {
   password: string;
   cod_emp: string;
   status: string;
+  correo: string;
 }
 function ChangePasswordVerify() {
   const [inProp, setInProp] = useState(false);
@@ -57,40 +58,18 @@ function ChangePasswordVerify() {
     }
 }
 
-  const handleVerifyCodigoTemp = async () => {
-    try {
-        const result = await axios.post(`${apiUrl}/verifycode/${usuario}`, { passwordTemp });
-        console.log(result);
-        if (result.status === 200) {
-            setShow2(false);
-            setShow3(true);
-            setError('');
-        } else {
-            setError('Contraseña Incorrecta, intente de nuevo');
-        }
-    } catch (err) {
-        console.error(err);
-        if (axios.isAxiosError(err)) {
-            if (err.response?.status === 500) {
-                setError(err.message);
-            } else {
-                setError('Error en el servidor, por favor intenta más tarde');
-            }
-        } else {
-            setError('Error en el servidor, por favor intenta más tarde');
-        }
-    }
-}
 
 const handleEnvioCodigo = async () => {
   try {
-      const result = await axios.post(`${apiUrl}/sendcode/${usuario}`);
+    console.log("EL CORREO ES: "+usuarioData?.correo);
+      const result = await axios.put(`${apiUrl}/changepassword1/${usuario}`, {correo: "alejandro.salas@segurosaltamira.com"});
       console.log(result);
       if (result.status === 200) {
           setError('');
       } else {
           setError('Error en el servidor, por favor intenta más tarde');
       }
+      console.log("enviado")
   } catch (err) {
       console.error(err);
       if (axios.isAxiosError(err)) {
@@ -105,6 +84,34 @@ const handleEnvioCodigo = async () => {
 
   }
 }
+
+const handleVerifyCodigoTemp = async () => {
+  try {
+    console.log("PASSWORD TEMPORAL: " + passwordTemp);
+    const result = await axios.post(`${apiUrl}/verifycode/${usuario}`, { codigoTemporal: passwordTemp });
+    console.log(result);
+    if (result.status === 200) {
+      setShow2(false);
+      setShow3(true);
+      setError('');
+    } else {
+      setError('Contraseña Incorrecta, intente de nuevo');
+    }
+    console.log("verificado");
+  } catch (err) {
+    console.error(err);
+    if (axios.isAxiosError(err)) {
+      if (err.code === 'ERR_NETWORK') {
+        setError('Error de conexión, por favor verifica tu red');
+      } else {
+        setError(err.response?.data.message);
+      }
+    } else {
+      setError('Error en el servidor, por favor intenta más tarde');
+    }
+  }
+};
+
 useEffect(() => {
   setInProp(true);
 }, []);
@@ -114,11 +121,22 @@ useEffect(() => {
       <div className="d-flex justify-content-center align-items-center vh-100">
         <div className="card p-4 shadow" style={{ width: '30rem', margin: '0 auto' }}>
           <div className="d-flex justify-content-start">
-            <Link to="/">
-              <button className="btn btn-link p-0">
+                <button className="btn btn-link p-0" onClick={() => {
+                if (show1) {
+                  window.history.back();
+                } else if (show2) {
+                  setError('');
+                  setShow2(false);
+                  setShow1(true);
+                } else if (show3) {
+                  setError('');
+                  handleEnvioCodigo();
+                  setShow3(false);
+                  setShow2(true);
+                }
+                }}>
                 <FontAwesomeIcon icon="arrow-left" />
-              </button>
-            </Link>
+                </button>
           </div>
           <div className="text-center">
             <img src='https://www.segurosaltamira.com/wp-content/uploads/2024/03/logo-head.svg' alt="Logo Empresa" style={{ width: '180px' }} />
@@ -138,15 +156,15 @@ useEffect(() => {
             </div></>
           }
           {show2 && <>
-          <p style={{color: "rgb(63 63 65)", fontSize: "18px"}}>Se te envió un correo un codigo de validación.</p>
+          <p style={{color: "rgb(63 63 65)", fontSize: "18px"}}>Se te envió un código al correo empresarial para su validación.</p>
           <Alert variant="info">NOTA: Si esta página se cierra, puedes usar ese código de validación como contraseña para iniciar sesión</Alert>
           <Form.Control 
           type="password"
-           placeholder="Introduce la contraseña temporal"
+           placeholder="Introduce el código de validación"
            value={passwordTemp} onChange={(e) => setPasswordTemp(e.target.value)
            } />
            <br/>
-           <Button variant="primary" onClick={() => {setShow2(false);setShow3(true);handleVerifyCodigoTemp()}}>Aceptar</Button>
+           <Button variant="primary" onClick={() => {  handleVerifyCodigoTemp()}}>Aceptar</Button>
           </>}
           {show3 &&  <>
           <h3>¿Desea cambiar la contraseña temporal por una manual?</h3>
