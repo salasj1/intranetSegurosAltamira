@@ -102,10 +102,13 @@ const AgregarSupervisionModal: React.FC<AgregarSupervisionModalProps> = ({ show,
     handleClose();
   };
 
-  const departamentos = Array.from(new Set(empleados.map(e => e.departamento)));
+  const departamentos = Array.from(new Set(empleados.map(e => e.departamento))).sort();
 
-  const empleadosFiltradosSupervisor = empleados.filter(e => e.departamento === departamentoSupervisor && !supervisados.some(s => s.value === e.value));
-  const empleadosFiltradosSupervisado = empleados.filter(e => e.departamento === departamentoSupervisado && e.value !== supervisor?.value && !supervisados.some(s => s.value === e.value));
+  const empleadosFiltradosSupervisor = empleados
+    .filter(e => e.departamento === departamentoSupervisor && !supervisados.some(s => s.value === e.value))
+    .sort((a, b) => a.label.localeCompare(b.label));
+  const empleadosFiltradosSupervisado = empleados.filter(e => e.departamento === departamentoSupervisado && e.value !== supervisor?.value && !supervisados
+    .some(s => s.value === e.value)).sort((a, b) => a.label.localeCompare(b.label));
 
  
 

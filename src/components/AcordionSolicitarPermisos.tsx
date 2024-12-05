@@ -119,17 +119,23 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     if (!formData.Fecha_inicio) {
       newErrors.push('La fecha de inicio es requerida');
     }
-    console.log(new Date(formData.Fecha_inicio+1));
-    console.log(new Date(today));
-    if (new Date(formData.Fecha_inicio+1) < today) {
+    
+    const startDate = new Date(formData.Fecha_inicio);
+    startDate.setDate(startDate.getDate() + 1);
+    const endDate = new Date(formData.Fecha_Fin);
+    endDate.setDate(endDate.getDate() + 1);
+    if (startDate < today) {
       newErrors.push('La fecha de inicio no puede ser anterior a la fecha actual');
+    } else {
+      console.log(new Date(formData.Fecha_inicio));
+      console.log(today);
     }
 
     if (!formData.Fecha_Fin) {
       newErrors.push('La fecha de fin es requerida');
     }
 
-    if (new Date(formData.Fecha_Fin+1) < today) {
+    if (endDate < today) {
       newErrors.push('La fecha de fin no puede ser anterior a la fecha actual');
     }
 

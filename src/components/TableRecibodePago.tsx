@@ -36,7 +36,7 @@ function TableRecibodePago() {
       if (cod_emp) { 
         try {
           console.log(cod_emp);
-          const response = await axios.get(`${apiUrl}/recibos/${cod_emp}`);
+          const response = await axios.get(`${apiUrl}/recibos/${cod_emp}`);     
           setData(response.data);
         } catch (error) {
           console.error('Error al cargar la informacion de los recibo de pago', error);

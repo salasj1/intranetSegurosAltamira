@@ -46,6 +46,7 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
   const [showDescripcion, setShowDescripcion] = useState(false);
   const [error, setError] = useState<string | null>('');
   const apiUrl = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     fetchPermisos();
   }, []);
@@ -98,21 +99,30 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
     if (!selectedPermiso) return;
   
     try {
+      let response;
       if (action === 'approve') {
-        await axios.put(`${apiUrl}/permisos/${selectedPermiso.PermisosID}/approve`, {
+        response = await axios.put(`${apiUrl}/permisos/${selectedPermiso.PermisosID}/approve`, {
           cod_supervisor: cod_emp
         });
       } else {
-        await axios.put(`${apiUrl}/permisos/${selectedPermiso.PermisosID}/reject1`, {
+        response = await axios.put(`${apiUrl}/permisos/${selectedPermiso.PermisosID}/reject1`, {
           cod_supervisor: cod_emp
         });
       }
+      if (response.status === 200) {
+        console.log(`Permiso ${action === 'approve' ? 'aprobado' : 'rechazado'} exitosamente.`);
+      }
+      
       fetchPermisos();
       setShowModal(false);
     } catch (error) {
+      console.error(error); 
       if (axios.isAxiosError(error)) {
-        console.error(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso:`, error.response?.data);
-        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${error.response?.data}`);
+        if (error.response?.status === 400) {
+          setError(error.response.data);
+        }else if (error.response?.status === 500) {
+          setError(error.response.data.message);
+        } 
       } else {
         console.error(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso:`, error);
         setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${error}`);

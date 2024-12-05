@@ -27,7 +27,7 @@
 }
 
 .formRow {
-    margin-bottom: 15px;
+    margin-bottom: 15px; 
 }
 
 .cardEmpleado {
@@ -53,4 +53,10 @@
     width: 11%;
     height: 11%;
     margin-right: 10px;
+}
+
+@media screen and (max-width: 1024px) {
+    .formRow{
+        flex-direction: column;
+    }
 }

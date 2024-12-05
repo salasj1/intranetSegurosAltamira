@@ -80,7 +80,7 @@ const generatePDF = (data: any) => {
       doc.setFont('CalibriBold', 'bold');
       doc.text(`N  Recibo: `, posrecw - 170, posrecy2 + 14);
       doc.setFont('ArialNarrow', 'bold');
-      doc.text(`°`, posrecw - 160, posrecy2 + 14);
+      doc.text(`°`, posrecw - 165, posrecy2 + 14);
       doc.setFontSize(13);
       doc.setFont('ArialNarrow', 'normal');
       doc.text(`${data[0].reci_num || 'N/A'}`, posrecw - 80, posrecy2 + 14);
@@ -124,12 +124,23 @@ const generatePDF = (data: any) => {
         return `${day}/${month}/${year}`;
       };
       doc.setFont('ArialNarrow', 'normal');
-      doc.text(`${data[0].fecha_ing ? formatDate(data[0].fecha_ing) : 'N/A'}`, posrecw / 2 - 30, posrecy3 + 30);
+      const addOneDay = (dateString: string) => {
+        const date = new Date(dateString);
+        date.setDate(date.getDate() + 1);
+        return formatDate(date.toISOString());
+      };
+      doc.text(`${data[0].fecha_ing ? addOneDay(data[0].fecha_ing) : 'N/A'}`, posrecw / 2 - 30, posrecy3 + 30);
       doc.setFont('CalibriBold', 'bold');
-      doc.text(`Departamento `, posrecw - 210, posrecy3 + 30);
+      doc.text(`Departamento `, posrecw - 240, posrecy3 + 30);
       doc.setFont('ArialNarrow', 'normal');
-      doc.text(`${(data[0].Departamento).toUpperCase() || 'N/A'}`, posrecw - 150, posrecy3 + 30);
+      doc.text(`${(data[0].Departamento).toUpperCase() || 'N/A'}`, posrecw - 175, posrecy3 + 30);
 
+      
+      const formatNumber = (num: number) => {
+        return num.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      };
+      
+      const formattedMonto =  formatNumber(data[0].monto);
       // TABLA DE DATOS
       const tableData = data.map((item: any) => {
         const valorAuxiliar = item.auxi_cha || item.auxi_num !== 0 ? `${item.auxi_num} ${item.auxi_cha || ''}` : '';
@@ -137,8 +148,8 @@ const generatePDF = (data: any) => {
           item.co_conce,
           item.des_conce,
           valorAuxiliar,
-          item.tipo === 1 ? item.monto : '',
-          item.tipo === 2 || item.tipo === 3 ? item.monto : ''
+          item.tipo === 1 ? formattedMonto: '',
+          item.tipo === 2 || item.tipo === 3 ? formattedMonto : ''
         ];
       });
 
@@ -178,8 +189,8 @@ const generatePDF = (data: any) => {
       doc.setFont('CalibriBold', 'bold');
       doc.text(`Total Asignaciones & Deducciones`, 255, finalY + 10);
 
-      const totalAsignaciones = data.filter((item: any) => item.tipo === 1).reduce((sum: number, item: any) => sum + item.monto, 0).toFixed(2);
-      const totalDeducciones = data.filter((item: any) => item.tipo === 2 || item.tipo === 3).reduce((sum: number, item: any) => sum + item.monto, 0).toFixed(2);
+      const totalAsignaciones = formatNumber(data.filter((item: any) => item.tipo === 1).reduce((sum: number, item: any) => sum + item.monto, 0));
+      const totalDeducciones = formatNumber(data.filter((item: any) => item.tipo === 2 || item.tipo === 3).reduce((sum: number, item: any) => sum + item.monto, 0));
 
       // TOTAL DE DEDUCCIONES
       autoTable(doc, {
@@ -212,7 +223,7 @@ const generatePDF = (data: any) => {
       doc.setFontSize(12);
       doc.setFont('CalibriBold', 'bold');
       doc.text(`Total a Cobrar del Trabajador:    `, 280, finalY + 40);
-      doc.text(`${data[0].NetoPagar || 'N/A'}`, 410, finalY + 40);
+      doc.text(`${formatNumber(data[0].NetoPagar) || 'N/A'}`, 410, finalY + 40);
       doc.setFontSize(11);
       doc.text(`BANCO: `, 270, finalY + 70);
       doc.setFontSize(12);

@@ -121,7 +121,7 @@ const ListaCardEmpleados: React.FC = () => {
       (!filtros.correo || empleado.correo_e === filtros.correo)
     )
     .map(empleado => empleado.nombre_completo)
-  ));
+  )).sort((a, b) => a.localeCompare(b));
 
   const cargosUnicos = Array.from(new Set(empleados
     .filter(empleado => 
@@ -130,7 +130,7 @@ const ListaCardEmpleados: React.FC = () => {
       (!filtros.correo || empleado.correo_e === filtros.correo)
     )
     .map(empleado => empleado.des_cargo)
-  ));
+  )).sort((a, b) => a.localeCompare(b));
 
   const departamentosUnicos = Array.from(new Set(empleados
     .filter(empleado => 
@@ -139,7 +139,7 @@ const ListaCardEmpleados: React.FC = () => {
       (!filtros.correo || empleado.correo_e === filtros.correo)
     )
     .map(empleado => empleado.des_depart)
-  ));
+  )).sort((a, b) => a.localeCompare(b));
 
   const correosUnicos = Array.from(new Set(empleados
     .filter(empleado => 
@@ -148,7 +148,7 @@ const ListaCardEmpleados: React.FC = () => {
       (!filtros.departamento || empleado.des_depart === filtros.departamento)
     )
     .map(empleado => empleado.correo_e)
-  ));
+  )).sort((a, b) => (a || '').localeCompare(b || ''));
 
   return (
     <>
@@ -170,7 +170,7 @@ const ListaCardEmpleados: React.FC = () => {
                   />
                 </Form.Group>
               </Col>
-              <Col xs={3}>
+              <Col lg={3} >
                 <Form.Group controlId="filtroNombre">
                   <Form.Label>Nombre completo</Form.Label>
                   <Select
@@ -196,7 +196,7 @@ const ListaCardEmpleados: React.FC = () => {
                   />
                 </Form.Group>
               </Col>
-              <Col xs={4}>
+              <Col lg={4}>
                 <Form.Group controlId="filtroCorreo">
                   <Form.Label>Correo</Form.Label>
                   <Select

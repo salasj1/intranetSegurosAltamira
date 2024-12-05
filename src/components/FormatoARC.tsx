@@ -27,7 +27,7 @@ const generateARCPDF = (data: any, fecha: string) => {
     doc.text("DIRECCION GENERAL", x, y + 10);
     doc.text("SECTORIAL DE RENTAS", x, y + 15);
     doc.text("COMPROBANTE DE RETENCIÓN (ARC)",(doc.internal.pageSize.getWidth()/2)-25, y + 13);
-    doc.text(`Trabajador: Desde 01/01/2005 hasta 31/12/2024; Año: Desde ${(fecha || 'N/A')};`, (doc.internal.pageSize.getWidth()/2)-41, y + 18);
+    doc.text(` Año: ${(fecha || 'N/A')};`, (doc.internal.pageSize.getWidth()/2)-5, y + 18);
     // Línea horizontal
     doc.setLineWidth(0.35);
     doc.setDrawColor(0, 0, 0);
@@ -47,8 +47,8 @@ const generateARCPDF = (data: any, fecha: string) => {
     doc.text(`CIUDAD: ${data[0].ciudad || 'N/A'}`, 17, userInfoY + 36);
     doc.text(`ESTADO: ${data[0].estado || 'N/A'}`, 90, userInfoY + 36);
     const telefono = data[0].telefono || 'N/A';
-    const telefonoFormatted = telefono !== 'N/A' ? `(${telefono.slice(0, 4)}) ${telefono.slice(4, 7)} ${telefono.slice(7, 9)} ${telefono.slice(9)}` : telefono;
-    doc.text(`TELÉFONO:  ${telefonoFormatted}`, 150, userInfoY + 36);
+    
+    doc.text(`TELÉFONO:  ${telefono}`, 150, userInfoY + 36);
     
     // Mover la declaración de getMonthName aquí
     const getMonthName = (monthNumber: number) => {

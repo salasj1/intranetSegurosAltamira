@@ -1,5 +1,6 @@
 import { Alert, FormControl, Modal} from 'react-bootstrap';
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -26,14 +27,19 @@ interface Supervisión {
     Tipo: string;
 }
 
-const ModalEditSupervision: React.FC<EditarSupervisionModalProps> = ({ cod_emp, cod_supervisor, show, handleClose, handleEdit }) => {
+interface TipoSupervision {
+    tipo: number;
+    nombre: string;
+  }
+
+  const ModalEditSupervision: React.FC<EditarSupervisionModalProps> = ({ cod_emp, cod_supervisor, show, handleClose, handleEdit }) => {
     const [supervision, setSupervision] = useState<Supervisión | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [tipo_supervision, setTipo_supervision] = useState<string>(supervision?.Tipo || '');
+    const [tipo_supervision, setTipo_supervision] = useState<string>('');
+    const [opcionestiposSupervision, setOpcionesTiposSupervision] = useState<TipoSupervision[]>([]);
 
     useEffect(() => {
         const fetchSupervision = async () => {
-            console.log(cod_emp, cod_supervisor);
             try {
                 const response = await fetch(`${apiUrl}/empleados/supervision?cod_emp=${cod_emp}&cod_supervisor=${cod_supervisor}`, {
                     method: 'GET',
@@ -52,7 +58,7 @@ const ModalEditSupervision: React.FC<EditarSupervisionModalProps> = ({ cod_emp, 
                 }
 
                 const data = JSON.parse(text);
-                console.log(data);
+                
                 setSupervision(data);
                 setTipo_supervision(data.Tipo);
             } catch (error) {
@@ -60,12 +66,23 @@ const ModalEditSupervision: React.FC<EditarSupervisionModalProps> = ({ cod_emp, 
                 setError('Error al cargar los datos de la supervision');
             }
         };
+
+        const fetchTiposSupervision = async () => {
+            try {
+              const response = await axios.get(`${apiUrl}/empleados/tipos-supervision`);
+              setOpcionesTiposSupervision(response.data);
+            } catch (error) {
+              console.error('Error fetching tipos de supervision:', error);
+            }
+          };
+
         fetchSupervision();
+        fetchTiposSupervision();
     }, [cod_emp, cod_supervisor]);
 
     const handleSave = async () => {
         try {
-            console.log(supervision?.ID_SUPERVISION || 0, tipo_supervision || '');
+            console.log("Tipo Supervision: ", tipo_supervision);
             await handleEdit(supervision?.ID_SUPERVISION || 0, tipo_supervision || '');
             handleClose();
         } catch (error) {
@@ -84,14 +101,14 @@ const ModalEditSupervision: React.FC<EditarSupervisionModalProps> = ({ cod_emp, 
                 
                 <Alert variant="primary">
                     <h3>Supervisor</h3>
-                    <p> <strong>Cédula: </strong>{supervision?.cedula_supervisor}</p>
+                    <p><strong>Cédula: </strong>{supervision?.cedula_supervisor.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</p>
                     <p><strong>Nombre: </strong>{supervision?.nombre_supervisor}</p>
                     <p><strong>Departamento: </strong>{supervision?.departamento_supervisor}</p>
                     <p><strong>Cargo: </strong>{supervision?.cargo_supervisor}</p>
                 </Alert>
                 <Alert variant="primary">
                     <h3>Supervisado</h3>
-                    <p><strong>Cédula: </strong>{supervision?.cedula_empleado}</p>
+                    <p><strong>Cédula: </strong>{supervision?.cedula_empleado.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</p>
                     <p><strong>Nombre: </strong>{supervision?.nombre_empleado}</p>
                     <p><strong>Departamento: </strong>{supervision?.departamento_empleado}</p>
                     <p><strong>Cargo: </strong>{supervision?.cargo_empleado}</p>
@@ -104,9 +121,9 @@ const ModalEditSupervision: React.FC<EditarSupervisionModalProps> = ({ cod_emp, 
                         onChange={(e) => setTipo_supervision(e.target.value)}
                     >
                         <option value={"0"}>Seleccione un tipo</option>
-                        <option value={"1"}>Tipo 1</option>
-                        <option value={"2"}>Tipo 2</option>
-                        <option value={"3"}>Tipo 3</option>
+                        {opcionestiposSupervision.map((tipo) => (
+                            <option key={tipo.tipo} value={tipo.tipo.toString()}>{tipo.nombre}</option>
+                        ))}
                     </FormControl>
                 </Alert>
                
@@ -114,17 +131,6 @@ const ModalEditSupervision: React.FC<EditarSupervisionModalProps> = ({ cod_emp, 
                     <button className="btn btn-secondary" onClick={handleClose}>Cancelar</button>   
                     <button className="btn btn-primary" onClick={handleSave}>Editar Supervisión</button>
                 </div>
-                
-                    
-                   
-                    
-
-                    
-
-               
-                
-                
-                
             </Modal.Body>
         </Modal>
     );

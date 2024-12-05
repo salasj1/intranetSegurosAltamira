@@ -21,7 +21,8 @@ function Prestaciones() {
   const { cod_emp, email} = useAuth();
   const [correoSecundario, setCorreoSecundario] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
-
+  const cod_empSinEspacios = cod_emp?.replace(/\s+/g, '');
+  const anio= new Date().getFullYear();
   useEffect(() => {
     const fetchPrestacionesData = async () => {
       if (!cod_emp) return;
@@ -61,14 +62,14 @@ function Prestaciones() {
   const handleDownload = () => {
     if (prestacionesData) {
       const pdf = generatePrestacionesPDF(prestacionesData);
-      pdf.save(`prestaciones.pdf`);
+      pdf.save(`prestaciones_${cod_empSinEspacios}_${anio}.pdf`);
     }
   };
 
   const handleSendEmail = async () => {
     if (prestacionesData && pdfBlob) {
       const formData = new FormData();
-      formData.append('pdf', pdfBlob, 'prestaciones.pdf');
+      formData.append('pdf', pdfBlob, `prestaciones_${cod_empSinEspacios}_${anio}.pdf`);
       formData.append('cod_emp', cod_emp ?? '');
 
       try {
@@ -95,12 +96,12 @@ function Prestaciones() {
   const handleSendSecondaryEmail = async () => {
     if (prestacionesData && pdfBlob && correoSecundario) {
       const formData = new FormData();
-      formData.append('pdf', pdfBlob, 'prestaciones.pdf');
+      formData.append('pdf', pdfBlob, `prestaciones_${cod_empSinEspacios}_${anio}.pdf`);
       formData.append('cod_emp', cod_emp || '');
       formData.append('correo_secundario', correoSecundario);
 
       try {
-        const response = await axios.post(`${apiUrl}/send-prestaciones-secundario}`, formData, {
+        const response = await axios.post(`${apiUrl}/send-prestaciones-secundario`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -115,6 +116,11 @@ function Prestaciones() {
         }
       } catch (error) {
         console.error('Error sending secondary email:', error);
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 400 || error.response?.status === 404) {
+            console.error(error)
+          }
+        }
       }
     }
   };
@@ -188,7 +194,7 @@ function Prestaciones() {
                         unmountOnExit
                       >
                         <Alert variant='primary' style={{ fontSize: "24.5px" }}>
-                          ¡Recibo de Pago generado exitosamente! Seleccione una opción para continuar.
+                          ¡Movimientos de Prestaciones generado exitosamente! Seleccione una opción para continuar.
                         </Alert>
                       </CSSTransition>
                       <div className={styles['button-group']}>

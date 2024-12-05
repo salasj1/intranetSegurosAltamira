@@ -18,6 +18,8 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
   const [success, setSuccess] = useState<string | null>(null);
   
   useEffect(() => {
+    setError(null);
+    setSuccess(null);
     if (vacacion) {
       setFechaInicio(format(addDays(parseISO(vacacion.FechaInicio.toString()), 1), 'yyyy-MM-dd'));
       setFechaFin(format(addDays(parseISO(vacacion.FechaFin.toString()), 1), 'yyyy-MM-dd'));
@@ -39,7 +41,7 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
 
       setSuccess('Vacaciones actualizadas exitosamente');
       setError(null);
-      handleClose();
+      
       fetchVacaciones();
     } catch (error) {
       setSuccess(null);

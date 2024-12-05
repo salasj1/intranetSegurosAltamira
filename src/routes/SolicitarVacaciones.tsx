@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import ListaVacaciones from "../components/ListaVacaciones";
 import NavbarEmpresa from "../components/NavbarEmpresa";
 import styles from '../css/SolicitarVacaciones.module.css';
@@ -19,13 +19,14 @@ function SolicitarVacaciones() {
   const { cod_emp } = useAuth();
   const [vacaciones, setVacaciones] = useState<Vacacion[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [hasPreviousRequest, setHasPreviousRequest] = useState<boolean>(false);
 
   useEffect(() => {
     if (cod_emp) {
       fetchVacaciones();
+      checkPreviousRequest();
     }
   }, [cod_emp]);
-  
   const fetchVacaciones = async () => {
     try {
       const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
@@ -49,6 +50,16 @@ function SolicitarVacaciones() {
     }
   };
 
+  const checkPreviousRequest = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
+      const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada' || vacacion.Estado === 'Aprobada');
+      setHasPreviousRequest(hasRequest);
+    } catch (error) {
+      console.error('Error al verificar solicitudes previas:', error);
+    }
+  };
+
   return (
     <>
       <NavbarEmpresa />
@@ -56,10 +67,10 @@ function SolicitarVacaciones() {
         <h1>Solicitar Vacaciones</h1>
         <br/>
         {error && <Alert variant="danger" onClose={()=> setError(null)}  dismissible><AlertHeading>Error <hr/></AlertHeading>{error}</Alert>}
-        <FormularioVacaciones fetchVacaciones={fetchVacaciones} />
+        <FormularioVacaciones fetchVacaciones={fetchVacaciones} hasPreviousRequest={hasPreviousRequest} checkPreviousRequest={checkPreviousRequest} />
         <br/>
         <h2>Lista de Vacaciones</h2>
-        <ListaVacaciones vacaciones={vacaciones} fetchVacaciones={fetchVacaciones} />
+        <ListaVacaciones vacaciones={vacaciones} fetchVacaciones={fetchVacaciones} hasPreviousRequest={hasPreviousRequest} checkPreviousRequest={checkPreviousRequest} />
       </div>
     </>
   );
