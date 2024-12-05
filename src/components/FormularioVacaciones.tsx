@@ -10,9 +10,11 @@ import 'react-widgets/styles.css';
 const apiUrl = import.meta.env.VITE_API_URL;
 interface FormularioVacacionesProps {
   fetchVacaciones: () => void;
+  hasPreviousRequest: boolean;
+  checkPreviousRequest: () => void;
 }
 
-const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaciones }) => {
+const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaciones, hasPreviousRequest, checkPreviousRequest }) => {
   const { cod_emp } = useAuth();
   const [fechaInicio, setFechaInicio] = useState<string | null>(null);
   const [fechaFin, setFechaFin] = useState<string | null>(null);
@@ -21,20 +23,10 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
   const [diasCausados, setDiasCausados] = useState<number | null>(null);
   const [diasDisfrutados, setDiasDisfrutados] = useState<number | null>(null);
   const [diasHabiles, setDiasHabiles] = useState<number | null>(null);
-  const [hasPreviousRequest, setHasPreviousRequest] = useState<boolean>(false);
+  
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [fechaMaximaFin, setFechaMaximaFin] = useState<string | null>(null);
-
-  const checkPreviousRequest = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
-      const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada' || vacacion.Estado === 'Aprobada');
-      setHasPreviousRequest(hasRequest);
-    } catch (error) {
-      console.error('Error al verificar solicitudes previas:', error);
-    }
-  };
-
+  
   useEffect(() => {
     const fetchDiasVacaciones = async () => {
       try {
@@ -52,7 +44,6 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     };
 
     fetchDiasVacaciones();
-    checkPreviousRequest();
   }, [cod_emp]);
 
   useEffect(() => {
@@ -121,11 +112,30 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       setSuccess(null); 
       return;
     }
-
-    if (diasHabiles !== null && startDate && endDate && diasHabiles < (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24) + 1) {
-      setError('No tiene suficientes días hábiles disponibles.');
-      setSuccess(null);
-      return;
+    
+    if (diasHabiles !== null ) {
+      try {
+        const response = await axios.post(`${apiUrl}/vacaciones/revisionRangoCalendario`, {
+          fechaInicio: startDate,
+          fechaFin: endDate,
+          cod_emp: cod_emp
+        });
+        const { status, resultado } = response.data;
+        console.log(status, resultado);
+        if (status === 1) {
+          setError(resultado);
+          setSuccess(null);
+          return;
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+          setError(error.response.data.resultado || 'Error revisando los días disponibles.');
+        } else {
+          setError('Error revisando los días disponibles. Intente de nuevo');
+        }
+        setSuccess(null);
+        return;
+      }
     }
     
     if(diasHabiles === null) {
@@ -139,7 +149,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
         const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
         const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada');
         if (hasRequest) {
-          setError('Ya tiene una solicitud de vacaciones pendiente.');
+          setError('Ya tiene una solicitud de vacaciones pendiente. 1');
           setSuccess(null);
           return;
         }
@@ -167,7 +177,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       fetchVacaciones(); 
       if (tipo === 'solicitada') {
         setShowConfirmModal(false);
-        checkPreviousRequest();
+        await checkPreviousRequest();
       }
     } catch (error) {
       console.error(`Error ${tipo} vacaciones:`, error);
@@ -176,9 +186,10 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     }
   };
 
-  const handleConfirmSolicitar = () => {
-    handleSubmit('solicitada');
-  };
+const handleConfirmSolicitar = async () => {
+  await handleSubmit('solicitada');
+  await checkPreviousRequest();
+};
 
   return (
     <>
@@ -288,7 +299,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
         show={showConfirmModal}
         handleClose={() => setShowConfirmModal(false)}
         handleConfirm={handleConfirmSolicitar}
-        checkPreviousRequest={checkPreviousRequest}
+        cod_emp={cod_emp}
         error={error}
         setError={setError}
         fechaInicio={fechaInicio}

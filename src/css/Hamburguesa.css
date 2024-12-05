@@ -1,6 +1,6 @@
 .nav-icon-3{
-    width: 35px;
-    height: 30px;
+    width: 11.6px ;
+    height: 10px;
     margin: 10px 10px;
     position: relative;
     cursor: pointer;
@@ -13,49 +13,50 @@
     border-radius: 2px;
     transition: .3s cubic-bezier(.8, .5, .2, 1.4);
   }
+  
   .nav-icon-3 span:nth-child(1){
-    width: 100%;
+    width: 300%;
     height:  4px;
     display: block;
-    top: 0px;
-    left: 0px;
+    top: -5px;
+    left: -11px;
   }
   .nav-icon-3 span:nth-child(2){
-    width: 100%;
+    width: 300%;
     height:  4px;
     display: block;
-    top: 13px;
-    left: 0px;
+    top: 17.5px;
+    left: -11px;
   }
   .nav-icon-3 span:nth-child(3){
-    width: 100%;
+    width: 300%;
     height:  4px;
     display: block;
     bottom: 0px;
-    left: 0px;
+    left: -11px;
   }
-  .nav-icon-3:not(.open):hover span:nth-child(1){
-    width: 100%;
+  .nav-icon-3:not(.open):hover  span:nth-child(1),.nav-icon-3:not(.open):active  span:nth-child(1){
+    width: 350%;
     height:  4px;
     display: block;
-    top: -2px;
-    left: 0px;
+    top: 2px;
+    left: -13px;
     transition: .3s cubic-bezier(.8, .5, .2, 1.4);
   }
-  .nav-icon-3:not(.open):hover span:nth-child(2){
-    width: 100%;
+  .nav-icon-3:not(.open):hover span:nth-child(2),.nav-icon-3:not(.open):active span:nth-child(2){
+    width: 350%;
     height:  4px;
     display: block;
     top: 13px;
-    left: 0px;
+    left: -13px;
     transition: .4s cubic-bezier(.8, .5, .2, 1.4);
   }
-  .nav-icon-3:not(.open):hover span:nth-child(3){
-    width: 100%;
+  .nav-icon-3:not(.open):hover span:nth-child(3),.nav-icon-3:not(.open):active span:nth-child(3){
+    width: 350%;
     height:  4px;
     display: block;
     bottom: -2px;
-    left: 0px;
+    left: -13px;
     transition: .3s cubic-bezier(.8, .5, .2, 1.4);
   }
   .nav-icon-3.open {

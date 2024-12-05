@@ -23,9 +23,9 @@ function RecibodePagoDetallado() {
   const [error, setError] = useState<string | null>(null);
   const { cod_emp, email} = useAuth();
   const [correoSecundario, setCorreoSecundario] = useState<string>('');
+
   const apiUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
-    console.log('EMAIL ' + email);
     const fetchReciboData = async () => {
       if (!cod_emp) {
         console.error('cod_emp es null');
@@ -116,12 +116,15 @@ function RecibodePagoDetallado() {
       formData.append('reci_num', reciNum);
       formData.append('cod_emp', cod_emp || '');
       formData.append('correo_secundario', correoSecundario);
-
+      console.log(reciboData[0].fec_emis);
+      formData.append('fecha', reciboData[0].fec_emis);
+      
       try {
         const response = await axios.post(`${apiUrl}/send-recibo-secundario`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
+          
         });
 
         if (response.data.success) {
@@ -132,6 +135,7 @@ function RecibodePagoDetallado() {
         }
       } catch (error) {
         console.error('Error sending secondary email:', error);
+        
       }
     }
   };
@@ -145,7 +149,7 @@ function RecibodePagoDetallado() {
     <>
       <NavbarEmpresa />
       <div className={styles.canvas}>
-       
+        {error && <Alert variant='danger'>{error}</Alert>}
       
         <h1 className={styles.h1Recibo}>Recibo de Pago Nº {reciNum} </h1>
         <div style={{ width: "100%" }}>

@@ -20,6 +20,7 @@ function ARC() {
   const [correoSecundario, setCorreoSecundario] = useState<string>('');
   const [fechaARC, setFechaARC] = useState<string>('');
   const [tempFechaARC, setTempFechaARC] = useState<string>(''); 
+  const cod_empSinEspacios = cod_emp?.replace(/\s+/g, '');
 
   useEffect(() => {
     const isValidYear = /^\d{4}$/.test(fechaARC);
@@ -78,7 +79,7 @@ function ARC() {
   const handleDownload = () => {
     if (arcData) {
       const pdf = generateARCPDF(arcData, fechaARC);
-      pdf.save(`ARC.pdf`);
+      pdf.save(`ARC_${cod_empSinEspacios}_${fechaARC}.pdf`);
     }
   };
 
@@ -87,7 +88,7 @@ function ARC() {
     setIsPdfLoading(true);
     try {
         const formData = new FormData();
-        formData.append('pdf', pdfBlob, 'ARC.pdf');
+        formData.append('pdf', pdfBlob, `ARC_${cod_empSinEspacios}_${fechaARC}.pdf`);
         formData.append('cod_emp', cod_emp || '');
         formData.append('fecha', fechaARC);
 
@@ -118,7 +119,7 @@ const handleSendSecondaryEmail = async () => {
     setIsPdfLoading(true);
     try {
         const formData = new FormData();
-        formData.append('pdf', pdfBlob, 'ARC.pdf');
+        formData.append('pdf', pdfBlob, `ARC_${cod_empSinEspacios}_${fechaARC}.pdf`);
         formData.append('cod_emp', cod_emp || '');
         formData.append('correo_secundario', correoSecundario);
         formData.append('fecha', fechaARC);
@@ -164,6 +165,8 @@ const handleSendSecondaryEmail = async () => {
                     value={tempFechaARC}
                     onChange={(e) => setTempFechaARC(e.target.value)}
                     placeholder="AAAA"
+                    min="1992"
+                    max={new Date().getFullYear()}
                   />    
                   <Button variant='light' className={styles['pdf-botton-download']} onClick={() => { setFechaARC(tempFechaARC); setIsPdfLoading(true); setShowPdf(true); }}>Buscar</Button>
                 </div>

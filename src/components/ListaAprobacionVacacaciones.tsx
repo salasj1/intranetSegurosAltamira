@@ -91,7 +91,7 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
           cod_supervisor: cod_emp
         });
       } else {
-        await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/reject`);
+        await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/reject1`);
       }
       fetchVacaciones();
       setError('');

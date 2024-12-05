@@ -119,7 +119,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
           cod_supervisor: cod_emp
         });
       } else {
-        await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/reject`);
+        await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/reject2`);
       }
       fetchVacaciones();
       setError('');
@@ -127,7 +127,6 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
 
     } catch (error) {
       setShowModal(false);
-      console.error(`Error ${action === 'approve' ? 'aprobando' : 'devolviendo'} vacaciones:`, error);
       if (axios.isAxiosError(error)) {
         
         if (error.request?.response === 'La vacación ya ha sido procesada') {

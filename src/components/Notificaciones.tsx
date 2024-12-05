@@ -51,6 +51,7 @@ const Notificaciones: React.FC = () => {
     };
 
     useEffect(() => {
+        
         if (showPermisos) {
             fetchNewPermisos();
         }
@@ -115,7 +116,7 @@ const Notificaciones: React.FC = () => {
                         ) : (
                             <>
                                 {filteredPermisos.map((permiso, index) => (
-                                    ((auth.tipo === "Supervisor") && permiso.Estado==="Pendiente") && (
+                                    ((auth.tipo === "Supervisor") && permiso.Estado === "Pendiente") && (
                                         <ListGroup.Item key={index}>
                                             <Toast className='notificacion' onClose={() => handleDiscard(permiso.PermisosID, permiso.Estado)}>
                                                 <Toast.Header closeButton={true}>
@@ -134,7 +135,7 @@ const Notificaciones: React.FC = () => {
                                     )
                                 ))}
                                 {filteredPermisos.map((permiso, index) => (
-                                    (auth.RRHH === 1 && permiso.Estado==="Aprobada") && (
+                                    (auth.RRHH === 1 && (permiso.Estado === "Aprobada" || permiso.Estado === "Pendiente")) && (
                                         <ListGroup.Item key={index}>
                                             <Toast className='notificacion' onClose={() => handleDiscard(permiso.PermisosID, permiso.Estado)}>
                                                 <Toast.Header closeButton={true}>
@@ -143,7 +144,7 @@ const Notificaciones: React.FC = () => {
                                                 </Toast.Header>
                                                 <Toast.Body>
                                                     <div className="BodyItem">
-                                                        Hay un permiso por procesar:
+                                                        {permiso.Estado === "Aprobada" ? "Hay un permiso por procesar:" : "Hay un permiso por aprobar:"}
                                                         <br />
                                                         <strong>{permiso.Titulo}</strong>
                                                     </div>
@@ -151,9 +152,10 @@ const Notificaciones: React.FC = () => {
                                             </Toast>
                                         </ListGroup.Item>
                                     )
+                                    
                                 ))}
                                 {filteredPermisos.map((permiso, index) => (
-                                    ( auth.cod_emp === permiso.cod_emp && (permiso.Estado === "Aprobada" || permiso.Estado === "Rechazada" || permiso.Estado === "Procesada")) && (
+                                    (auth.cod_emp === permiso.cod_emp && (permiso.Estado === "Aprobada" || permiso.Estado === "Rechazada" || permiso.Estado === "Procesada")) && (
                                         <ListGroup.Item key={index}>
                                             <Toast className='notificacion' onClose={() => handleDiscard(permiso.PermisosID, permiso.Estado)}>
                                                 <Toast.Header closeButton={true}>

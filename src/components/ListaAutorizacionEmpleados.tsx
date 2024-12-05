@@ -118,16 +118,25 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
 
   const handleModifySupervision = async (ID_SUPERVISION: number, Tipo: string) => {
     try {
-      await fetch(`${apiUrl}/empleados/supervision/Tipo`, {
+      const response = await fetch(`${apiUrl}/empleados/supervision/Tipo`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ ID_SUPERVISION, Tipo }),
       });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error('Error al modificar la supervisión');
+        
+      }
+  
       fetchEmpleados();
     } catch (error) {
       console.error('Error modificando supervisión:', error);
+      setError('Error al modificar la supervisión');
     }
   };
 
@@ -302,10 +311,10 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
           <tbody>
             {filteredData.map((item, index) => (
               <tr key={`${item.cod_emp}-${index}`}>
-                <td>{item.cedula_supervisor}</td>
+                <td>{item.cedula_supervisor.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</td>
                 <td>{item.nombres_supervisor}</td>
                 <td>{item.apellidos_supervisor}</td>
-                <td>{item.cedula_empleado}</td>
+                <td>{item.cedula_empleado.replace(/\B(?=(\d{3})+(?!\d))/g, ".")}</td>
                 <td>{item.nombres_empleado}</td>
                 <td>{item.apellidos_empleado}</td>
                 <td>{item.Tipo}</td>

@@ -17,9 +17,11 @@ const apiUrl = import.meta.env.VITE_API_URL;
 interface ListaVacacionesProps {
   vacaciones: Vacacion[];
   fetchVacaciones: () => void;
+  hasPreviousRequest: boolean;
+  checkPreviousRequest: () => void;
 }
 
-const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVacaciones }) => {
+const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVacaciones, hasPreviousRequest, checkPreviousRequest }) => {
   const { cod_emp } = useAuth();
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: '', direction: 'asc' });
   const [searchVacacionID, setSearchVacacionID] = useState('');
@@ -32,24 +34,13 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
   const [vacacionToSolicitar, setVacacionToSolicitar] = useState<Vacacion | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [vacacionToDelete, setVacacionToDelete] = useState<Vacacion | null>(null);
-  const [hasPreviousRequest, setHasPreviousRequest] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null); // Nuevo estado para manejar errores
 
+  const [error, setError] = useState<string | null>(null); 
   useEffect(() => {
     fetchVacaciones();
-    checkPreviousRequest();
-  }, []);
-
-  const checkPreviousRequest = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
-      const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada' || vacacion.Estado === 'Aprobada');
-      setHasPreviousRequest(hasRequest);
-    } catch (error) {
-      console.error('Error al verificar solicitudes previas:', error);
-    }
-  };
-
+    
+  }, [hasPreviousRequest]);
+  
   const sortedData = [...vacaciones].sort((a: Vacacion, b: Vacacion) => {
     if (sortConfig.key) {
       let aValue = a[sortConfig.key as keyof Vacacion];
@@ -103,9 +94,14 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
     setShowDeleteModal(false);
   };
 
-  const handleSolicitar = (vacacion: Vacacion) => {
+  const handleSolicitar = async (vacacion: Vacacion) => {
+    fetchVacaciones();
+    await checkPreviousRequest();
     setVacacionToSolicitar(vacacion);
-    setShowConfirmModal(true);
+    console.log('hasPreviousRequest:', hasPreviousRequest);
+    if ( !hasPreviousRequest) { 
+      setShowConfirmModal(true);
+    }
   };
 
   const handleConfirmSolicitar = async () => {
@@ -133,10 +129,31 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
       }
 
       try {
+        const response = await axios.post(`${apiUrl}/vacaciones/revisionRangoCalendario`, {
+          fechaInicio: startDate,
+          fechaFin: endDate,
+          cod_emp: cod_emp
+        });
+        const { status, resultado } = response.data;
+        console.log(status, resultado);
+        if (status === 1) {
+          setError(resultado);
+          return;
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+          setError(error.response.data.resultado || 'Error revisando los días disponibles.');
+        } else {
+          setError('Error revisando los días disponibles. Intente de nuevo');
+        }
+        return;
+      }
+
+      try {
         const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
         const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada');
         if (hasRequest) {
-          setError('Ya tiene una solicitud de vacaciones pendiente.');
+          setError('Ya tiene una solicitud de vacaciones pendiente. 2');
           return;
         }
       } catch (error) {
@@ -144,23 +161,23 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
         setError('Error al verificar solicitudes previas.');
         return;
       }
-
-      try {
-        await axios.put(`${apiUrl}/vacaciones/${vacacionToSolicitar.VacacionID}/solicitar`);
-        fetchVacaciones();
-        setHasPreviousRequest(true); 
-        setError(null); 
-      } catch (error) {
-        console.error('Error solicitando vacaciones:', error);
-        setError('Error solicitando vacaciones');
+      if(!hasPreviousRequest){
+        try {
+          await axios.put(`${apiUrl}/vacaciones/${vacacionToSolicitar.VacacionID}/solicitar`);
+          fetchVacaciones();
+          setError(null); 
+          checkPreviousRequest();
+        } catch (error) {
+          console.error('Error solicitando vacaciones:', error);
+          setError('Error solicitando vacaciones');
+        }
       }
     }
-    setShowConfirmModal(false);
   };
 
   const handleCloseModal = () => {
-    console.log(error);
-    if (error!==null) {
+    
+    if (error!==undefined) {
       setShowModal(false);
     }
     
@@ -288,12 +305,12 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
           show={showConfirmModal}
           handleClose={() => setShowConfirmModal(false)}
           handleConfirm={handleConfirmSolicitar}
-          checkPreviousRequest={checkPreviousRequest}
+          cod_emp={cod_emp}
           error={error}
           setError={setError}
           vacacionID={vacacionToSolicitar.VacacionID}
-          fechaInicio={format(addDays(parseISO(vacacionToSolicitar.FechaInicio.toString()), 1), 'dd/MM/yyyy')}
-          fechaFin={format(addDays(parseISO(vacacionToSolicitar.FechaFin.toString()), 1), 'dd/MM/yyyy')}
+          fechaInicio={addDays(parseISO(vacacionToSolicitar.FechaInicio.toString()), 1).toISOString()}
+          fechaFin={addDays(parseISO(vacacionToSolicitar.FechaFin.toString()), 1).toISOString()}
         />
       )}
 

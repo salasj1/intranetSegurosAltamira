@@ -84,12 +84,25 @@ const generatePrestacionesPDF = (data: any) => {
 
     
     // Calcular totales
+    const formatNumber = (num: number) => {
+      return num.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
+
     const totalPrestacionesAcumuladas = data.reduce((acc: number, item: any) => acc + item.antiguedad_mensual, 0);
     const totalInteres = data.reduce((acc: number, item: any) => acc + item.interes, 0);
     const totalAnticiposOtorgados = data.reduce((acc: number, item: any) => acc + item.Adelantos, 0);
 
-    const totalPrestacionesNetas = totalPrestacionesAcumuladas+totalAnticiposOtorgados;
+    const totalPrestacionesNetas = totalPrestacionesAcumuladas + totalAnticiposOtorgados;
     const totalDisponibles = totalPrestacionesNetas * 0.75;
+
+    // Formatear los números
+    const formattedTotalPrestacionesAcumuladas = formatNumber(totalPrestacionesAcumuladas)
+    const formattedTotalInteres = formatNumber(totalInteres);
+    const formattedTotalAnticiposOtorgados = formatNumber(totalAnticiposOtorgados);
+    const formattedTotalPrestacionesNetas = formatNumber(totalPrestacionesNetas);
+     const formattedTotalDisponibles = formatNumber(totalDisponibles);
+
+    
     autoTable(doc, {
       head: [['Año', 'Mes', 'Sueldo Mensual', 'Sueldo Diario', 'Alicuota Bono Vac', 'Salario Integral', 'Días Prest.', 'Antigüedad Mensual', 'Anticipos Otorgados', 'Neto Prestaciones', 'Tasa', 'Monto Interés']],
       body: tableData,
@@ -128,19 +141,19 @@ const generatePrestacionesPDF = (data: any) => {
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
     doc.text('Total Prestaciones Acumuladas:', rectX + 2, rectY + rectMarginTop + 10);
-    doc.text(totalPrestacionesAcumuladas.toFixed(2), rectX + 70, rectY + rectMarginTop + 10);
+    doc.text(formattedTotalPrestacionesAcumuladas, rectX + 70, rectY + rectMarginTop + 10);
 
     doc.text('Total Prestaciones Netas:', rectX + 136, rectY + rectMarginTop + 10);
-    doc.text(totalPrestacionesNetas.toFixed(2), rectX + 195, rectY + rectMarginTop + 10);
+    doc.text(formattedTotalPrestacionesNetas, rectX + 195, rectY + rectMarginTop + 10);
 
     doc.text('Total Anticipos Otorgados:', rectX + 13, rectY + rectMarginTop + 20);
-    doc.text(totalAnticiposOtorgados.toFixed(2), rectX + 70, rectY + rectMarginTop + 20);
+    doc.text(formattedTotalAnticiposOtorgados, rectX + 70, rectY + rectMarginTop + 20);
 
     doc.text('Total Disponibles (Netas * 75%):', rectX + 136, rectY + rectMarginTop + 20);
-    doc.text(totalDisponibles.toFixed(2), rectX + 205, rectY + rectMarginTop + 20);
+    doc.text(formattedTotalDisponibles, rectX + 205, rectY + rectMarginTop + 20);
 
     doc.text('Total Interés:', rectWidth - 15, rectY + rectMarginTop + 10);
-    doc.text(totalInteres.toFixed(2), rectWidth - 2, rectY + rectMarginTop + 20);
+    doc.text(formattedTotalInteres, rectWidth - 2, rectY + rectMarginTop + 20);
 
     // Obtener el número total de páginas
     const totalPages = doc.internal.pages.length - 1;
