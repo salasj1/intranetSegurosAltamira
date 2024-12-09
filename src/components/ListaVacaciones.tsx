@@ -136,7 +136,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
         });
         const { status, resultado } = response.data;
         console.log(status, resultado);
-        if (status === 1) {
+        if (status === 0) {
           setError(resultado);
           return;
         }
@@ -297,6 +297,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
           handleClose={handleCloseModal}
           vacacion={selectedVacacion}
           fetchVacaciones={fetchVacaciones}
+          cod_emp={cod_emp}
         />
       )}
 
