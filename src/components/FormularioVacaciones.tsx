@@ -7,6 +7,7 @@ import '../css/FormularioVacaciones.css';
 import ConfirmarSolicitudModal from './ConfirmarSolicitudModal';
 import DatePicker from "react-widgets/DatePicker";
 import 'react-widgets/styles.css';
+import { parseISO } from 'date-fns';
 const apiUrl = import.meta.env.VITE_API_URL;
 interface FormularioVacacionesProps {
   fetchVacaciones: () => void;
@@ -89,11 +90,6 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       return;
     }
     
-    if (fechaMaximaFin && (fechaFin >fechaMaximaFin)){
-      setError('La fecha de fin no puede ser posterior a la fecha máxima de fin de vacaciones: ' + new Date( fechaMaximaFin).toLocaleDateString() + '.');
-      setSuccess(null); 
-      return;
-    }
     
     if (startDate && (startDate < today)) {
       setError('La fecha de inicio no puede ser anterior a la fecha actual.');
@@ -122,7 +118,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
         });
         const { status, resultado } = response.data;
         console.log(status, resultado);
-        if (status === 1) {
+        if (status === 0) {
           setError(resultado);
           setSuccess(null);
           return;
@@ -213,7 +209,7 @@ const handleConfirmSolicitar = async () => {
                 <Form.Label>Fecha Inicio:</Form.Label>
                 <DatePicker
                   placeholder="dd/mm/yyyy"
-                  value={fechaInicio ? new Date(fechaInicio) : null}
+                  value={fechaInicio ? parseISO(fechaInicio) : null}
                   valueFormat={{day:"numeric", month: "numeric", year: "numeric" }}
                   onChange={handleFechaInicioChange}
                   min={new Date()}
@@ -226,7 +222,7 @@ const handleConfirmSolicitar = async () => {
                       (month ? month - 1 : today.getMonth()),
                       day
                     );
-                    const startDate = fechaInicio ? new Date(fechaInicio) : today;
+                    const startDate = fechaInicio ? parseISO(fechaInicio) : today;
                     if (parsedDate < startDate) {
                       return startDate;
                     }
@@ -237,7 +233,7 @@ const handleConfirmSolicitar = async () => {
                 <>
                 <br/>
                 <Alert variant="warning">
-                  Limite de fecha fin: {new Date(fechaMaximaFin).toLocaleDateString()}
+                  Limite de fecha fin: {parseISO((fechaMaximaFin)).toLocaleDateString()}
                 </Alert>
                 </>
               )}
@@ -281,11 +277,7 @@ const handleConfirmSolicitar = async () => {
                 <Button variant="warning" onClick={() => setError('Debe llenar todos los campos.')}>Solicitar</Button>
                 ) : (
                 <>
-                  {fechaMaximaFin && (new Date(fechaFin) > new Date(fechaMaximaFin)) ? (
-                    <Button variant="warning" onClick={() => setError('La fecha de fin no puede ser posterior a la fecha máxima de fin de vacaciones: ' + new Date( fechaMaximaFin).toLocaleDateString() + '.')}>Solicitar</Button>
-                  ):(
-                    <Button variant="warning" onClick={() => setShowConfirmModal(true)}>Solicitar</Button>
-                  )}
+                  <Button variant="warning" onClick={() => setShowConfirmModal(true)}>Solicitar</Button>
                 </>
                 )}
               </>

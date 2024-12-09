@@ -24,8 +24,9 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
   useEffect(() => {
     if (error) {
       setSuccess(null);
+      setError(error);
     }
-  }, [error]);
+  });
   const handleConfirmAndCheck = async () => {
     try {
       
@@ -35,6 +36,7 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
         setError('Ya tiene una solicitud de vacaciones pendiente. 3');
         return;
       }
+      
       if(!hasRequest || error === null){
         handleConfirm();
         setSuccess('Solicitud enviada con exito.');
@@ -52,7 +54,7 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
       </Modal.Header>
       <Modal.Body>
         { success && <Alert variant="success" onClose={() => {} } dismissible>{success}</Alert>}
-        {error && <Alert variant="danger" onClose={() => {}} dismissible>{error}</Alert>}
+        {error && <Alert variant="danger" onClose={() => {setError('')}} dismissible>{error}</Alert>}
         <Alert variant="primary">
           {vacacionID !== undefined && (
             <p><strong>ID de Vacaciones:</strong> {vacacionID}</p>
