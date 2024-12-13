@@ -7,7 +7,8 @@ import '../css/FormularioVacaciones.css';
 import ConfirmarSolicitudModal from './ConfirmarSolicitudModal';
 import DatePicker from "react-widgets/DatePicker";
 import 'react-widgets/styles.css';
-import { parseISO } from 'date-fns';
+import { parseISO,addDays } from 'date-fns';
+
 const apiUrl = import.meta.env.VITE_API_URL;
 interface FormularioVacacionesProps {
   fetchVacaciones: () => void;
@@ -233,7 +234,7 @@ const handleConfirmSolicitar = async () => {
                 <>
                 <br/>
                 <Alert variant="warning">
-                  Limite de fecha fin: {parseISO((fechaMaximaFin)).toLocaleDateString()}
+                  Limite de fecha fin: {addDays(parseISO((fechaMaximaFin)),1).toLocaleDateString()}
                 </Alert>
                 </>
               )}
@@ -251,7 +252,7 @@ const handleConfirmSolicitar = async () => {
                 }}
                 valueFormat={{day:"numeric", month: "numeric", year: "numeric" }}
                 min={fechaInicio ? new Date(fechaInicio) : new Date()}
-                max={fechaMaximaFin ? new Date(fechaMaximaFin) : undefined} 
+                max={fechaMaximaFin ? addDays(new Date(fechaMaximaFin),1) : undefined} 
                 parse={(str) => {
                   if (!str) return undefined; 
                   const [day, month, year] = str.split('/').map(Number);

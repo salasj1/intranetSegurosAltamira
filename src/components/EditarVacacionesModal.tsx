@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { Vacacion } from '../routes/SolicitarVacaciones';
-import { format, parseISO, addDays, isBefore, isEqual, isToday } from 'date-fns';
+import { format, parseISO, addDays, isBefore, isEqual} from 'date-fns';
 import DatePicker from "react-widgets/DatePicker";
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -28,7 +28,7 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
     setError(null);
     setSuccess(null);
     if (vacacion) {
-      const inicio = format(addDays(parseISO(vacacion.FechaInicio.toString()), 1), 'yyyy-MM-dd');
+      const inicio = format(parseISO(vacacion.FechaInicio.toString()), 'yyyy-MM-dd');
       setFechaInicio(inicio);
       setFechaFin(format(addDays(parseISO(vacacion.FechaFin.toString()), 1), 'yyyy-MM-dd'));
     }
@@ -57,7 +57,11 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
       setDiasHabiles(diasCausados - diasDisfrutados);
     }
   }, [diasCausados, diasDisfrutados]);
-
+  useEffect(() => {
+    if(error) {
+      setSuccess(null);
+    }
+  }, [error]);
   // Nuevo useEffect para ejecutar handleFechaInicioChange cuando fechaInicio cambie
   useEffect(() => {
     if (fechaInicio) {
@@ -130,6 +134,7 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
   const handleFechaInicioChange = async (date: Date | null | undefined) => {
     if (date) {
       const newFechaInicio = date.toISOString();
+      console.log(newFechaInicio);
       setFechaInicio(newFechaInicio);
       if (diasHabiles !== null) {
         try {
@@ -140,6 +145,7 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
             }
           });
           setFechaMaximaFin(response.data.fechaMaximaFin);
+          console.log(response.data.fechaMaximaFin);
           setError(null);
         } catch (error) {
           console.error('Error al calcular la fecha máxima de fin de vacaciones:', error);
@@ -177,7 +183,8 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
           <>
             <br/>
             <Alert variant="warning">
-              Limite de fecha fin: {fechaMaximaFin ? new Date(fechaMaximaFin).toLocaleDateString() : ''}
+              
+              Limite de fecha fin: {fechaMaximaFin ? addDays(new Date(fechaMaximaFin),1).toLocaleDateString() : ''}
             </Alert>
           </>
         )}
@@ -189,10 +196,10 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
             <Form.Label>Fecha Inicio:</Form.Label>
             <DatePicker
               placeholder="dd/mm/yyyy"
-              value={fechaInicio ? parseISO(fechaInicio) : null}
+              value={ parseISO(fechaInicio)}
               valueFormat={{ day: "numeric", month: "numeric", year: "numeric" }}
               onChange={handleFechaInicioChange}
-              min={ fechaMaximaFin?   new Date():parseISO(fechaInicio) }
+              min={  new Date() }
               parse={(str) => {
                 if (!str) return undefined;
                 const [day, month, year] = str.split('/').map(Number);
@@ -214,7 +221,7 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
             <Form.Label>Fecha Fin:</Form.Label>
             <DatePicker
               placeholder='dd/mm/yyyy'
-              value={fechaFin ? new Date(fechaFin) : null}
+              value={fechaFin ? parseISO(fechaFin) : null}
               onChange={handleFechaFinChange}
               valueFormat={{ day: "numeric", month: "numeric", year: "numeric" }}
               min={ new Date(fechaInicio) }
