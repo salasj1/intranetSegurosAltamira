@@ -47,7 +47,7 @@ function Login() {
                 if (err.response?.status === 401) {
                     setError(err.response.data.message);
                 }
-                if (err.response?.status === 500) {
+                if (err.message === 'Network Error') {
                     setError('Error en el servidor, por favor intenta más tarde');
                 }
             } else {

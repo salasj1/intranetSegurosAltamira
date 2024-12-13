@@ -58,8 +58,8 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
 
   const filteredData = sortedData.filter(item =>
     item.VacacionID.toString().includes(searchVacacionID) &&
-    format(parseISO(item.FechaInicio.toString()), 'dd/MM/yyyy').includes(searchFechaInicio) &&
-    format(parseISO(item.FechaFin.toString()), 'dd/MM/yyyy').includes(searchFechaFin) &&
+    format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy').includes(searchFechaInicio) &&
+    format(addDays(parseISO(item.FechaFin.toString()), 1), 'dd/MM/yyyy').includes(searchFechaFin) &&
     item.Estado.toLowerCase().includes(searchEstado.toLowerCase()) &&
     item.Estado.toLowerCase() !== 'borrado'
   );
