@@ -1,0 +1,409 @@
+#root {
+    position: absolute;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+}
+    
+
+
+.canvas {
+    position: relative;
+    top: 125px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    background-color:white ;
+    
+}
+.canvas .Tarjeta{
+    position: absolute;
+    left: 900px;
+    top: 120px;
+    font-size: 30px;
+    width: 34.5%;
+    border-radius: 3px;
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, .14);
+    animation: fadeInUp 1.5s;
+}
+.canvas .TarjetaMostrarSueldo{
+    position: relative;
+    left: 780px;
+    top:-80px;
+    font-size: 16px;
+    width: 35.45%;
+    border-radius: 3.5px;
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, .14);
+    animation: fadeInUp 1.5s;
+  
+}
+
+.canvas .cardDestinatario{
+    position: relative;
+    left: -350px;
+    top:0px;
+    font-size: 16px;
+    width: 35.45%;
+    border-radius: 4px;
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, .14);
+    animation: fadeInUp 1.5s;
+}
+
+@media (max-width:1400px) {
+    
+    .canvas .Tarjeta{
+        left: 800px;
+
+    }
+    
+}
+@media (max-width:1300px) {
+    .canvas .Tarjeta{
+        left: 700px;
+    }
+    
+}
+
+@media (max-width: 1200px) {
+    .canvas .Tarjeta {
+       position: relative;
+       left:0%;
+       
+       width: 523px;
+       top:35px;
+       margin-bottom: 50px;
+    }
+}
+@media (max-width:740px) {
+    .canvas .Tarjeta{
+        margin-bottom:50px ;
+    }
+}
+
+/* @media (max-width: 915px) {
+    .canvas .Tarjeta {
+       position: relative;
+       width: 70%;
+       top:25px;
+       left: 15%; 
+    }
+}
+
+@media (max-width: 768px) {
+    .canvas .Tarjeta {
+       position: relative;
+       width: 70%;
+    }
+}
+
+@media (max-width: 680px) {
+    .canvas .Tarjeta {
+        position: relative;
+        width: 80%;
+        
+    }
+}
+@media (max-width: 650px) {
+    .canvas .Tarjeta {
+       position: relative;
+       width: 100%;
+       left:0%;
+       margin-bottom: 5%;
+    }
+} */
+.canvas .Tarjeta p{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    display: flex;
+    
+
+}
+.botonesZoom {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 5%;
+    left: 90%;
+    font-size: 55px;
+    font-weight: 1000;
+    width: 40px;
+    z-index: 25;
+    /* align-content: center; */
+    flex-wrap: wrap;
+}
+@media (max-width: 680px) {
+    .botonesZoom {
+     left:88%;
+    }
+}
+@media (max-width: 580px) {
+    .botonesZoom {
+     left:86%;
+    }
+}
+.pdf-viewer-container {
+    width: 50%;
+    left: 1.5%;
+    height: 500px; 
+    /* border: 1px solid #ccc; */
+    position: relative;
+    max-height: max-content;
+    overflow: hidden;
+    margin-top: 35px;
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, .14);
+}
+@media (max-width: 1200px) {
+    .pdf-viewer-container {
+        width: 100%;
+    }
+}
+
+
+.rpv-core__canvas-layer {
+    direction: ltr;
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+.rpv-core__viewer {
+    margin-top: 35px !important;
+    width: 90%;
+}
+
+
+/* Agrega estas clases CSS para la animación de la alerta */
+.alert-enter {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  .alert-enter-active {
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 500ms, transform 500ms;
+  }
+  .alert-exit {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .alert-exit-active {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 500ms, transform 500ms;
+  }
+
+
+
+.table-bordered>:not(caption)>*>* {
+     border-width: 0 ;
+}
+/* #pdf-botton-download, #pdf-botton-download2 {
+    position: relative;
+    padding: 10px 20px;  
+    margin-left: 25px; 
+    margin-bottom: 10px;
+} */
+/* Cambiar los selectores de ID a clases */
+.pdf-botton-download, .pdf-botton-download2, .pdf-botton-download3 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+}
+
+.pdf-botton-download {
+    display: inline-block;
+    font-family: "Gotham", Sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    border-color: #f48134;
+    color: #fff;
+    background-color: #f48134;
+    border-radius: 30px;
+    box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .05);
+}
+
+.pdf-botton-download:hover,  .pdf-botton-download:focus-visible {
+    color: #f48134;
+    background-color: #fff;
+    border-color: #fff;
+}
+.pdf-botton-download:active{
+    color: #f48134 !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
+}
+.pdf-botton-download2 {
+    font-family: "Gotham", Sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    fill: #fff;
+    color: #fff;
+    border-color: #003896;
+    background-color: #003896;
+    border-radius: 30px;
+    box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .05);
+}
+
+.pdf-botton-download2:hover, .pdf-botton-download2:focus-visible{
+    color: #003896;
+    background-color: #fff;
+    border-color: #fff;
+}
+.pdf-botton-download2:active{
+    color: #003896 !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
+}
+.pdf-botton-download3 {
+    font-family: "Gotham", Sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    fill: #fff;
+    color: #fff;
+    border-color: #003896;
+    background-color: #003896;
+    border-radius: 30px 10px;
+    box-shadow: 2px 2px 5px 2px rgba(0, 0, 0, .05);
+}
+
+.pdf-botton-download3:hover, .pdf-botton-download3:focus-visible {
+    color: #003896;
+    background-color: #fff;
+    border-color: #fff;
+}
+.pdf-botton-download3:active{
+    color: #003896 !important;
+    background-color: #fff !important;
+    border-color: #fff !important;
+}
+.nav-link {
+    color: rgba(253, 10, 10, 0.842);
+}
+@keyframes elementor-animation-bob {
+    0% {
+        transform: translateY(-8px)
+    }
+
+    50% {
+        transform: translateY(-4px)
+    }
+
+    100% {
+        transform: translateY(-8px)
+    }
+}
+
+@keyframes elementor-animation-bob-float {
+    100% {
+        transform: translateY(-8px)
+    }
+}
+
+.pdf-botton-download:hover, .pdf-botton-download:active, .pdf-botton-download2:active, .pdf-botton-download2:hover, .pdf-botton-download3:active, .pdf-botton-download3:hover {
+    animation-name: elementor-animation-bob-float, elementor-animation-bob;
+    animation-duration: .3s, 1.5s;
+    animation-delay: 0s, .3s;
+    animation-timing-function: ease-out, ease-in-out;
+    animation-iteration-count: 1, infinite;
+    animation-fill-mode: forwards;
+    animation-direction: normal, alternate;
+}
+
+.pdf-botton-download2 {
+    font-weight: 475;
+}
+
+.pdf-botton-download3 {
+    margin-left: 10px;
+    font-weight: 480;
+    width: 100%;
+}
+
+
+
+.card-body-buttons {
+    display: flex;
+    flex-direction: column; /* Asegura que los botones se dispongan en columna */
+    align-items: center; /* Centra los botones horizontalmente */
+}
+
+.card-body-buttons .button-group {
+    display: flex;
+    flex-direction: row; /* Asegura que los dos primeros botones estén en columna */
+    align-items: center; /* Centra los botones horizontalmente */
+    margin-bottom: 20px; /* Añadir margen inferior para separar el grupo de botones del tercer botón */
+    gap: 10px;
+}
+.canvas h1 {
+    position: relative;
+    max-width: 100%; 
+    box-sizing: border-box; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+    font-family: "Gotham", Sans-serif;
+    text-align: center; /* Centrar el texto horizontalmente */
+    width: 100%; /* Asegurar que el h1 ocupe el 100% del contenedor */
+    font-size: 3rem; /* Tamaño de fuente inicial */
+    left: 25px;
+}
+
+@media (max-width: 1200px) {
+    .canvas h1 {
+        margin-left: 0% !important; /* Centrar el elemento */
+        text-wrap: pretty;
+        font-size: 3rem; /* Reducir el tamaño de la fuente en pantallas más pequeñas */
+    }
+}
+
+@media (max-width: 480px) {
+    .canvas h1 {
+        margin: 0 !important; /* Centrar el elemento */
+        text-wrap: wrap; /* Permitir que el texto se ajuste al ancho del contenedor */
+        font-size: 1.5rem; /* Reducir aún más el tamaño de la fuente en pantallas muy pequeñas */
+    }
+}
+
+.h1Recibo{
+    margin-left: -50% !important;
+}
+.h1Prestaciones{
+    margin-left: -50% !important;
+}
+
+.alert{
+    border-radius: 2px;
+}
+
+.canvas .rcp-core__viewer {
+    width: 100%;
+    height: 600px; /* Ajusta la altura según sea necesario */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px !important;
+}
+
+.canvas h2{
+    margin-left: 18% !important;
+    margin-top: 25px !important;
+}
+.rpv-core__inner-pages {
+    overflow: hidden !important;
+    /* overflow-y: visible !important; */
+    overflow-x: visible !important;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0,100%,0)
+    }
+
+    to {
+        opacity: 1;
+        transform: none
+    }
+}
+/* .imagenTitulo{
+    
+} */

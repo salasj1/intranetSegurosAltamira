@@ -85,6 +85,13 @@ const ListaCardEmpleados: React.FC = () => {
     }
   };
 
+/*************  ✨ Codeium Command ⭐  *************/
+  /**
+   * Elimina el número de teléfono de un empleado.
+   * Se utiliza en el modal de edición de teléfono.
+   * @function
+   */
+/******  5ee6eb7d-8103-471a-82e6-4f7496a7691b  *******/
   const handleTelefonoDelete = async () => {
     if (selectedEmpleado) {
       try {

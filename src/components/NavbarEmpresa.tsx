@@ -47,7 +47,7 @@ function NavbarEmpresa() {
             '/RecibodePago',
             '/Prestaciones',
             '/ARC',
-            '/ConstanciaTrabajo'
+            '/ConstanciaDeTrabajo'
         ];
         return activePaths.some(activePath => path.startsWith(activePath));
     };
@@ -96,10 +96,12 @@ function NavbarEmpresa() {
                                                     <NavDropdown.Item href='/Prestaciones' className='cuadroItem'>
                                                         Prestaciones Sociales
                                                     </NavDropdown.Item>
+                                                    <NavDropdown.Item href="/ConstanciaDeTrabajo" className='cuadroItem'>
+                                                    Constancia de Trabajo
+                                                    </NavDropdown.Item>
                                                     <NavDropdown.Item href='/ARC' className='cuadroItem'>
                                                         Comprobante de Agente de Retención (ARC)
                                                     </NavDropdown.Item>
-                                                    {/* <NavDropdown.Item href="/ConstanciaTrabajo" className='cuadroItem'>Constancia de Trabajo</NavDropdown.Item> */}
                                                 </NavDropdown>
                                             </Col>
 

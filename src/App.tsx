@@ -17,6 +17,7 @@ import SolicitarPermisos from './routes/SolicitarPermisos.tsx';
 import AprobarPermisos from './routes/AprobarPermisos.tsx';
 import ControlAutorizacion from './routes/ControlAutorizacion.tsx';
 import ChangePasswordVerify from './routes/ChangePasswordVerify.tsx';
+import ConstaciaDeTrabajo from './routes/ConstaciaDeTrabajo.tsx';
 
  function App() {
   return (
@@ -32,6 +33,7 @@ import ChangePasswordVerify from './routes/ChangePasswordVerify.tsx';
             <Route key="RecibodePago" path="RecibodePago" element={<RecibodePago/>} />,
             <Route key="RecibodePagoDetallado" path="RecibodePago/:reci_num" element={<RecibodePagoDetallado/>} />, 
             <Route key="Prestaciones" path="Prestaciones" element={<Prestaciones/>} />,
+            <Route key="ConstanciaDeTrabajo" path='ConstanciaDeTrabajo' element={<ConstaciaDeTrabajo />} />,
             <Route key="ARC" path="ARC" element={<ARC/>} />,
             <Route key="PrestacionesDetallado" path="Prestaciones/:prest_num" element={<RecibodePagoDetallado/>} />,
             <Route key="SolicitarVacaciones" path="SolicitarVacaciones" element={<SolicitarVacaciones/>} />,
