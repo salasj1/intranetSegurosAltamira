@@ -34,6 +34,7 @@ function NavbarEmpresa() {
             '/SolicitarVacaciones',
             '/AprobarVacaciones',
             '/ProcesarVacaciones',
+            '/RetornoVacaciones',
             '/SolicitarPermisos',
             '/AprobarPermisos',
             '/ProcesarPermisos'
@@ -114,10 +115,14 @@ function NavbarEmpresa() {
                                                                 Aprobar Vacaciones
                                                             </NavDropdown.Item>
                                                         ) : null}
-                                                        {auth.RRHH === 1 ? (
+                                                        {auth.RRHH === 1 ? (<>
                                                             <NavDropdown.Item href='/ProcesarVacaciones' className='cuadroItem'>
                                                                 Procesar Vacaciones
                                                             </NavDropdown.Item>
+                                                            <NavDropdown.Item href='/RetornoVacaciones' className='cuadroItem'>
+                                                                Retorno de Vacaciones
+                                                            </NavDropdown.Item>
+                                                            </>
                                                         ) : null}
                                                     </NavDropdown>
                                                     <NavDropdown title='Permisos' id='submenu' className={isSolicitudesActive() ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end'>
