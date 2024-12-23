@@ -8,8 +8,6 @@ import Table from 'react-bootstrap/Table';
 import axios from 'axios';
 import { Vacacion } from '../routes/RetornoVacaciones';
 import { format, parseISO, addDays, isValid } from 'date-fns';
-import AprobarVacacionesModal from './AprobarVacacionesModal';
-import { useAuth } from '../auth/AuthProvider';
 import ModalRetonarDias from './ModalRetonarDias';
 
 interface ListaVacacionesProps {
@@ -32,7 +30,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
   const [showModal, setShowModal] = useState(false);
   const [selectedVacacion, setSelectedVacacion] = useState<Vacacion | null>(null);
   const [action, setAction] = useState<'approve' | 'reject'>('approve');
-  const { cod_emp } = useAuth();
+  
   const [error, setError] = useState<string | null>('');
   useEffect(() => {
     fetchVacaciones();

@@ -11,12 +11,6 @@ interface ModalRetonarDiasProps {
 }
 
 const ModalRetonarDias: React.FC<ModalRetonarDiasProps> = ({ show, onClose, vacacion, onConfirm }) => {
-  const formatoFechaRetorno = (fechaRetorno: Date) => {
-    const dia = fechaRetorno.getDate().toString().padStart(2, '0');
-    const mes = (fechaRetorno.getMonth() + 1).toString().padStart(2, '0');
-    const anio = fechaRetorno.getFullYear().toString();
-    return `${dia}/${mes}/${anio}`;
-  };
 
   const [fechaRetorno, setFechaRetorno] = useState<Date | null>(null);
 

@@ -62,7 +62,7 @@ function NavbarEmpresa() {
                             <img src={logoEmpresa} alt='Logo Empresa' />
                         </Navbar.Brand>
 
-                        <Button variant='primary' className='d-lg-none abrir-boton' onClick={handleShow}>
+                        <Button variant='primary' className='d-lg-none abrir-boton'  onClick={handleShow}>
                         <div className="icon nav-icon-3">
                             <span></span>
                             <span></span>
