@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState} from 'react';
 import { Alert, AlertHeading, Button, Form, Nav } from "react-bootstrap";
 import axios from 'axios';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
@@ -108,12 +108,12 @@ function ConstaciaDeTrabajo() {
   const handleSendSecondaryEmail = async () => {
     if (constanciaData && pdfBlob && correoSecundario) {
       const formData = new FormData();
-      formData.append('pdf', pdfBlob, `prestaciones_${cod_empSinEspacios}_${anio}.pdf`);
+      formData.append('pdf', pdfBlob, `constancia_de_trabajo_${cod_empSinEspacios}_${anio}.pdf`);
       formData.append('cod_emp', cod_emp || '');
-      formData.append('correo_secundario', correoSecundario);
-
+      formData.append('correo', correoSecundario);
+      formData.append('fecha', new Date().toLocaleDateString('es-ES'));
       try {
-        const response = await axios.post(`${apiUrl}/send-prestaciones-secundario`, formData, {
+        const response = await axios.post(`${apiUrl}/send-constancia-trabajo`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -123,8 +123,8 @@ function ConstaciaDeTrabajo() {
           setShowAlert(true);
           alert('Correo enviado exitosamente');
         } else {
-          alert('Error enviando el correo secundario');
-          console.error('Error sending secondary email');
+          alert('Error enviando el correo');
+          console.error('Error enviando el correo:', response.data.message);
         }
       } catch (error) {
         console.error('Error sending secondary email:', error);

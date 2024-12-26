@@ -79,7 +79,12 @@ function RecibodePagoDetallado() {
   const handleDownload = () => {
     if (reciboData) {
       const pdf = generatePDF(reciboData);
-      pdf.save(`Recibo_de_Pago_${reciNum}.pdf`);
+      const pdfBlob = pdf.output('blob');
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Recibo_de_Pago_${reciNum}.pdf`;
+      link.click();
     }
   };
 

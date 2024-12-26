@@ -56,13 +56,18 @@ function Prestaciones() {
       const pdf = generatePrestacionesPDF(prestacionesData);
       return pdf.output('blob');
     }
-    return 0;
+    return null;
   }, [prestacionesData]);
 
   const handleDownload = () => {
     if (prestacionesData) {
       const pdf = generatePrestacionesPDF(prestacionesData);
-      pdf.save(`prestaciones_${cod_empSinEspacios}_${anio}.pdf`);
+      const pdfBlob = pdf.output('blob');
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `prestaciones_${cod_empSinEspacios}_${anio}.pdf`;
+      link.click();
     }
   };
 
