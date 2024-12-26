@@ -64,10 +64,8 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-}
-
-.formGroupMargin {
-    margin-right: 10px;
+    gap: 10px;
+    margin-bottom: 3px;
 }
 
 .formControl {

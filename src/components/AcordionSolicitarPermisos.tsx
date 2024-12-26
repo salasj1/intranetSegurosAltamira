@@ -2,14 +2,14 @@ import Accordion from 'react-bootstrap/Accordion';
 import style from '../css/accordion.module.css';
 import { useAccordionButton } from 'react-bootstrap/AccordionButton';
 import { Button, Form, Card, Alert } from 'react-bootstrap';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthProvider';
 import ConfirmModal from './ModalConfirmarSolicitarPermisos';
-
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
 const apiUrl = import.meta.env.VITE_API_URL;
+
 interface CustomToggleProps {
   children: ReactNode;
   eventKey: string;
@@ -60,7 +60,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
   const [alertVariant, setAlertVariant] = useState<'success' | 'danger' | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [otroMotivoError, setOtroMotivoError] = useState<string | null>(null); // Nuevo estado para errores específicos de otroMotivo
-
+  const [diasNoDisfrutados, setDiasNoDisfrutados] = useState<number | null>(null);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
@@ -109,7 +109,20 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
       setShowModal(false);
     }
   };
-
+  const handleDiasNoDisfrutados = async () => {
+    // Calcular dias no disfrutados
+    try {
+      const response = await axios.get(`${apiUrl}/vacaciones/CalculrDiasNoDisfrutadosVacaciones/${cod_emp}`);
+      console.log(response.data);
+      setDiasNoDisfrutados(response.data.diasNoDisfrutados);
+    } catch (error) {
+      console.error('Error al obtener los días no disfrutados:', error);
+    }
+  };
+  useEffect(() => {
+    handleDiasNoDisfrutados();
+  }, [cod_emp]);
+  
   const handleConfirm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newErrors: string[] = [];
@@ -190,9 +203,12 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                   </ul>
                 </Alert>
               )}
+              <Alert variant={diasNoDisfrutados !== null && diasNoDisfrutados <= 0 ? "danger" : "warning"} /* style={{ marginBottom: '-12px' }} */>
+                    Días no disfrutados de Vacacaciones: {diasNoDisfrutados !== null ? diasNoDisfrutados +' días': 'Cargando...'} 
+              </Alert>
               <Form onSubmit={handleConfirm}>
                 <div className={style.formGroup}>
-                  <Form.Group className={`mb-3 ${style.formGroupMargin}`} controlId="formFechas">
+                  <Form.Group controlId="formFechas">
                     <Form.Label>Fecha de inicio</Form.Label>
                     <Form.Control
                       type="date"
@@ -201,7 +217,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                       onChange={handleChange}
                     />
                   </Form.Group>
-                  <Form.Group className="mb-3" controlId="formFechas">
+                  <Form.Group controlId="formFechas">
                     <Form.Label>Fecha de fin</Form.Label>
                     <Form.Control
                       type="date"
@@ -210,6 +226,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                       onChange={handleChange}
                     />
                   </Form.Group>
+                  
                 </div>
                 <Form.Group className="mb-3" controlId="formTitulo">
                   <Form.Label>Título</Form.Label>

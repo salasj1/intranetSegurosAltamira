@@ -25,10 +25,11 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
   const [fechaMaximaFin, setFechaMaximaFin] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log(addDays(parseISO(vacacion?.FechaFin.toString() || 'nop'), 1));
     setError(null);
     setSuccess(null);
     if (vacacion) {
-      const inicio = format(parseISO(vacacion.FechaInicio.toString()), 'yyyy-MM-dd');
+      const inicio = format(addDays(parseISO(vacacion.FechaInicio.toString()), 2), 'yyyy-MM-dd');
       setFechaInicio(inicio);
       setFechaFin(format(addDays(parseISO(vacacion.FechaFin.toString()), 1), 'yyyy-MM-dd'));
     }
@@ -90,7 +91,6 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
       setError('La fecha de fin no puede ser anterior a la fecha de inicio.');
       return;
     }
-    console.log(fechaInicio, fechaFin, cod_emp);
     try {
       const response = await axios.post(`${apiUrl}/vacaciones/revisionRangoCalendario`, {
         fechaInicio: fechaInicio,
@@ -98,7 +98,7 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
         cod_emp: cod_emp
       });
       const { status, resultado } = response.data;
-      console.log(status, resultado);
+      
       if (status === 0) {
         setError(resultado);
         return;
@@ -112,7 +112,6 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
       }
       return;
     }
-
     try {
       // Enviar las fechas originales sin el día extra al endpoint
       await axios.put(`${apiUrl}/vacaciones/${vacacion?.VacacionID}`, {
@@ -133,14 +132,14 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
 
   const handleFechaInicioChange = async (date: Date | null | undefined) => {
     if (date) {
-      const newFechaInicio = date.toISOString();
-      console.log(newFechaInicio);
+      const newFechaInicio =date.toISOString();
+      console.log(addDays(newFechaInicio,-1).toISOString());
       setFechaInicio(newFechaInicio);
       if (diasHabiles !== null) {
         try {
           const response = await axios.get(`${apiUrl}/vacaciones/fechaMaximaFin`, {
             params: {
-              fechaInicio: newFechaInicio,
+              fechaInicio: addDays(newFechaInicio,-1).toISOString(),
               diasDisfrutar: diasHabiles
             }
           });

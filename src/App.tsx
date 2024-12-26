@@ -18,6 +18,7 @@ import AprobarPermisos from './routes/AprobarPermisos.tsx';
 import ControlAutorizacion from './routes/ControlAutorizacion.tsx';
 import ChangePasswordVerify from './routes/ChangePasswordVerify.tsx';
 import ConstaciaDeTrabajo from './routes/ConstaciaDeTrabajo.tsx';
+import RetornoVacaciones from './routes/RetornoVacaciones.tsx';
 
  function App() {
   return (
@@ -39,6 +40,7 @@ import ConstaciaDeTrabajo from './routes/ConstaciaDeTrabajo.tsx';
             <Route key="SolicitarVacaciones" path="SolicitarVacaciones" element={<SolicitarVacaciones/>} />,
             <Route key="AprobarVacaciones" path="AprobarVacaciones" element={<AprobarVacaciones/>} />,
             <Route key="ProcesarVacaciones" path="ProcesarVacaciones" element={<ProcesarVacaciones/>} />,
+            <Route key="RetornoVacaciones" path="RetornoVacaciones" element={<RetornoVacaciones/>} />,
             <Route key="SolicitarPermisos" path="SolicitarPermisos" element={<SolicitarPermisos/>} />,
             <Route key="AprobarPermisos" path="AprobarPermisos" element={<AprobarPermisos/>} />,
             <Route key="ProcesarPermisos" path="ProcesarPermisos" element={<ProcesarPermisos/>} />,
