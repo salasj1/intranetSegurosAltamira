@@ -83,7 +83,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     today.setHours(0, 0, 0, 0); 
 
     const startDate = fechaInicio ? new Date(fechaInicio) : null;
-    const endDate = fechaFin ? new Date(fechaFin) : null;
+    const endDate = fechaFin ? addDays(new Date(fechaFin), -1) : null;
 
     if (!fechaInicio || !fechaFin) {
       setError('Debe llenar todos los campos.');
@@ -162,7 +162,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       await axios.post(`${apiUrl}/vacaciones`, {
         cod_emp,
         FechaInicio: fechaInicio,
-        FechaFin: fechaFin,
+        FechaFin: fechaFin ? addDays(new Date(fechaFin),-1).toISOString() : null,
         Estado: tipo
       });
       
