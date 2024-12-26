@@ -92,9 +92,9 @@ function Login() {
                         <div className="mb-3">
                             <button type="submit" className="btn btn-primary w-100">Iniciar Sesión</button>
                         </div>
-                        <div className="mb-3">
+                        {/* <div className="mb-3">
                             <Link to="/signup"> <button type="submit" className="btn btn-primary w-100">Registrate</button></Link>
-                        </div>
+                        </div> */}
                         <div className="mb-3">
                             <Link to="/change-password-verify"> <button type="submit" className="btn btn-primary w-100">Cambiar Contraseña</button></Link>
                         </div>
