@@ -79,10 +79,7 @@ function ChangePasswordVerify() {
 
   const handleEnvioCodigo = async () => {
     try {
-      console.log("EL CORREO ES: " + usuarioData?.correo);
-      console.log("EL CODIGO ES: " + usuarioData?.cod_emp);
-      console.log("EL USUARIO ES: " + usuarioData);
-      const result = await axios.put(`${apiUrl}/changepassword1/${usuarioData?.cod_emp}`, { correo: "alejandro.salas@segurosaltamira.com" });
+      const result = await axios.put(`${apiUrl}/changepassword1/${usuarioData?.cod_emp}`, { correo: usuarioData?.correo });
       console.log(result);
       if (result.status === 200) {
         setError('');
