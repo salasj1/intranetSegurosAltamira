@@ -57,6 +57,34 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+
+body {
+  --sb-track-color: #efefef;
+  --sb-thumb-color: #c1c1c1;
+  --sb-size: 15px;
+}
+
+body::-webkit-scrollbar {
+  width: var(--sb-size)
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 3px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 2px;
+  
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  body {
+    scrollbar-color: var(--sb-thumb-color)
+                     var(--sb-track-color);
+  }
+}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -69,3 +97,4 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+

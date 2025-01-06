@@ -168,7 +168,7 @@ function Prestaciones() {
                           </div>
                           <Viewer
                             fileUrl={URL.createObjectURL(pdfBlob)}
-                            defaultScale={1}
+                            defaultScale={0.8}
                             onDocumentLoad={() => setIsPdfLoading(false)}
                             plugins={[zoomPluginInstance]}
                           />

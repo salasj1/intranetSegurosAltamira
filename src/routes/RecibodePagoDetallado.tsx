@@ -194,7 +194,7 @@ function RecibodePagoDetallado() {
                             </div>
                             <Viewer
                               fileUrl={URL.createObjectURL(pdfBlob)}
-                              defaultScale={1}
+                              defaultScale={0.85}
                               onDocumentLoad={() => setIsPdfLoading(false)}
                               plugins={[ zoomPluginInstance]}
                             />
