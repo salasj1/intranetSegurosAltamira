@@ -7,7 +7,7 @@ import '../css/FormularioVacaciones.css';
 import ConfirmarSolicitudModal from './ConfirmarSolicitudModal';
 import DatePicker from "react-widgets/DatePicker";
 import 'react-widgets/styles.css';
-import { parseISO,addDays } from 'date-fns';
+import { parseISO,addDays, isBefore, isEqual } from 'date-fns';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 interface FormularioVacacionesProps {
@@ -83,7 +83,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     today.setHours(0, 0, 0, 0); 
 
     const startDate = fechaInicio ? new Date(fechaInicio) : null;
-    const endDate = fechaFin ? addDays(new Date(fechaFin), -1) : null;
+    const endDate = fechaFin ? new Date(fechaFin) : null;
 
     if (!fechaInicio || !fechaFin) {
       setError('Debe llenar todos los campos.');
@@ -92,19 +92,19 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     }
     
     
-    if (startDate && (startDate < today)) {
-      setError('La fecha de inicio no puede ser anterior a la fecha actual.');
+    if (startDate && isBefore(startDate, today) && !isEqual(startDate, today)) {
+      setError('La fecha de inicio no puede ser anterior a la fecha actual o el dia de hoy.');
       setSuccess(null); 
       return;
     }
     
-    if (endDate && (endDate < today)) {
-      setError('La fecha de fin no puede ser anterior a la fecha actual.');
+    if (endDate && isBefore(endDate, today) && !isEqual(endDate, today)) {
+      setError('La fecha de fin no puede ser anterior a la fecha actual o el dia de hoy.');
       setSuccess(null); 
       return;
     }
 
-    if (startDate && endDate && endDate < startDate) {
+    if (startDate && endDate && isBefore(endDate, startDate)) {
       setError('La fecha de fin no puede ser anterior a la fecha de inicio.');
       setSuccess(null); 
       return;
@@ -146,7 +146,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
         const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
         const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada');
         if (hasRequest) {
-          setError('Ya tiene una solicitud de vacaciones pendiente. 1');
+          setError('Ya tiene una solicitud de vacaciones pendiente. ');
           setSuccess(null);
           return;
         }
@@ -162,7 +162,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       await axios.post(`${apiUrl}/vacaciones`, {
         cod_emp,
         FechaInicio: fechaInicio,
-        FechaFin: fechaFin ? addDays(new Date(fechaFin),-1).toISOString() : null,
+        FechaFin: fechaFin ? new Date(fechaFin).toISOString() : null,
         Estado: tipo
       });
       

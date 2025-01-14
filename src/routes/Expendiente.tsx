@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NavbarEmpresa from "../components/NavbarEmpresa";
 import { Form, Button, Row, Col, Card, InputGroup } from "react-bootstrap";
 import { useAuth } from '../auth/AuthProvider';
@@ -9,7 +9,7 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 const Expendiente = () => {
   const [validatedFiles, setValidatedFiles] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<string >('');
   const [files, setFiles] = useState<File[]>([]);
   const [fileInputs, setFileInputs] = useState<number[]>([0]);
 
@@ -30,6 +30,14 @@ const Expendiente = () => {
     setValidatedFiles(false); // Desactivar la validación
   };
 
+  useEffect(() => {
+    if (!selectedDocument) {
+      setFiles([]);
+      setFileInputs([0]);
+      setSelectedDocument('');
+      setValidatedFiles(false); // Desactivar la validación
+    }
+  }, [selectedDocument]);
   const addFileInput = () => {
     setFileInputs([...fileInputs, fileInputs.length]);
   };
@@ -42,10 +50,11 @@ const Expendiente = () => {
     }
 
     const formData = new FormData();
-    files.forEach((file, index) => {
-      formData.append(`archivo${index + 1}`, file);
+    files.forEach((file) => {
+      formData.append('archivos', file); // Asegúrate de que el nombre del campo sea 'archivos'
     });
     formData.append('cod_emp', cod_emp);
+    formData.append('tipo_documento', selectedDocument);
 
     try {
       const response = await fetch(`${apiUrl}/google-drive/subir-varios-archivos`, {
@@ -56,7 +65,10 @@ const Expendiente = () => {
       const result = await response.json();
       if (result.success) {
         alert('Archivos subidos con éxito.');
+        setFiles([]);
+        
       } else {
+        if(result.error)
         alert('Error al subir los archivos: ' + result.error);
       }
     } catch (error) {
@@ -137,7 +149,7 @@ const Expendiente = () => {
             <Form.Group controlId="formEstadoCivil">
               <Form.Label>Estado Civil</Form.Label>
               <Form.Control as="select">
-              <option >Seleccione un estado civil</option>
+              <option value={""} >Seleccione un estado civil</option>
               <option value={"Soltero"}>Soltero</option>
               <option value={"Casado"}>Casado</option>
               <option value={"Divorciado"}>Divorciado</option>

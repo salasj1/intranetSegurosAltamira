@@ -114,12 +114,12 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
       console.log('startDate:', startDate);
       console.log('endDate:', endDate);
       if (isBefore(startDate, today) && !isEqual(startDate, today)) {
-        setError('La fecha de inicio no puede ser anterior a la fecha actual.');
+        setError('La fecha de inicio no puede ser anterior a la fecha actual o el dia de hoy.');
         return;
       }
 
       if (isBefore(endDate, today) && !isEqual(endDate, today)) {
-        setError('La fecha de fin no puede ser anterior a la fecha actual.');
+        setError('La fecha de fin no puede ser anterior a la fecha actual o el dia de hoy. ');
         return;
       }
 
