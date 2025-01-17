@@ -1,17 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import NavbarEmpresa from "../components/NavbarEmpresa";
-import { Form, Button, Row, Col, Card, InputGroup } from "react-bootstrap";
+import { Form, Button, Row, Col, Card, InputGroup, OverlayTrigger, Tooltip, TooltipProps } from "react-bootstrap";
 import { useAuth } from '../auth/AuthProvider';
 import { IoDocumentText } from "react-icons/io5";
 import { LuPencilLine } from "react-icons/lu";
+import axios from 'axios';
+import DatePicker from "react-widgets/DatePicker";
+import { FaCircleInfo } from "react-icons/fa6";
+
+export interface TiposDocumento {
+  id: number;
+  nombre: string;
+  estatus: string;
+}
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Expendiente = () => {
   const [validatedFiles, setValidatedFiles] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState<string >('');
+  const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
+  const [tiposDocumentos, setTiposDocumentos] = useState<TiposDocumento[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [fileInputs, setFileInputs] = useState<number[]>([0]);
+  const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const { cod_emp } = useAuth();
 
@@ -27,17 +38,22 @@ const Expendiente = () => {
     setSelectedDocument(event.target.value);
     setFiles([]);
     setFileInputs([0]);
-    setValidatedFiles(false); // Desactivar la validación
+    setValidatedFiles(false);
   };
 
   useEffect(() => {
-    if (!selectedDocument) {
-      setFiles([]);
-      setFileInputs([0]);
-      setSelectedDocument('');
-      setValidatedFiles(false); // Desactivar la validación
-    }
-  }, [selectedDocument]);
+    const fetchTiposDocumentos = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/google-drive/tiposDocumentos`);
+        setTiposDocumentos(response.data);
+      } catch (error) {
+        console.error('Error fetching tipos de documentos:', error);
+      }
+    };
+
+    fetchTiposDocumentos();
+  }, []);
+
   const addFileInput = () => {
     setFileInputs([...fileInputs, fileInputs.length]);
   };
@@ -54,8 +70,10 @@ const Expendiente = () => {
       formData.append('archivos', file); // Asegúrate de que el nombre del campo sea 'archivos'
     });
     formData.append('cod_emp', cod_emp);
-    formData.append('tipo_documento', selectedDocument);
-
+    if (selectedDocument) {
+      formData.append('tipo_documento', selectedDocument);
+    }
+    
     try {
       const response = await fetch(`${apiUrl}/google-drive/subir-varios-archivos`, {
         method: 'POST',
@@ -66,7 +84,11 @@ const Expendiente = () => {
       if (result.success) {
         alert('Archivos subidos con éxito.');
         setFiles([]);
-        
+        setFileInputs([0]);
+        setSelectedDocument('');
+        fileInputRefs.current.forEach(input => {
+          if (input) input.value = '';
+        });
       } else {
         if(result.error)
         alert('Error al subir los archivos: ' + result.error);
@@ -77,6 +99,16 @@ const Expendiente = () => {
     }
     setValidatedFiles(true);
   };
+
+  const renderTooltip = (props: TooltipProps) => (
+    <div {...props} style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)', padding: '2px 10px', color: 'white', borderRadius: 3 }}>
+       <Tooltip id="button-tooltip" {...props}>
+        Simple tooltip
+        </Tooltip>
+
+    </div>
+   
+  );
 
   return (
     <>
@@ -132,7 +164,7 @@ const Expendiente = () => {
               <Form.Label>RIF</Form.Label>
             <Form.Group controlId="formRif">
               <InputGroup hasValidation>
-              <InputGroup.Text id="inputGroupPrepend">J</InputGroup.Text>
+              <InputGroup.Text style={{borderTopRightRadius:'0px', borderEndEndRadius :'0px' }}>J</InputGroup.Text>
               <Form.Control 
               type="text" 
               placeholder="RIF" 
@@ -211,10 +243,9 @@ const Expendiente = () => {
         <Form.Label><h4>Seleccionar Documento</h4></Form.Label>
         <Form.Select id="SeleccionDocumento" aria-label="Default select example" className="mb-3 " style={{ width:'600px'}} onChange={handleDocumentChange}>
           <option value="">Seleccione un documento</option>
-          <option value="Cédula">Cédula</option>
-          <option value="RIF">RIF</option>
-          <option value="Recibo">Recibo de Pago</option>
-          <option value="Otros Archivos">Otros Archivos</option>
+          {tiposDocumentos.map((tipo) => (
+            <option key={tipo.id} value={tipo.nombre}>{tipo.nombre}</option>
+          ))}
         </Form.Select>
         </Form.Group>
         
@@ -223,12 +254,57 @@ const Expendiente = () => {
             <Form.Label style={{  color: 'rgb(51, 51, 51)' , fontWeight: 'bold'}}>{selectedDocument}</Form.Label>
             
             <br/>
-            {selectedDocument === 'Otros Archivos' && "Por favor, selecciona uno o más archivos."}
+            
+            <Row>
+            {(selectedDocument === 'CEDULA' || selectedDocument=== 'RIF')&& 
+            <Col lg={3}>
+                <Form.Label style={{ fontWeight: 'bold' }}>Fecha de Vencimiento 
+                <OverlayTrigger
+                placement='right'
+                delay={{ show: 250, hide: 400 }}
+                overlay={renderTooltip}
+                >
+                  <span style={{ display: 'inline-block', marginTop: '10px' }}><FaCircleInfo /></span>
+                </OverlayTrigger>
+                  </Form.Label>
+              <DatePicker
+                placeholder="dd/mm/yyyy"
+                valueFormat={{day:"2-digit", month: "2-digit", year: "numeric" }}
+                dropUp={true}
+              />
+            </Col>
+
+            }
+            {!(selectedDocument === 'CEDULA' || selectedDocument=== 'RIF' || selectedDocument=== '')&&
+            <Col lg={4}>
+              <Form.Label style={{ fontWeight: 'bold' }}>Periodo de Actualización del documento</Form.Label>
+              <div style={{display:"flex",flexDirection:"row", gap: "10px", alignItems:"center", flexWrap:"nowrap"}}>
+              <Form.Control 
+              type="number" 
+              min="1" 
+              max="180" 
+              onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
+                if (parseInt(e.target.value) > 180) e.target.value = '180';
+              }}
+              />
+              días
+
+              </div>
+              
+            </Col>}
+            </Row>
+            <br/>
+            {selectedDocument === 'OTROS ARCHIVOS'? "Por favor, selecciona uno o más archivos.": "Por favor, selecciona un archivo."}
+            
             {fileInputs.map((index) => (
+              
               <div key={index}>
+              
                 <Form.Control style={{marginBottom: '10px'}}
                   type="file"
                   required
+                  ref={el => fileInputRefs.current[index] = el}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFileChange(e, index)}
                   accept=".pdf"
                 />
@@ -237,9 +313,12 @@ const Expendiente = () => {
                 </Form.Control.Feedback>
               </div>
             ))}
-            {selectedDocument=== "Otros Archivos" && <Button variant="secondary" onClick={addFileInput}>
+            
+            {selectedDocument=== "OTROS ARCHIVOS" && 
+            <Button variant="secondary" onClick={addFileInput}>
               Agregar otro archivo
             </Button>}
+            
           </Form.Group>
         )}
         <Button variant="primary" type="submit" >
