@@ -19,6 +19,7 @@ interface Permiso {
   Titulo: string;
   Motivo: string;
   Estado: string | string[];
+  descontable: boolean;
   descripcion: string;
   ci: string;
   nombres: string;

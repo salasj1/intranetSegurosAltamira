@@ -10,6 +10,7 @@ interface Permiso {
   Titulo: string;
   Motivo: string;
   Estado: string;
+  descontable: boolean;
   ci: string;
   nombres: string;
   apellidos: string;
@@ -47,6 +48,7 @@ const ModalConfirmacionPermiso: React.FC<ModalConfirmacionPermisoProps> = ({ sho
           <p><strong>Título:</strong> {permiso.Titulo}</p>
           <p><strong>Fecha Inicio:</strong> {format(addDays(parseISO(permiso.Fecha_inicio.toString()), 1), 'dd/MM/yyyy')}</p>
           <p><strong>Fecha Fin:</strong> {format(addDays(parseISO(permiso.Fecha_Fin.toString()), 1), 'dd/MM/yyyy')}</p>
+          <p><strong>Descontable:</strong> {permiso.descontable ? 'Si' : 'No'}</p>
         </Alert>
         <p>¿Está seguro que desea {action === 'approve' ? 'aprobar' : 'rechazar'} el siguiente permiso?</p>
       </Modal.Body>

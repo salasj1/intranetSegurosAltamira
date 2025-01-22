@@ -1,8 +1,8 @@
 import Accordion from 'react-bootstrap/Accordion';
 import style from '../css/accordion.module.css';
 import { useAccordionButton } from 'react-bootstrap/AccordionButton';
-import { Button, Form, Card, Alert } from 'react-bootstrap';
-import { ReactNode, useEffect, useState } from 'react';
+import { Button, Form, Card, Alert, FormCheck } from 'react-bootstrap';
+import { ReactNode, useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthProvider';
 import ConfirmModal from './ModalConfirmarSolicitarPermisos';
@@ -15,6 +15,11 @@ interface CustomToggleProps {
   eventKey: string;
 }
 
+interface MotivoPermiso {
+  id: number;
+  tipo: string;
+  activo: boolean;
+}
 interface AcordionSolicitarPermisoProps {
   onRefresh: () => void;
 }
@@ -24,7 +29,6 @@ function CustomToggle({ children, eventKey }: CustomToggleProps) {
 
   const decoratedOnClick = useAccordionButton(eventKey, () => {
     setIsOpen(!isOpen);
-    console.log('totally custom!');
   });
 
   return (
@@ -50,10 +54,10 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
   const [formData, setFormData] = useState({
     Fecha_inicio: '',
     Fecha_Fin: '',
-    Titulo: '',
     Motivo: '',
     descripcion: '',
-    otroMotivo: '' // Nuevo campo para el motivo adicional
+    otroMotivo: '',
+    descontable: false // Nuevo campo para el checkbox
   });
   const [showModal, setShowModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
@@ -61,41 +65,56 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
   const [errors, setErrors] = useState<string[]>([]);
   const [otroMotivoError, setOtroMotivoError] = useState<string | null>(null); // Nuevo estado para errores específicos de otroMotivo
   const [diasNoDisfrutados, setDiasNoDisfrutados] = useState<number | null>(null);
+  const [motivosPermiso, setMotivosPermiso] = useState<MotivoPermiso[]>([]);
+  
+  const descontableRef = useRef<HTMLInputElement>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
 
     if (name === 'otroMotivo') {
       const wordCount = value.trim().split(/\s+/).length;
       if (wordCount > 3) {
-        setOtroMotivoError('El motivo no puede tener más de tres palabras');
-      } else if (value.length > 25) {
+        setOtroMotivoError('El motivo no puede tener más de tres palabras'); 
+      } else if (value.length > 50) {
         setOtroMotivoError('Mucha longitud');
       } else {
         setOtroMotivoError(null);
       }
+
     }
 
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    if (type === 'checkbox') {
+      const { checked } = e.target as HTMLInputElement;
+      setFormData({
+        ...formData,
+        [name]: checked
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
   };
 
   const resetForm = () => {
     setFormData({
       Fecha_inicio: '',
       Fecha_Fin: '',
-      Titulo: '',
       Motivo: '',
       descripcion: '',
-      otroMotivo: '' // Resetear el nuevo campo
+      otroMotivo: '',
+      descontable: false // Resetear el nuevo campo
     });
     setOtroMotivoError(null); // Resetear el error específico de otroMotivo
   };
 
   const handleSubmit = async () => {
+    if(formData.Motivo === 'Otro' && formData.otroMotivo) {
+      formData.Motivo = formData.otroMotivo;
+    }
     try {
-
       await axios.post(`${apiUrl}/permisos`, { ...formData, cod_emp });
       setAlertMessage('Permiso solicitado exitosamente');
       setAlertVariant('success');
@@ -109,6 +128,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
       setShowModal(false);
     }
   };
+
   const handleDiasNoDisfrutados = async () => {
     // Calcular dias no disfrutados
     try {
@@ -119,8 +139,20 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
       console.error('Error al obtener los días no disfrutados:', error);
     }
   };
+
+  const handleMotivosPermiso = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/permisos/motivos`);
+      console.log(response.data);
+      setMotivosPermiso(response.data);
+    } catch (error) {
+      console.error('Error al obtener los motivos de permiso:', error);
+    }
+  };
+
   useEffect(() => {
     handleDiasNoDisfrutados();
+    handleMotivosPermiso();
   }, [cod_emp]);
   
   const handleConfirm = (e: React.FormEvent<HTMLFormElement>) => {
@@ -156,10 +188,6 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
       newErrors.push('La fecha de inicio no puede ser posterior a la fecha de fin');
     }
 
-    if (!formData.Titulo) {
-      newErrors.push('El título es requerido');
-    }
-
     if (!formData.Motivo) {
       newErrors.push('El motivo es requerido');
     }
@@ -167,6 +195,8 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     if (formData.Motivo === 'Otro' && !formData.otroMotivo) {
       newErrors.push('El motivo adicional es requerido');
     }
+
+    
 
     if (otroMotivoError) {
       newErrors.push(otroMotivoError);
@@ -203,9 +233,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                   </ul>
                 </Alert>
               )}
-              <Alert variant={diasNoDisfrutados !== null && diasNoDisfrutados <= 0 ? "danger" : "warning"} /* style={{ marginBottom: '-12px' }} */>
-                    Días no disfrutados de Vacacaciones: {diasNoDisfrutados !== null ? diasNoDisfrutados +' días': 'Cargando...'} 
-              </Alert>
+              
               <Form onSubmit={handleConfirm}>
                 <div className={style.formGroup}>
                   <Form.Group controlId="formFechas">
@@ -228,18 +256,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                   </Form.Group>
                   
                 </div>
-                <Form.Group className="mb-3" controlId="formTitulo">
-                  <Form.Label>Título</Form.Label>
-                  <div className={style.formControl}>
-                    <Form.Control
-                      type="text"
-                      name="Titulo"
-                      placeholder="Título"
-                      value={formData.Titulo}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </Form.Group>
+                <br/>
                 <Form.Group className="mb-3" controlId="formSelect">
                   <Form.Label>Razon del Motivo</Form.Label>
                   <div className={style.formControl}>
@@ -249,13 +266,16 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                       value={formData.Motivo}
                       onChange={handleChange}
                       placeholder='Seleccione una opción'
+                      style={{color:'black'}}
                     >
-                      <option value="" disabled hidden>Seleccione una opción</option>
-                      <option value="Familiar">Familiar</option>
-                      <option value="Academico">Académico</option>
-                      <option value="Salud">Salud</option>
-                      <option value="Otro">Otro</option>
+                      <option value="">Seleccione una opción</option>
+                      {motivosPermiso.map((motivo) => (
+                        <option key={motivo.id} value={motivo.tipo} style={{color:'black'}}>
+                          {motivo.tipo}
+                      </option>
+                      ))}
                     </Form.Control>
+                    
                     {formData.Motivo === 'Otro' && (
                       <>
                         <Form.Control
@@ -272,6 +292,17 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                       </>
                     )}
                   </div>
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formDiasNoDisfrutados">
+                  {(diasNoDisfrutados !== null && diasNoDisfrutados > 0) && (
+                    <FormCheck
+                      ref={descontableRef}
+                      label={`Descontarlo de los días no disfrutados en Vacaciones (${diasNoDisfrutados} días disponibles)`}
+                      name="descontable"
+                      checked={formData.descontable}
+                      onChange={() => setFormData({ ...formData, descontable: descontableRef.current?.checked || false })}
+                    />
+                  )}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formDescripcion">
                   <Form.Label>Descripción</Form.Label>

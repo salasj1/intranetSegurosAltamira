@@ -22,16 +22,22 @@ const generateConstanciaPDF = (data: any, destinatario: string) => {
   doc.setFontSize(12);
   doc.setFontSize(13);
   doc.setFont('calibri', 'normal');
+  let y=55;
+  if (destinatario){
+    
+    doc.text(`Señores.\n${destinatario}\nPresente.`, 15, y);
+    y+=25;
+  }
+
   
-  doc.text(`Señores.\n${destinatario}\nPresente.`, 15, 55);
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bolditalic');
-  doc.text("CONSTANCIA DE TRABAJO", doc.internal.pageSize.getWidth() / 2, 80, { align: 'center' });
+  doc.text("CONSTANCIA DE TRABAJO", doc.internal.pageSize.getWidth() / 2,y , { align: 'center' });
   doc.setFontSize(12);
   doc.setFont('calibri', 'normal');
-  let y=100;
-  doc.text("                    Quien suscribe, hace constar que el Trabajador identificado a continuación, mantiene\n una relación laboral bajo las siguientes condiciones:", 15, y);
-  let yDatos=120;
+  
+  doc.text("                    Quien suscribe, hace constar que el Trabajador identificado a continuación, mantiene\n una relación laboral bajo las siguientes condiciones:", 15, y+20);
+  let yDatos=y+40;
   doc.text(`Apellidos y Nombres:    ${data[0].nombre_completo}`, 17, yDatos);
   doc.text(`Cédula de Identidad:     ${data[0].cedula}`, 17, yDatos+10);
   const fecha_ingreso =addDays((data[0].fecha_ing),1);

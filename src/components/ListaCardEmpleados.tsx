@@ -20,7 +20,7 @@ interface Empleado {
 }
 
 const ListaCardEmpleados: React.FC = () => {
-  const { cod_emp: authCodEmp } = useAuth();
+  const {RRHH} = useAuth();
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [filtros, setFiltros] = useState({
     nombre: '',
@@ -62,14 +62,14 @@ const ListaCardEmpleados: React.FC = () => {
   };
 
   const validatePhoneNumber = (phone: string) => {
-    const phoneRegex = /^02\d{2}-\d{7}$/;
+    const phoneRegex = /^\d{4}$/;
     return phoneRegex.test(phone);
   };
 
   const handleTelefonoSubmit = async () => {
     if (selectedEmpleado) {
       if (!validatePhoneNumber(telefono)) {
-        setError('El número de teléfono debe tener el formato 02XX-XXXXXXX');
+        setError('El número de teléfono debe tener el formato XXXX');
         return;
       }
       try {
@@ -85,13 +85,7 @@ const ListaCardEmpleados: React.FC = () => {
     }
   };
 
-/*************  ✨ Codeium Command ⭐  *************/
-  /**
-   * Elimina el número de teléfono de un empleado.
-   * Se utiliza en el modal de edición de teléfono.
-   * @function
-   */
-/******  5ee6eb7d-8103-471a-82e6-4f7496a7691b  *******/
+
   const handleTelefonoDelete = async () => {
     if (selectedEmpleado) {
       try {
@@ -239,7 +233,7 @@ const ListaCardEmpleados: React.FC = () => {
                         <strong>Correo:</strong> {empleado.correo_e}<br />
                         <div style={{ display: 'flex', gap: '10px' }}>
                           <strong>Teléfono:</strong> {empleado.tlf_oficina || 'No disponible'}
-                        {empleado.cod_emp === authCodEmp && (
+                        { RRHH ===1  && (
                           <>
                             <Button variant="primary" onClick={() => handleEditClick(empleado)}>Editar</Button>
                           </>
@@ -263,12 +257,13 @@ const ListaCardEmpleados: React.FC = () => {
           {error && <Alert variant="danger">{error}</Alert>}
           <Form>
             <Form.Group controlId="telefono">
-              <Form.Label>El telfono debe tener el siguiente formato: Ej 0212-1234567</Form.Label>
+              <Form.Label>El teléfono de extensión debe tener el siguiente formato: Ej 1234</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Actualizar teléfono"
-                value={telefono}
-                onChange={handleTelefonoChange}
+              type="text"
+              placeholder="Actualizar teléfono"
+              value={telefono}
+              onChange={handleTelefonoChange}
+              maxLength={4}
               />
             </Form.Group>
           </Form>

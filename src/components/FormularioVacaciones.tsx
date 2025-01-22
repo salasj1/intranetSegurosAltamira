@@ -271,14 +271,14 @@ const handleConfirmSolicitar = async () => {
               />
             </Form.Group>
             <div className="button-group">
-              <Button variant="primary" onClick={() => handleSubmit('emitida')} style={hasPreviousRequest ? { width: "100%" } : {}}>Emitir</Button>
+              
               {!hasPreviousRequest && (
               <>
                 {(!fechaInicio || !fechaFin) ? (
-                <Button variant="warning" onClick={() => setError('Debe llenar todos los campos.')}>Solicitar</Button>
+                <Button variant="warning" onClick={() => setError('Debe llenar todos los campos.')} style={{ width: "100%"}}>Solicitar</Button>
                 ) : (
                 <>
-                  <Button variant="warning" onClick={() => setShowConfirmModal(true)}>Solicitar</Button>
+                  <Button variant="warning" onClick={() => setShowConfirmModal(true)} style={{ width: "100%"}}>Solicitar</Button>
                 </>
                 )}
               </>

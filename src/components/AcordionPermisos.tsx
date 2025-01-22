@@ -17,6 +17,7 @@ interface Permiso {
   cod_supervisor: string;
   cod_RRHH: string;
   descripcion: string;
+  descontable: boolean;
 }
 
 interface AcordionPermisosProps {
@@ -79,6 +80,7 @@ function AcordionPermisos({ refresh }: AcordionPermisosProps) {
                 <strong>Fecha:</strong> {format(addDays(parseISO(permiso.Fecha_inicio.toString()), 1), 'dd/MM/yyyy')} al {format(addDays(parseISO(permiso.Fecha_Fin.toString()), 1), 'dd/MM/yyyy')} <br />
                 <strong>Motivo:</strong> {permiso.Motivo} <br />
                 <strong>Estado:</strong> {permiso.Estado} <br />
+                <strong>Descontado de las Vacaciones: </strong> {permiso.descontable ? 'Si' : 'No'} <br />
                 <strong>Descripción: </strong> <br />
                 {permiso.descripcion}
               </Card.Body>

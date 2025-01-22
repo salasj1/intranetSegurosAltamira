@@ -15,6 +15,7 @@ interface Permiso {
   Motivo: string;
   Estado: string | string[];
   descripcion: string;
+  descontable: boolean;
   ci: string;
   nombres: string;
   apellidos: string;  
@@ -96,6 +97,7 @@ const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show,
               <p style={{ fontSize: "18px", margin: "0" }}><strong>Fecha Inicio:</strong> {format(addDays(parseISO(permiso.Fecha_inicio.toString()), 1), 'dd/MM/yyyy')}</p>
               <p style={{ fontSize: "18px", margin: "0" }}><strong>Fecha Fin:</strong> {format(addDays(parseISO(permiso.Fecha_Fin.toString()), 1), 'dd/MM/yyyy')}</p>
               <p style={{ fontSize: "18px", margin: "0" }}><strong>Motivo:</strong> {permiso.Motivo}</p>
+              <p style={{ fontSize: "18px", margin: "0" }}><strong>Descontado de las Vacaciones: </strong> {permiso.descontable ? 'Si' : 'No'} </p>
             </div>
           </Alert>
           <div style={{ display: "flex", flexDirection: "row", gap: "5px" }}>
