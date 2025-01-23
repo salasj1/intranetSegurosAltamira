@@ -79,7 +79,14 @@ function ARC() {
   const handleDownload = () => {
     if (arcData) {
       const pdf = generateARCPDF(arcData, fechaARC);
-      pdf.save(`ARC_${cod_empSinEspacios}_${fechaARC}.pdf`);
+      const blob = pdf.output('blob');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ARC_${cod_empSinEspacios}_${fechaARC}.pdf`;
+      a.click();
+      window.open(url, '_blank');
+      URL.revokeObjectURL(url);
     }
   };
 

@@ -68,6 +68,8 @@ function Prestaciones() {
       link.href = url;
       link.download = `prestaciones_${cod_empSinEspacios}_${anio}.pdf`;
       link.click();
+      window.open(url, '_blank');
+      URL.revokeObjectURL(url);
     }
   };
 

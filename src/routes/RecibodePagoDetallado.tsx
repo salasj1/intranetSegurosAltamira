@@ -85,6 +85,8 @@ function RecibodePagoDetallado() {
       link.href = url;
       link.download = `Recibo_de_Pago_${reciNum}.pdf`;
       link.click();
+      window.open(url, '_blank');
+      URL.revokeObjectURL(url);
     }
   };
 

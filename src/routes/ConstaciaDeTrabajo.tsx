@@ -76,6 +76,8 @@ function ConstaciaDeTrabajo() {
       link.href = url;
       link.download = `Constancia_de_Trabajo_${cod_empSinEspacios}_${anio}.pdf`;
       link.click();
+      window.open(url, '_blank');
+      URL.revokeObjectURL(url);
     }
   };
 
