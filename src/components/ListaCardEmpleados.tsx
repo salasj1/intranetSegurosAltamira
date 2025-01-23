@@ -62,14 +62,14 @@ const ListaCardEmpleados: React.FC = () => {
   };
 
   const validatePhoneNumber = (phone: string) => {
-    const phoneRegex = /^\d{4}$/;
+    const phoneRegex = /^\d{10}$/;
     return phoneRegex.test(phone);
   };
 
   const handleTelefonoSubmit = async () => {
     if (selectedEmpleado) {
       if (!validatePhoneNumber(telefono)) {
-        setError('El número de teléfono debe tener el formato XXXX');
+        setError('El número de teléfono debe tener el formato que se dió de ejemplo');
         return;
       }
       try {
@@ -257,13 +257,17 @@ const ListaCardEmpleados: React.FC = () => {
           {error && <Alert variant="danger">{error}</Alert>}
           <Form>
             <Form.Group controlId="telefono">
-              <Form.Label>El teléfono de extensión debe tener el siguiente formato: Ej 1234</Form.Label>
+              <Form.Label>El teléfono de extensión debe tener el siguiente formato:<br/> Ejemplo: 2121234567</Form.Label>
               <Form.Control
               type="text"
               placeholder="Actualizar teléfono"
               value={telefono}
               onChange={handleTelefonoChange}
-              maxLength={4}
+              onInput={(e) => {
+                const input = e.target as HTMLInputElement;
+                input.value = input.value.replace(/[^0-9]/g, '');
+              }}
+              maxLength={10}
               />
             </Form.Group>
           </Form>

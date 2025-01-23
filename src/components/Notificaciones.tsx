@@ -107,7 +107,7 @@ const Notificaciones: React.FC = () => {
                 </h6>
             </Button>
             {showPermisos && (
-                <div className="permisos-lista">
+                <div className="notificaciones-lista">
                     <ListGroup className='Notificaciones'>
                         {filteredPermisos.length === 0 ? (
                             <ListGroupItem>

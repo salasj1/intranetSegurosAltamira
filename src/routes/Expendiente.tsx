@@ -304,7 +304,7 @@ const Expendiente = () => {
                 <Form.Control style={{marginBottom: '10px'}}
                   type="file"
                   required
-                  ref={el => fileInputRefs.current[index] = el}
+                  ref={(el: HTMLInputElement | null) => fileInputRefs.current[index] = el}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFileChange(e, index)}
                   accept=".pdf"
                 />

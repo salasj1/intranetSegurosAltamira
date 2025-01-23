@@ -197,7 +197,7 @@ img {
     color: #ff7b00 !important;
 }
 
-.permisos-lista {
+.notificaciones-lista {
     position: absolute;
     top: 60px;
     right: 240px;
@@ -211,7 +211,7 @@ img {
     overflow-y: auto;
 }
 
-.permisos-lista::-webkit-scrollbar {
+.notificaciones-lista::-webkit-scrollbar {
     width: 0px;
 }
 
