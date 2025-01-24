@@ -275,7 +275,7 @@ const handleConfirmSolicitar = async () => {
               {!hasPreviousRequest && (
               <>
                 {(!fechaInicio || !fechaFin) ? (
-                <Button variant="warning" onClick={() => setError('Debe llenar todos los campos.')} style={{ width: "100%"}}>Solicitar</Button>
+                <Button variant="primary" onClick={() => setError('Debe llenar todos los campos.')} style={{ width: "100%"}}>Solicitar</Button>
                 ) : (
                 <>
                   <Button variant="warning" onClick={() => setShowConfirmModal(true)} style={{ width: "100%"}}>Solicitar</Button>
