@@ -35,9 +35,9 @@ const Notificaciones: React.FC = () => {
                 response = await axios.get(`${apiUrl}/permisos/notificacion/Supervisor/${auth.cod_emp}`);
             } 
             if(auth.RRHH === 1) {
-                response = await axios.get(`${apiUrl}/permisos/nuevos/${auth.cod_emp}`);
+                response = await axios.get(`${apiUrl}/permisos/notificacion/RRHH/${auth.cod_emp}`);
             } else if (auth.RRHH === 0 && auth.tipo === 'Empleado') {
-                response = await axios.get(`${apiUrl}/permisos/id/${auth.cod_emp}`);
+                response = await axios.get(`${apiUrl}/permisos/notificacion/Empleado/id/${auth.cod_emp}`);
             }
             if (response && Array.isArray(response.data)) {
                 setNewPermisos(response.data);
@@ -51,7 +51,6 @@ const Notificaciones: React.FC = () => {
     };
 
     useEffect(() => {
-        
         if (showPermisos) {
             fetchNewPermisos();
         }
@@ -116,7 +115,7 @@ const Notificaciones: React.FC = () => {
                         ) : (
                             <>
                                 {filteredPermisos.map((permiso, index) => (
-                                    ((auth.tipo === "Supervisor") && permiso.Estado === "Pendiente") && (
+                                    ((auth.tipo === "Supervisor") && auth.RRHH === 0   && permiso.Estado === "Pendiente") && (
                                         <ListGroup.Item key={index}>
                                             <Toast className='notificacion' onClose={() => handleDiscard(permiso.PermisosID, permiso.Estado)}>
                                                 <Toast.Header closeButton={true}>
@@ -134,9 +133,9 @@ const Notificaciones: React.FC = () => {
                                         </ListGroup.Item>
                                     )
                                 ))}
-                                {filteredPermisos.map((permiso, index) => (
+                                {filteredPermisos.map((permiso) => (
                                     (auth.RRHH === 1 && (permiso.Estado === "Aprobada" || permiso.Estado === "Pendiente")) && (
-                                        <ListGroup.Item key={index}>
+                                        <ListGroup.Item key={permiso.PermisosID}>
                                             <Toast className='notificacion' onClose={() => handleDiscard(permiso.PermisosID, permiso.Estado)}>
                                                 <Toast.Header closeButton={true}>
                                                     <img src={img1} className="rounded me-2" alt="" style={{ width: "20px" }} />
