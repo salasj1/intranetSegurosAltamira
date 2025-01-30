@@ -205,15 +205,55 @@ const handleConfirmSolicitar = async () => {
               <p><strong>Días hábiles disponibles:</strong> {diasHabiles !== null ? diasHabiles : 'Cargando...'}</p>
             </Alert>
           </div>
-          <Form>
-            <Form.Group controlId="fechaInicio">
-                <Form.Label>Fecha Inicio:</Form.Label>
-                <DatePicker
-                  placeholder="dd/mm/yyyy"
-                  value={fechaInicio ? parseISO(fechaInicio) : null}
+          { diasHabiles !== null && diasHabiles > 0 && (
+                <Form>
+              <Form.Group controlId="fechaInicio">
+                  <Form.Label>Fecha Inicio:</Form.Label>
+                  <DatePicker
+                    placeholder="dd/mm/yyyy"
+                    value={fechaInicio ? parseISO(fechaInicio) : null}
+                    valueFormat={{day:"numeric", month: "numeric", year: "numeric" }}
+                    onChange={handleFechaInicioChange}
+                    min={new Date()}
+                    parse={(str) => {
+                      if (!str) return undefined; 
+                      const [day, month, year] = str.split('/').map(Number);
+                      const today = new Date();
+                      const parsedDate = new Date(
+                        year || today.getFullYear(),
+                        (month ? month - 1 : today.getMonth()),
+                        day
+                      );
+                      const startDate = fechaInicio ? parseISO(fechaInicio) : today;
+                      if (parsedDate < startDate) {
+                        return startDate;
+                      }
+                      return parsedDate;
+                  }}
+                  />
+                {fechaMaximaFin  &&    (
+                  <>
+                  <br/>
+                  <Alert variant="warning">
+                    Limite de fecha fin: {addDays(parseISO((fechaMaximaFin)),1).toLocaleDateString()}
+                  </Alert>
+                  </>
+                )}
+              </Form.Group>
+              {!fechaMaximaFin &&  (
+                <br/>
+              )}
+              <Form.Group controlId="fechaFin">
+                <Form.Label>Fecha Fin:</Form.Label>
+                <DatePicker 
+                  placeholder='dd/mm/yyyy'
+                  value={fechaFin ? new Date(fechaFin) : null}
+                  onChange={(date: Date | null | undefined) => {
+                    setFechaFin(date ? date.toISOString() : null);
+                  }}
                   valueFormat={{day:"numeric", month: "numeric", year: "numeric" }}
-                  onChange={handleFechaInicioChange}
-                  min={new Date()}
+                  min={fechaInicio ? new Date(fechaInicio) : new Date()}
+                  max={fechaMaximaFin ? addDays(new Date(fechaMaximaFin),1) : undefined} 
                   parse={(str) => {
                     if (!str) return undefined; 
                     const [day, month, year] = str.split('/').map(Number);
@@ -223,68 +263,32 @@ const handleConfirmSolicitar = async () => {
                       (month ? month - 1 : today.getMonth()),
                       day
                     );
-                    const startDate = fechaInicio ? parseISO(fechaInicio) : today;
+                    const startDate = fechaInicio ? new Date(fechaInicio) : today;
                     if (parsedDate < startDate) {
                       return startDate;
                     }
                     return parsedDate;
-                }}
+                  }}
                 />
-              {fechaMaximaFin && (
+              </Form.Group>
+              <div className="button-group">
+                
+                {!hasPreviousRequest && diasHabiles !== null && diasHabiles > 0 && (
                 <>
-                <br/>
-                <Alert variant="warning">
-                  Limite de fecha fin: {addDays(parseISO((fechaMaximaFin)),1).toLocaleDateString()}
-                </Alert>
-                </>
-              )}
-            </Form.Group>
-            {!fechaMaximaFin && (
-              <br/>
-            )}
-            <Form.Group controlId="fechaFin">
-              <Form.Label>Fecha Fin:</Form.Label>
-              <DatePicker 
-                placeholder='dd/mm/yyyy'
-                value={fechaFin ? new Date(fechaFin) : null}
-                onChange={(date: Date | null | undefined) => {
-                  setFechaFin(date ? date.toISOString() : null);
-                }}
-                valueFormat={{day:"numeric", month: "numeric", year: "numeric" }}
-                min={fechaInicio ? new Date(fechaInicio) : new Date()}
-                max={fechaMaximaFin ? addDays(new Date(fechaMaximaFin),1) : undefined} 
-                parse={(str) => {
-                  if (!str) return undefined; 
-                  const [day, month, year] = str.split('/').map(Number);
-                  const today = new Date();
-                  const parsedDate = new Date(
-                    year || today.getFullYear(),
-                    (month ? month - 1 : today.getMonth()),
-                    day
-                  );
-                  const startDate = fechaInicio ? new Date(fechaInicio) : today;
-                  if (parsedDate < startDate) {
-                    return startDate;
-                  }
-                  return parsedDate;
-                }}
-              />
-            </Form.Group>
-            <div className="button-group">
-              
-              {!hasPreviousRequest && (
-              <>
-                {(!fechaInicio || !fechaFin) ? (
-                <Button variant="primary" onClick={() => setError('Debe llenar todos los campos.')} style={{ width: "100%"}}>Solicitar</Button>
-                ) : (
-                <>
-                  <Button variant="primary" onClick={() => setShowConfirmModal(true)} style={{ width: "100%"}}>Solicitar</Button>
+                  {(!fechaInicio || !fechaFin) ? (
+                  <Button variant="primary" onClick={() => setError('Debe llenar todos los campos.')} style={{ width: "100%"}}>Solicitar</Button>
+                  ) : (
+                  <>
+                    <Button variant="primary" onClick={() => setShowConfirmModal(true)} style={{ width: "100%"}}>Solicitar</Button>
+                  </>
+                  )}
                 </>
                 )}
-              </>
-              )}
-            </div>
-          </Form>
+              </div>
+            </Form>
+            )
+          }
+          
         </Card.Body>
       </Card>
 
