@@ -125,8 +125,8 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
     } catch (error) {
       console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso:`, error);
       if (axios.isAxiosError(error)) {
-        console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso:`, error.response?.data);
-        setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${error.response?.data}`);
+        console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso:`, error?.message);
+        setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${error?.message}`);
       } else {
         console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso:`, error);
         setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${error}`);
