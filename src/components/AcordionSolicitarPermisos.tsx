@@ -8,6 +8,7 @@ import { useAuth } from '../auth/AuthProvider';
 import ConfirmModal from './ModalConfirmarSolicitarPermisos';
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
+import { differenceInDays } from 'date-fns';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 interface CustomToggleProps {
@@ -118,6 +119,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
       await axios.post(`${apiUrl}/permisos`, { ...formData, cod_emp });
       setAlertMessage('Permiso solicitado exitosamente');
       setAlertVariant('success');
+      handleDiasNoDisfrutados();
       resetForm();
       onRefresh();
     } catch (error) {
@@ -133,7 +135,6 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     // Calcular dias no disfrutados
     try {
       const response = await axios.get(`${apiUrl}/vacaciones/CalculrDiasNoDisfrutadosVacaciones/${cod_emp}`);
-      console.log(response.data);
       setDiasNoDisfrutados(response.data.diasNoDisfrutados);
     } catch (error) {
       console.error('Error al obtener los días no disfrutados:', error);
@@ -155,7 +156,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     handleMotivosPermiso();
   }, [cod_emp]);
   
-  const handleConfirm = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleConfirm = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newErrors: string[] = [];
     const today = new Date();
@@ -195,6 +196,21 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     if (formData.Motivo === 'Otro' && !formData.otroMotivo) {
       newErrors.push('El motivo adicional es requerido');
     }
+
+   
+    if(formData.descontable){
+      
+      handleDiasNoDisfrutados();
+  
+      if (diasNoDisfrutados === null) {
+        newErrors.push('Error al evaluar los días no disfrutados');
+      }
+      
+        if (diasNoDisfrutados !== null &&  differenceInDays(endDate, startDate) > diasNoDisfrutados) {
+          newErrors.push('No tiene días no disfrutados para descontar. Tienes: '+ diasNoDisfrutados + ' días disponibles y estas solicitando: ' + differenceInDays(endDate, startDate) + ' días');
+        }
+      
+    } 
 
     
 
