@@ -321,7 +321,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                   )}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formDescripcion">
-                  <Form.Label>Descripción</Form.Label>
+                  <Form.Label>Descripción (opcional)</Form.Label>
                   <Form.Control
                     as="textarea"
                     name="descripcion"
