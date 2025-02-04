@@ -115,18 +115,39 @@ const ListaCardEmpleados: React.FC = () => {
   const hayFiltrosActivos = Object.values(filtros).some(filtro => filtro !== '');
 
   const nombresUnicos = Array.from(new Set(empleados
+    .filter(empleado => 
+      (!filtros.nombre || empleado.nombre_completo === filtros.nombre) &&
+      (!filtros.departamento || empleado.des_depart === filtros.departamento) &&
+      (!filtros.correo || empleado.correo_e === filtros.correo)
+    )
     .map(empleado => empleado.nombre_completo)
+    
   )).sort((a, b) => a.localeCompare(b));
 
   const cargosUnicos = Array.from(new Set(empleados
+    .filter(empleado => 
+      (!filtros.nombre || empleado.nombre_completo === filtros.nombre) &&
+      (!filtros.departamento || empleado.des_depart === filtros.departamento) &&
+      (!filtros.correo || empleado.correo_e === filtros.correo)
+    )
     .map(empleado => empleado.des_cargo)
   )).sort((a, b) => a.localeCompare(b));
 
   const departamentosUnicos = Array.from(new Set(empleados
+    .filter(empleado => 
+      (!filtros.nombre || empleado.nombre_completo === filtros.nombre) &&
+      (!filtros.departamento || empleado.des_depart === filtros.departamento) &&
+      (!filtros.correo || empleado.correo_e === filtros.correo)
+    )
     .map(empleado => empleado.des_depart)
   )).sort((a, b) => a.localeCompare(b));
 
   const correosUnicos = Array.from(new Set(empleados
+    .filter(empleado => 
+      (!filtros.nombre || empleado.nombre_completo === filtros.nombre) &&
+      (!filtros.departamento || empleado.des_depart === filtros.departamento) &&
+      (!filtros.correo || empleado.correo_e === filtros.correo)
+    )
     .map(empleado => empleado.correo_e)
   )).sort((a, b) => (a || '').localeCompare(b || ''));
 
