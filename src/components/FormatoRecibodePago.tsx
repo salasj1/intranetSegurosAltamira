@@ -39,11 +39,12 @@ const generatePDF = (data: any) => {
       doc.text('RIF.: J-30052236-9', posrecx + 56, posrecy + 39);
 
       // Información de Pagina y nombre persona
+      console.log(data[0].nombres);
       const firstName = data[0].nombres ? data[0].nombres.split(' ')[0] : 'N/A';
-      const firstlastName = data[0].nombres ? data[0].nombres.split(' ')[1] : 'N/A';
+      const firstlastName = data[0].apellidos ? data[0].apellidos.split(' ')[0] : 'N/A';
       doc.setFontSize(12);
       doc.text(`Usuario:`, posrecw - 175, posrecy + 10);
-      doc.text(`${firstName} ${firstlastName}`, posrecw - 75, posrecy + 10);
+      doc.text(`${firstName} ${firstlastName}`, posrecw - 137, posrecy + 10);
       if (totalPages) {
         doc.text('Página:', posrecw - 173, posrecy + 20);
         doc.text(` ${pageNumber}      de                ${totalPages}`, posrecw - 90, posrecy + 20);
@@ -140,10 +141,11 @@ const generatePDF = (data: any) => {
         return num.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       };
       
-      const formattedMonto =  formatNumber(data[0].monto);
+      
       // TABLA DE DATOS
       const tableData = data.map((item: any) => {
         const valorAuxiliar = item.auxi_cha || item.auxi_num !== 0 ? `${item.auxi_num} ${item.auxi_cha || ''}` : '';
+        const formattedMonto =  formatNumber(item.monto);
         return [
           item.co_conce,
           item.des_conce,
