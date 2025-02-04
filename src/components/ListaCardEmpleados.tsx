@@ -20,7 +20,7 @@ interface Empleado {
 }
 
 const ListaCardEmpleados: React.FC = () => {
-  const {RRHH} = useAuth();
+  const { RRHH } = useAuth();
   const [empleados, setEmpleados] = useState<Empleado[]>([]);
   const [filtros, setFiltros] = useState({
     nombre: '',
@@ -85,7 +85,6 @@ const ListaCardEmpleados: React.FC = () => {
     }
   };
 
-
   const handleTelefonoDelete = async () => {
     if (selectedEmpleado) {
       try {
@@ -107,47 +106,27 @@ const ListaCardEmpleados: React.FC = () => {
   };
 
   const empleadosFiltrados = empleados.filter(empleado =>
-    empleado.nombre_completo?.toLowerCase().includes(filtros.nombre.toLowerCase()) &&
-    empleado.des_cargo?.toLowerCase().includes(filtros.cargo.toLowerCase()) &&
-    empleado.des_depart?.toLowerCase().includes(filtros.departamento.toLowerCase()) &&
-    (empleado.correo_e?.toLowerCase() || '').includes(filtros.correo.toLowerCase())
+    (!filtros.nombre || empleado.nombre_completo?.toLowerCase().includes(filtros.nombre.toLowerCase())) &&
+    (!filtros.cargo || empleado.des_cargo?.toLowerCase().includes(filtros.cargo.toLowerCase())) &&
+    (!filtros.departamento || empleado.des_depart?.toLowerCase() === filtros.departamento.toLowerCase()) &&
+    (!filtros.correo || (empleado.correo_e?.toLowerCase() || '').includes(filtros.correo.toLowerCase()))
   );
 
   const hayFiltrosActivos = Object.values(filtros).some(filtro => filtro !== '');
 
   const nombresUnicos = Array.from(new Set(empleados
-    .filter(empleado => 
-      (!filtros.cargo || empleado.des_cargo === filtros.cargo) &&
-      (!filtros.departamento || empleado.des_depart === filtros.departamento) &&
-      (!filtros.correo || empleado.correo_e === filtros.correo)
-    )
     .map(empleado => empleado.nombre_completo)
   )).sort((a, b) => a.localeCompare(b));
 
   const cargosUnicos = Array.from(new Set(empleados
-    .filter(empleado => 
-      (!filtros.nombre || empleado.nombre_completo === filtros.nombre) &&
-      (!filtros.departamento || empleado.des_depart === filtros.departamento) &&
-      (!filtros.correo || empleado.correo_e === filtros.correo)
-    )
     .map(empleado => empleado.des_cargo)
   )).sort((a, b) => a.localeCompare(b));
 
   const departamentosUnicos = Array.from(new Set(empleados
-    .filter(empleado => 
-      (!filtros.nombre || empleado.nombre_completo === filtros.nombre) &&
-      (!filtros.cargo || empleado.des_cargo === filtros.cargo) &&
-      (!filtros.correo || empleado.correo_e === filtros.correo)
-    )
     .map(empleado => empleado.des_depart)
   )).sort((a, b) => a.localeCompare(b));
 
   const correosUnicos = Array.from(new Set(empleados
-    .filter(empleado => 
-      (!filtros.nombre || empleado.nombre_completo === filtros.nombre) &&
-      (!filtros.cargo || empleado.des_cargo === filtros.cargo) &&
-      (!filtros.departamento || empleado.des_depart === filtros.departamento)
-    )
     .map(empleado => empleado.correo_e)
   )).sort((a, b) => (a || '').localeCompare(b || ''));
 
