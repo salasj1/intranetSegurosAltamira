@@ -19,6 +19,7 @@ import ControlAutorizacion from './routes/ControlAutorizacion.tsx';
 import ChangePasswordVerify from './routes/ChangePasswordVerify.tsx';
 import ConstaciaDeTrabajo from './routes/ConstaciaDeTrabajo.tsx';
 import RetornoVacaciones from './routes/RetornoVacaciones.tsx';
+import Expendiente from './routes/Expendiente.tsx';
  function App() {
   return (
     <AuthProvider>
@@ -45,6 +46,7 @@ import RetornoVacaciones from './routes/RetornoVacaciones.tsx';
             <Route key="ProcesarPermisos" path="ProcesarPermisos" element={<ProcesarPermisos/>} />,
             <Route key="DirectorioEmpleados" path="DirectorioEmpleados" element={<DirectorioEmpleados/>} />,
             <Route key="ControlSupervision" path='ControlSupervision' element={<ControlAutorizacion />} />,
+            <Route key='ayuda' path='ayuda' element={<Expendiente />} />,
             
           ]}
         ></Route>
