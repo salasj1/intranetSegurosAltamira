@@ -82,8 +82,8 @@ function Login() {
                         </div>
                         {error && <div className="alert alert-danger">{error}</div>}
                         <div className="mb-3">
-                            <label htmlFor="usuario" className="form-label">Usuario</label>
-                            <input type="text" className="form-control" id="usuario" placeholder="Ingresa tu usuario" value={usuario} onChange={(e) => setUsuario(e.target.value)} autoComplete="current-password" />
+                            <label htmlFor="usuario" className="form-label">Correo Empresarial</label>
+                            <input type="text" className="form-control" id="usuario" placeholder="Ingresa tu correo empresarial" value={usuario} onChange={(e) => setUsuario(e.target.value)} autoComplete="current-password" />
                         </div>
                         <div className="mb-3">
                             <label htmlFor="password" className="form-label">Contraseña</label>
