@@ -209,8 +209,8 @@ function ChangePasswordVerify() {
           {show1 && <>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
-                <label htmlFor="usuario" className="form-label">Introduzca el usuario</label>
-                <input type="text" className="form-control" id="usuario" placeholder="Ingresa tu usuario" value={usuario} onChange={(e) => setUsuario(e.target.value)} />
+                <label htmlFor="usuario" className="form-label">Introduzca el correo empresarial</label>
+                <input type="text" className="form-control" id="usuario" placeholder="Ingresa tu correo Empresarial" value={usuario} onChange={(e) => setUsuario(e.target.value)} />
               </div>
             </form>
             <div className="mb-3">
