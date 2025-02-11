@@ -1,7 +1,7 @@
 import { useContext, createContext, useState, useEffect } from "react";
 import axios, { AxiosError } from 'axios';
-import NavbarEmpresa from "../components/NavbarEmpresa";
-
+import { Mosaic } from "react-loading-indicators";
+import styles from '../css/loading.module.css';
 const apiUrl = import.meta.env.VITE_API_URL;
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -157,7 +157,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     if (loading) {
-        return <NavbarEmpresa />;
+        return (
+            <div className={styles.loadingContainer}>
+            <Mosaic  color={["#003391","#1A5FFA","#33CCCC","#1A3FFA"]} size="large" text="" textColor="#0d1bff" />
+            </div>
+        );
     }
 
     return (

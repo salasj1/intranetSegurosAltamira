@@ -10,6 +10,8 @@ import { CSSTransition } from 'react-transition-group';
 import { useAuth } from '../auth/AuthProvider'; 
 import NavbarEmpresa from '../components/NavbarEmpresa';
 import generatePrestacionesPDF from '../components/FormatoPrestaciones';
+import stylesLoading from "../css/loading.module.css";
+import { Mosaic } from "react-loading-indicators";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -141,7 +143,9 @@ function Prestaciones() {
         <h1 style={{ textAlign: "center" }} className={styles.h1Prestaciones}>Movimientos de Prestaciones Sociales</h1>
         <div className={styles.divEspacio} style={{width:"100%"}}>
           {isLoading ? (
-            <h2>Cargando Detalle...</h2>
+            <div className={stylesLoading.loadingDocument} >
+                <Mosaic  color={["#003391","#1A5FFA","#33CCCC","#1A3FFA"]} size="large" text="" textColor="#0d1bff" />
+            </div>
           ) : prestacionesData && prestacionesData.length > 0 ? (
             <>
               <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
@@ -152,10 +156,14 @@ function Prestaciones() {
                   </Alert>
                 ) : (
                   <>
-                    {isPdfLoading && <h2>Cargando detalle PDF...</h2>}
                     <div className={styles['pdf-viewer-container']}>
                       {pdfBlob && (
                         <>
+                          {isPdfLoading && (
+                            <div className={stylesLoading.loadingDocument} >
+                              <Mosaic  color={["#003391","#1A5FFA","#33CCCC","#1A3FFA"]} size="large" text="" textColor="#0d1bff" />
+                            </div>
+                          )}
                           <div className={styles.botonesZoom}>
                             <zoomPluginInstance.ZoomIn>
                               {({ onClick }) => (

@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import logo from "../assets/logo-head.png";
-import marca from "../assets/marca.png";
-import firmaaprueba from "../assets/firmaprueba.png";
+import firma from "../assets/firma.png";
+
 import CalibriBase64 from '../fonts/Calibri.base64.ts';
 import { addDays } from 'date-fns';
 const generateConstanciaPDF = (data: any, destinatario: string) => {
@@ -24,15 +24,15 @@ const generateConstanciaPDF = (data: any, destinatario: string) => {
   doc.setFont('calibri', 'normal');
   let y=55;
   if (destinatario){
-    
+    y=58;
     doc.text(`Señores.\n${destinatario}\nPresente.`, 15, y);
-    y+=25;
+    y+=15;
   }
 
   
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bolditalic');
-  doc.text("CONSTANCIA DE TRABAJO", doc.internal.pageSize.getWidth() / 2,y , { align: 'center' });
+  doc.text("CONSTANCIA DE TRABAJO", doc.internal.pageSize.getWidth() / 2,y+9 , { align: 'center' });
   doc.setFontSize(12);
   doc.setFont('calibri', 'normal');
   
@@ -60,8 +60,7 @@ const generateConstanciaPDF = (data: any, destinatario: string) => {
   
  
   doc.line(65, yParrafo2+37.5, doc.internal.pageSize.getWidth() - 65, yParrafo2+37.5);
-  doc.addImage(marca, 'PNG', doc.internal.pageSize.getWidth() / 2-15, yParrafo2, 50, 50);
-  doc.addImage(firmaaprueba, 'PNG', doc.internal.pageSize.getWidth() / 2-30, yParrafo2+17, 60, 30);
+  doc.addImage(firma, 'PNG', doc.internal.pageSize.getWidth() / 2-75, yParrafo2-18, 139.13, 104.63);
   doc.setFontSize(12);
   doc.text("Atentamente,", doc.internal.pageSize.getWidth() / 2, yParrafo2+15, { align: 'center' });
   doc.setFont('helvetica', 'bold');

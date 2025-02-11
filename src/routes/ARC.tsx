@@ -6,7 +6,8 @@ import { Button, Card, Alert, Form } from 'react-bootstrap';
 import NavbarEmpresa from '../components/NavbarEmpresa';
 import generateARCPDF from '../components/FormatoARC';
 import styles from '../css/ARC.module.css';
-
+import stylesLoading from "../css/loading.module.css";
+import { Mosaic } from "react-loading-indicators";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function ARC() {
@@ -192,10 +193,15 @@ const handleSendSecondaryEmail = async () => {
           ) : showPdf && arcData ? (
             <>
               <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
-                {isPdfLoading && <h2>Cargando detalle PDF...</h2>}
+                
                 <div className={styles['pdf-viewer-container']}>
                   {pdfBlob && (
                     <>
+                    {isPdfLoading && (
+                      <div className={stylesLoading.loadingDocument} >
+                        <Mosaic  color={["#003391","#1A5FFA","#33CCCC","#1A3FFA"]} size="large" text="" textColor="#0d1bff" />
+                      </div>
+                    )}
                     <div className={styles.botonesZoom}>
                       <zoomPluginInstance.ZoomIn>
                         {({ onClick }) => (

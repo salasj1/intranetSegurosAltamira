@@ -10,7 +10,8 @@ import { CSSTransition } from 'react-transition-group';
 import NavbarEmpresa from '../components/NavbarEmpresa';
 import generatePDF from '../components/FormatoRecibodePago';
 import styles from '../css/RecibodePagoDetallado.module.css';
-
+import stylesLoading from "../css/loading.module.css";
+import { Mosaic } from "react-loading-indicators";
 function RecibodePagoDetallado() {
   const { reci_num } = useParams<{ reci_num: string }>();
   const reciNum = reci_num || '';
@@ -178,10 +179,15 @@ function RecibodePagoDetallado() {
                   {reciboData && isAuthorized ? (
                     <>
                       <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
-                        {isPdfLoading && <h2>Cargando detalle PDF...</h2>}
+                        
                         <div className={styles['pdf-viewer-container']}>
                           {pdfBlob && (
                             <>
+                            {isPdfLoading && (
+                              <div className={stylesLoading.loadingDocument} >
+                                <Mosaic  color={["#003391","#1A5FFA","#33CCCC","#1A3FFA"]} size="large" text="" textColor="#0d1bff" />
+                              </div>
+                            )}
                             <div className={styles.botonesZoom}>
                               <zoomPluginInstance.ZoomIn>
                                 {({ onClick }) => (
