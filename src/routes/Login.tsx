@@ -13,7 +13,7 @@ function Login() {
     const [error, setError] = useState('');
     const auth = useAuth();
     const nodeRef = useRef(null);
-    const [actionExecuted, setActionExecuted] = useState(false);
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -56,13 +56,7 @@ function Login() {
         }
     };
 
-    useEffect(() => {
-        if (auth.isAuthenticated && !actionExecuted) {
-            // Aquí puedes poner la acción que quieres ejecutar una sola vez
-            console.log('Login confirmado, ejecutando acción una sola vez.');
-            setActionExecuted(true); // Marcar la acción como ejecutada
-        }
-    }, [auth.isAuthenticated, actionExecuted]);
+    
 
     if (auth.isAuthenticated) {
         return <Navigate to="/home" />;

@@ -5,13 +5,14 @@ import { Viewer, Worker } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import styles from "../css/constanciaDeTrabajo.module.css";
+import stylesLoading from "../css/loading.module.css";
 import Card from 'react-bootstrap/Card';
 import { CSSTransition } from 'react-transition-group';
 import { useAuth } from '../auth/AuthProvider'; 
 import NavbarEmpresa from '../components/NavbarEmpresa';
 import generateConstanciaPDF from '../components/FormatoConstancia';
 import Select from 'react-select';
-
+import { Mosaic } from "react-loading-indicators";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function ConstaciaDeTrabajo() {
@@ -190,9 +191,15 @@ function ConstaciaDeTrabajo() {
                     {error}
                   </Alert>
                 ) : (
+
                   <>
-                    {isPdfLoading && <h2>Cargando detalle PDF...</h2>}
+                    
                     <div className={styles['pdf-viewer-container']}>
+                    {isPdfLoading && (
+                      <div className={stylesLoading.loadingDocument} >
+                        <Mosaic  color={["#003391","#1A5FFA","#33CCCC","#1A3FFA"]} size="large" text="" textColor="#0d1bff" />
+                        </div>
+                      )}
                       {pdfBlob && (
                         <>
                           <div className={styles.botonesZoom}>
