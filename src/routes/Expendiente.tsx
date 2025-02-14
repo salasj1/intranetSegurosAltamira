@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import style from '../css/ExpedienteEmpleado.module.css';
+import stylesLoading from "../css/loading.module.css";
 import NavbarEmpresa from "../components/NavbarEmpresa";
-import { Form, Button, Row, Col, Card, InputGroup, OverlayTrigger, Tooltip, TooltipProps } from "react-bootstrap";
+import { Form, Button, Row, Col, Card, InputGroup, OverlayTrigger, Tooltip, TooltipProps, Alert } from "react-bootstrap";
 import { useAuth } from '../auth/AuthProvider';
 import { IoDocumentText } from "react-icons/io5";
 import { LuPencilLine } from "react-icons/lu";
@@ -10,6 +11,10 @@ import DatePicker from "react-widgets/DatePicker";
 import { FaCircleInfo } from "react-icons/fa6";
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Temporal } from '@js-temporal/polyfill';
+import { MdInfoOutline } from "react-icons/md";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { Mosaic } from 'react-loading-indicators';
+import { FaRoute } from "react-icons/fa6";
 
 export interface TiposDocumento {
   id: number;
@@ -27,7 +32,8 @@ export interface DatosPersonales {
   fechaNacimiento: string;
   telefonoCelular: string;
   direccion: string;
-  telefonoCasa: string;
+  RutaaCasa: string[];
+  RutaaOficina: string[];
 }
 
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -43,18 +49,36 @@ const Expendiente = () => {
   const [updatePeriod, setUpdatePeriod] = useState<number | null>(null); // Estado para el periodo de actualización
   const [datosPersonales, setDatosPersonales] = useState<DatosPersonales | null>(null);
   const [prefRIF, setPrefRIF] = useState<string>('J');
-
+  const [rutaACasa, setRutaACasa] = useState<string[]>(['']);
+  const [rutaAOficina, setRutaAOficina] = useState<string[]>(['']);
   const { cod_emp } = useAuth();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     const fetchDatosPersonales = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/expediente/getDatosPersonales/${cod_emp}`);
-        setDatosPersonales(response.data.expediente);
-        console.log('Datos personales:', JSON.stringify(response.data.expediente));
-        setPrefRIF(response.data.expediente.rif.charAt(0));
+        await axios.get(`${apiUrl}/expediente/getDatosPersonales/${cod_emp}`).
+        then((response) => 
+          {setDatosPersonales(response.data.expediente); 
+          setPrefRIF(response.data.expediente.rif.charAt(0));
+          return response;}
+        );
+
+        await axios.get(`${apiUrl}/expediente/geDatostRutas/Ida/${cod_emp}`).
+        then((response) =>
+          {setRutaACasa(response.data.expediente.RutaaCasa); return response;}
+        );
+
+        await axios.get(`${apiUrl}/expediente/getDatosRutas/Regreso/${cod_emp}`).
+        then((response) =>
+          {setRutaAOficina(response.data.expediente.RutaaOficina); return response;}
+        );  
       } catch (error) {
         console.error('Error fetching datos personales:', error);
+      }
+      finally{
+        setLoading(false);
       }
     };
 
@@ -159,6 +183,80 @@ const Expendiente = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' }); 
   };
 
+  const handleCaminoAOficinaChange = (index: number, value: string) => {
+    const updatedInputs = [...rutaAOficina];
+    updatedInputs[index] = value;
+    setRutaAOficina(updatedInputs);
+    if (datosPersonales) {
+      setDatosPersonales({
+        ...datosPersonales,
+        RutaaOficina: updatedInputs
+      });
+    }
+  };
+
+  const addCaminoAOficinaInput = () => {
+    setRutaAOficina([...rutaAOficina, '']);
+  };
+
+  const clearCaminoAOficinaInputs = () => {
+    setRutaAOficina(['']);
+    if (datosPersonales) {
+      setDatosPersonales({
+        ...datosPersonales,
+        RutaaOficina: ['']
+      });
+    }
+  };
+
+  const removeCaminoAOficinaInput = (index: number) => {
+    const updatedInputs = rutaAOficina.filter((_, i) => i !== index);
+    setRutaAOficina(updatedInputs);
+    if (datosPersonales) {
+      setDatosPersonales({
+        ...datosPersonales,
+        RutaaOficina: updatedInputs
+      });
+    }
+  };
+
+  const handleCaminoACasaChange = (index: number, value: string) => {
+    const updatedInputs = [...rutaACasa];
+    updatedInputs[index] = value;
+    setRutaACasa(updatedInputs);
+    if (datosPersonales) {
+      setDatosPersonales({
+        ...datosPersonales,
+        RutaaCasa: updatedInputs
+      });
+    }
+  };
+
+  const addCaminoACasaInput = () => {
+    setRutaACasa([...rutaACasa, '']);
+  };
+
+  const clearCaminoACasaInputs = () => {
+    setRutaACasa(['']);
+    if (datosPersonales) {
+      setDatosPersonales({
+        ...datosPersonales,
+        RutaaCasa: ['']
+      });
+    }
+  };
+
+  const removeCaminoACasaInput = (index: number) => {
+    const updatedInputs = rutaACasa.filter((_, i) => i !== index);
+    setRutaACasa(updatedInputs);
+    if (datosPersonales) {
+      setDatosPersonales({
+        ...datosPersonales,
+        RutaaCasa: updatedInputs
+      });
+    }
+  };
+
   return (
     <>
       <NavbarEmpresa />
@@ -168,7 +266,7 @@ const Expendiente = () => {
       <br />
       <br />
       <h1 style={{marginBottom:'20px'}}>Expendiente</h1>
-      
+      {loading && <div className={stylesLoading.loadingContainer}><Mosaic color={["#003391", "#1A5FFA", "#33CCCC", "#1A3FFA"]} size="large" text="" textColor="#0d1bff" /></div>}
       <div className={style.phaseWrapper}>
         <TransitionGroup>
           <CSSTransition
@@ -177,197 +275,264 @@ const Expendiente = () => {
             classNames="fade"
           >
             <div className={style.phaseContainer}>
-              {phase === 1 && (
+              {phase === 1 && datosPersonales && (
                 <Form className="container">
-                  <Card bg="primary" className="mb-3" style={{ padding: '20px', color: 'white', boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.3)' }}>
-                    <h2 style={{display:'flex',alignItems:'end'}}><LuPencilLine />Datos Personales</h2>
-                    <hr/>
-                    <Row className="mb-3">
-                    <Col lg={3}> 
-                        <Form.Label>Cédula de Identidad</Form.Label>
-                        <Form.Group controlId="formCedula">
-                          <InputGroup hasValidation>
-                          <InputGroup.Text id="inputGroupPrepend">V</InputGroup.Text>
-                          <Form.Control 
-                            type="text" 
-                            placeholder="Cédula de Identidad" 
-                            pattern="\d{1,8}" 
-                            maxLength={8} 
-                            required 
-                            value={datosPersonales?.cedula.replace(/\s/g, '') || ''}
-                            onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 8);
-                            }}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            if (datosPersonales) {
-                              setDatosPersonales({
-                              ...datosPersonales,
-                              cedula: e.target.value.replace(/\s/g, '')
-                              });
-                            }
-                            }}
-                          />
-                            <Form.Control.Feedback type="invalid">
-                              Por favor, ingresa un número de cédula válido (hasta 8 dígitos).
-                            </Form.Control.Feedback>
-                          </InputGroup>
-                        </Form.Group>
-                      </Col>
-                      <Col >
-                        <Form.Group controlId="formNombre">
-                          <Form.Label>Nombres</Form.Label>
-                          <Form.Control type="text" placeholder="Nombres" defaultValue={datosPersonales?.nombres || ''} 
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            if (datosPersonales) {
-                              setDatosPersonales({
-                                ...datosPersonales,
-                                nombres: e.target.value
-                              });
-                            }
-                          }} />
-                        </Form.Group>
-                      </Col>
-                      <Col >
-                        <Form.Group controlId="formApellido">
-                          <Form.Label>Apellidos</Form.Label>
-                          <Form.Control type="text" placeholder="Apellidos" defaultValue={datosPersonales?.apellidos || ''} 
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            if (datosPersonales) {
-                              setDatosPersonales({
-                                ...datosPersonales,
-                                apellidos: e.target.value
-                              });
-                            }
-                          }} />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg={2}>
-                        <Form.Label>RIF</Form.Label>
-                        <Form.Group controlId="formRif">
+                    <Card bg="primary" className="mb-3" style={{ padding: '20px', color: 'white', boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.3)' }}>
+                      <h2 style={{display:'flex',alignItems:'end'}}><LuPencilLine />Datos Personales</h2>
+                      <hr/>
+                      <Alert variant="info" style={{ display: 'flex', alignItems: 'center' }}>
+                        <MdInfoOutline style={{ width: "30px", height: "30px", marginRight: '10px' }} />
+                        <span>Por favor, revise y complete sus datos personales. En caso de que algún dato sea incorrecto, por favor, edítelo y solicite el cambio de datos.</span>
+                      </Alert>
+                      <Row className="mb-3">
+                      <Col lg={3}> 
+                          <Form.Label>Cédula de Identidad</Form.Label>
+                          <Form.Group controlId="formCedula">
                             <InputGroup hasValidation>
-                            <InputGroup.Text style={{borderTopRightRadius:'0px', borderEndEndRadius :'0px' }}>{isNaN(parseInt(prefRIF)) ? prefRIF : 'V'}</InputGroup.Text>
+                            <InputGroup.Text id="inputGroupPrepend">V</InputGroup.Text>
                             <Form.Control 
                               type="text" 
-                              placeholder="RIF" 
-                              pattern="\d{1,9}" 
-                              maxLength={9}
-                              value={datosPersonales?.rif.slice(1).trim() || ''}
+                              placeholder="Cédula de Identidad" 
+                              pattern="\d{1,8}" 
+                              maxLength={8} 
+                              required 
+                              value={datosPersonales?.cedula.replace(/\s/g, '') || ''}
                               onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
-                              e.target.value = e.target.value.replace(/\D/g, '').slice(0, 9);
+                              e.target.value = e.target.value.replace(/\D/g, '').slice(0, 8);
                               }}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                              if (datosPersonales) {
+                                setDatosPersonales({
+                                ...datosPersonales,
+                                cedula: e.target.value.replace(/\s/g, '')
+                                });
+                              }
+                              }}
+                            />
+                              <Form.Control.Feedback type="invalid">
+                                Por favor, ingresa un número de cédula válido (hasta 8 dígitos).
+                              </Form.Control.Feedback>
+                            </InputGroup>
+                          </Form.Group>
+                        </Col>
+                        <Col >
+                          <Form.Group controlId="formNombre">
+                            <Form.Label>Nombres</Form.Label>
+                            <Form.Control type="text" placeholder="Nombres" defaultValue={datosPersonales?.nombres || ''} 
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                              if (datosPersonales) {
+                                setDatosPersonales({
+                                  ...datosPersonales,
+                                  nombres: e.target.value
+                                });
+                              }
+                            }} />
+                          </Form.Group>
+                        </Col>
+                        <Col >
+                          <Form.Group controlId="formApellido">
+                            <Form.Label>Apellidos</Form.Label>
+                            <Form.Control type="text" placeholder="Apellidos" defaultValue={datosPersonales?.apellidos || ''} 
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                              if (datosPersonales) {
+                                setDatosPersonales({
+                                  ...datosPersonales,
+                                  apellidos: e.target.value
+                                });
+                              }
+                            }} />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col lg={2}>
+                          <Form.Label>RIF</Form.Label>
+                          <Form.Group controlId="formRif">
+                              <InputGroup hasValidation>
+                              <InputGroup.Text style={{borderTopRightRadius:'0px', borderEndEndRadius :'0px' }}>{isNaN(parseInt(prefRIF)) ? prefRIF : 'V'}</InputGroup.Text>
+                              <Form.Control 
+                                type="text" 
+                                placeholder="RIF" 
+                                pattern="\d{1,9}" 
+                                maxLength={9}
+                                value={datosPersonales?.rif.slice(1).trim() || ''}
+                                onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 9);
+                                }}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                  if (datosPersonales) {
+                                    setDatosPersonales({
+                                      ...datosPersonales,
+                                      rif: prefRIF + e.target.value.trim()
+                                    });
+                                  }
+                                }}
+                              />
+                              </InputGroup>
+                          </Form.Group>
+                        </Col>
+                        <Col lg={3}>
+                          <Form.Group controlId="formEstadoCivil">
+                            <Form.Label>Estado Civil</Form.Label>
+                            <Form.Control as="select" value={datosPersonales?.estadoCivil} 
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                if (datosPersonales) {
+                                  setDatosPersonales({
+                                    ...datosPersonales,
+                                    estadoCivil: e.target.value
+                                  });
+                                }
+                              }} >
+                              <option value={""} >Seleccione un estado civil</option>
+                              <option value={"Soltero"}>Soltero</option>
+                              <option value={"Casado"}>Casado</option>
+                              <option value={"Divorciado"}>Divorciado</option>
+                              <option value={"Viudo"}>Viudo</option>
+
+                            </Form.Control>
+                          </Form.Group>
+                        </Col>
+                        <Col lg={4}>
+                          <Form.Group controlId="formEmail">
+                            <Form.Label>Email</Form.Label>
+                            <Form.Control type="email" placeholder="Email" defaultValue={datosPersonales?.email || ''} />
+                          </Form.Group>
+                        </Col>
+                        <Col lg={3}>
+                          <Form.Group controlId="formDireccion">
+                            <Form.Label>Fecha de Nacimiento</Form.Label>
+                            <Form.Control 
+                              type="date" 
+                              value={datosPersonales?.fechaNacimiento.split('T')[0] || ''} 
                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                 if (datosPersonales) {
                                   setDatosPersonales({
                                     ...datosPersonales,
-                                    rif: prefRIF + e.target.value.trim()
+                                    fechaNacimiento: e.target.value
                                   });
                                 }
-                              }}
+                              }} 
                             />
-                            </InputGroup>
-                        </Form.Group>
-                      </Col>
-                      <Col lg={3}>
-                        <Form.Group controlId="formEstadoCivil">
-                          <Form.Label>Estado Civil</Form.Label>
-                          <Form.Control as="select" value={datosPersonales?.estadoCivil} 
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                              if (datosPersonales) {
-                                setDatosPersonales({
-                                  ...datosPersonales,
-                                  estadoCivil: e.target.value
-                                });
-                              }
-                            }} >
-                            <option value={""} >Seleccione un estado civil</option>
-                            <option value={"Soltero"}>Soltero</option>
-                            <option value={"Casado"}>Casado</option>
-                            <option value={"Divorciado"}>Divorciado</option>
-                            <option value={"Viudo"}>Viudo</option>
-
-                          </Form.Control>
-                        </Form.Group>
-                      </Col>
-                      <Col lg={4}>
-                        <Form.Group controlId="formEmail">
-                          <Form.Label>Email</Form.Label>
-                          <Form.Control type="email" placeholder="Email" defaultValue={datosPersonales?.email || ''} />
-                        </Form.Group>
-                      </Col>
-                      <Col lg={3}>
-                        <Form.Group controlId="formDireccion">
-                          <Form.Label>Fecha de Nacimiento</Form.Label>
-                          <Form.Control 
-                            type="date" 
-                            value={datosPersonales?.fechaNacimiento.split('T')[0] || ''} 
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                      <br/>
+                      <Row>
+                        <Col lg={3}>
+                          <Form.Group controlId="formTelefono">
+                            <Form.Label>Teléfono Celular</Form.Label>
+                            <Form.Control type="text" placeholder="Teléfono" defaultValue={datosPersonales?.telefonoCelular || ''}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                               if (datosPersonales) {
                                 setDatosPersonales({
                                   ...datosPersonales,
-                                  fechaNacimiento: e.target.value
+                                  telefonoCelular: e.target.value
                                 });
                               }
                             }} 
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <br/>
-                    <Row>
-                      <Col lg={3}>
-                        <Form.Group controlId="formTelefono">
-                          <Form.Label>Teléfono Celular</Form.Label>
-                          <Form.Control type="text" placeholder="Teléfono" defaultValue={datosPersonales?.telefonoCelular || ''}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            if (datosPersonales) {
-                              setDatosPersonales({
-                                ...datosPersonales,
-                                telefonoCelular: e.target.value
-                              });
-                            }
-                          }} 
-                           />
-                        </Form.Group>
-                      </Col>
-                      <Col>
-                        <Form.Group controlId="formDireccion">
-                          <Form.Label>Dirección</Form.Label>
-                          <Form.Control type="text" placeholder="Dirección" defaultValue={datosPersonales?.direccion || ''}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            if (datosPersonales) {
-                              setDatosPersonales({
-                                ...datosPersonales,
-                                direccion: e.target.value
-                              });
-                            }
-                          }}  />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <br/>
-                    <Row>
-                      <Col lg={3}>
-                        <Form.Group controlId="formTelefono">
-                          <Form.Label>Teléfono de Casa</Form.Label>
-                          <Form.Control type="text" placeholder="Teléfono" defaultValue={datosPersonales?.telefonoCasa || ''} />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <br/>
-                    <Button variant="primary">
-                      Solicitar Cambio de Datos
-                    </Button>
-                  </Card>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-                    <Button variant="primary" onClick={handleNextPhase}>
-                      Siguiente
-                    </Button>
-                  </div>
-                </Form>
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col>
+                          <Form.Group controlId="formDireccion">
+                            <Form.Label>Dirección</Form.Label>
+                            <Form.Control type="text" placeholder="Dirección" defaultValue={datosPersonales?.direccion || ''}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                              if (datosPersonales) {
+                                setDatosPersonales({
+                                  ...datosPersonales,
+                                  direccion: e.target.value
+                                });
+                              }
+                            }}  />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                      <br/>
+                      <Button variant="primary">
+                        Solicitar Cambio de Datos
+                      </Button>
+                    </Card>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+                      <Button variant="primary" onClick={handleNextPhase}>
+                        Siguiente
+                      </Button>
+                    </div>
+                  </Form>
+                
               )}
-              {phase === 2 && (
+              {phase === 2 && datosPersonales && (
+                    <Form className="container">
+                      <Card bg="primary" className="mb-3" style={{ padding: '20px', color: 'white', boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.3)' }}>
+                        <h2 style={{display:'flex',alignItems:'center'}}><FaRoute  style={{marginRight: "5px"}}/><span>  Rutas Habituales</span> </h2>
+                        <hr/>
+                        <Alert style={{ boxShadow: "5px 5px 15px rgba(0, 0, 0, 0.1)" }}> Explique las rutas que habitualmente realiza de forma de detallada</Alert>
+                        <Row>
+                          <Form.Group controlId="formruta1" style= {{marginBottom: '20px'}} >
+                            <Form.Label>Ruta habitual desde el lugar de hospedaje hasta la oficina</Form.Label>
+                            {rutaAOficina.map((item, index) => (
+                              <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                                <Form.Control 
+                                  as="textarea" 
+                                  placeholder="Describe la ruta desde el lugar de hospedaje hasta la oficina" 
+                                  value={item} 
+                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCaminoAOficinaChange(index, e.target.value)}
+                                  style={{ marginRight: '10px' }}
+                                  rows={3}
+                                />
+                                {rutaAOficina.length > 1 && 
+                                <Button variant="danger" onClick={() => removeCaminoAOficinaInput(index)}>
+                                  <FaRegTrashAlt />
+                                </Button>}
+                              </div>
+                            ))}
+                            <Button variant="secondary" onClick={addCaminoAOficinaInput}>
+                              Agregar otra ruta
+                            </Button>
+                            <Button variant="danger" onClick={clearCaminoAOficinaInputs} style={{ marginLeft: '10px' }}>
+                              Borrar todas las rutas
+                            </Button>
+                          </Form.Group>    
+                          <Form.Group controlId="formruta2">
+                            <Form.Label>Ruta habitual desde la oficina hasta el lugar de hospedaje</Form.Label>
+                            {rutaACasa.map((item, index) => (
+                              <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                                <Form.Control 
+                                  as="textarea" 
+                                  placeholder="Describe la ruta desde la oficina hasta el lugar de hospedaje" 
+                                  value={item} 
+                                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCaminoACasaChange(index, e.target.value)}
+                                  style={{ marginRight: '10px' }}
+                                  rows={3}
+                                />
+                                {rutaACasa.length > 1 && 
+                                <Button variant="danger" onClick={() => removeCaminoACasaInput(index)}>
+                                  <FaRegTrashAlt />
+                                </Button>}
+                              </div>
+                            ))}
+                            <Button variant="secondary" onClick={addCaminoACasaInput}>
+                              Agregar otra ruta
+                            </Button>
+                            <Button variant="danger" onClick={clearCaminoACasaInputs} style={{ marginLeft: '10px' }}>
+                              Borrar todas las rutas
+                            </Button>
+                          </Form.Group>               
+                        </Row>
+                        <br/>
+                      </Card>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
+                    <Button variant="secondary" onClick={handlePreviousPhase}>
+                      Anterior
+                    </Button>
+                    <Button variant="primary" onClick={handleNextPhase}>
+                        Siguiente
+                      </Button>
+                  </div>
+                    </Form>
+                  )
+              }
+              {phase === 3 && (
                 <Form className="container" noValidate validated={validatedFiles} onSubmit={handleUploadSubmit}>
                   <Card border="primary" className="mb-3" style={{ padding: '20px', boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.3)' }}>
                     <h2 style={{display:'flex',alignItems:'center', color: 'rgb(3, 76, 185)'}}><IoDocumentText /> Documentos</h2>
@@ -460,6 +625,7 @@ const Expendiente = () => {
             </div>
           </CSSTransition>
         </TransitionGroup>
+      
       </div>
       <br />
     </>

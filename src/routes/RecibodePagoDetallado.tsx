@@ -162,7 +162,9 @@ function RecibodePagoDetallado() {
         <h1 className={styles.h1Recibo}>Recibo de Pago Nº {reciNum} </h1>
         <div style={{ width: "100%" }}>
           {isLoading ? (
-            <h2>Cargando detalle PDF...</h2>
+            <div className={stylesLoading.loadingDocument} >
+            <Mosaic  color={["#003391","#1A5FFA","#33CCCC","#1A3FFA"]} size="large" text="" textColor="#0d1bff" />
+            </div>
           ) : (
             <>
               {reciboNotFound ? (
