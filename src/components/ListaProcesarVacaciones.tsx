@@ -333,6 +333,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
           handleClose={() => setShowModal(false)}
           handleConfirm={handleConfirm}
           action={action}
+          DiasVacaciones={selectedVacacion.DiasVacaciones}
           vacacionID={selectedVacacion.VacacionID}
           nombreEmpleado={`${selectedVacacion.nombres_empleado} ${selectedVacacion.apellidos_empleado}`}
           ci={selectedVacacion.ci}

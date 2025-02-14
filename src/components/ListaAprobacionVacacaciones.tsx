@@ -22,6 +22,7 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
   const { cod_emp } = useAuth();
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: '', direction: 'asc' });
   const [searchVacacionID, setSearchVacacionID] = useState('');
+  const [searchDiasVacaciones, setSearchDiasVacaciones] = useState('');
   const [searchNombre, setSearchNombre] = useState('');
   const [searchCodEmp, setSearchCodEmp] = useState('');
   const [searchFechaInicio, setSearchFechaInicio] = useState('');
@@ -53,6 +54,7 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
 
   const filteredData = sortedData.filter(item =>
     item.VacacionID.toString().includes(searchVacacionID) &&
+    item.DiasVacaciones.toString().includes(searchDiasVacaciones) &&
     format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy').includes(searchFechaInicio) &&
     format(addDays(parseISO(item.FechaFin.toString()), 1), 'dd/MM/yyyy').includes(searchFechaFin) &&
     item.Estado.toLowerCase().includes(searchEstado.toLowerCase()) &&
@@ -142,6 +144,15 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
             <th>
               <Form.Control
                 className={styles.search}
+                type="text"
+                placeholder="Buscar Número de días..."
+                value={searchDiasVacaciones}
+                onChange={(e) => setSearchDiasVacaciones(e.target.value)}
+              />
+            </th>
+            <th>
+              <Form.Control
+                className={styles.search}
                 type="select"
                 placeholder='Buscar codigo...'
                 value={searchCodEmp}
@@ -199,8 +210,14 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
         <thead>
           <tr>
             <th id={styles.headTable} onClick={() => requestSort('VacacionID')} className='titulo'>
-              ID Vacación
+              ID de Vacaciones
               {sortConfig.key === 'VacacionID' && (
+                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+              )}
+            </th>
+            <th id={styles.headTable} onClick={() => requestSort('DiasVacaciones')} className='titulo'>
+              Número de Días de Vacaciones
+              {sortConfig.key === 'DiasVacaciones' && (
                 <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
               )}
             </th>
@@ -248,6 +265,7 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
           {filteredData.map(item => (
             <tr key={item.VacacionID}>
               <td>{item.VacacionID}</td>
+              <td>{item.DiasVacaciones}</td>
               <td>{item.ci}</td>
               <td>{item.nombres}</td>
               <td>{item.apellidos}</td>
@@ -279,6 +297,7 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
           handleConfirm={handleConfirm}
           action={action}
           vacacionID={selectedVacacion.VacacionID}
+          DiasVacaciones={selectedVacacion.DiasVacaciones}
           nombreEmpleado={`${selectedVacacion.nombres} ${selectedVacacion.apellidos}`}
           ci={selectedVacacion.ci}
           departamento={selectedVacacion.departamento}

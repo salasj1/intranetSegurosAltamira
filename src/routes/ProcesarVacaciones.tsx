@@ -10,6 +10,7 @@ import { useAuth } from "../auth/AuthProvider";
 const apiUrl = import.meta.env.VITE_API_URL;
 export interface Vacacion {
     VacacionID: number;
+    DiasVacaciones: number;
     FechaInicio: Date;
     FechaFin: Date;
     Estado: string;
