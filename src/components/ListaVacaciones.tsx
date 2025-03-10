@@ -58,10 +58,12 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
 
   const filteredData = sortedData.filter(item =>
     item.VacacionID.toString().includes(searchVacacionID) &&
+    item.FechaInicio!=null && item.FechaFin !=null &&
     format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy').includes(searchFechaInicio) &&
     format(addDays(parseISO(item.FechaFin.toString()), 1), 'dd/MM/yyyy').includes(searchFechaFin) &&
     item.Estado.toLowerCase().includes(searchEstado.toLowerCase()) &&
-    item.Estado.toLowerCase() !== 'borrado'
+    item.Estado.toLowerCase() !== 'borrado' 
+    
   );
 
   const requestSort = (key: string) => {
@@ -301,19 +303,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
         />
       )}
 
-      {vacacionToSolicitar && (
-        <ConfirmarSolicitudModal
-          show={showConfirmModal}
-          handleClose={() => setShowConfirmModal(false)}
-          handleConfirm={handleConfirmSolicitar}
-          cod_emp={cod_emp}
-          error={error}
-          setError={setError}
-          vacacionID={vacacionToSolicitar.VacacionID}
-          fechaInicio={addDays(parseISO(vacacionToSolicitar.FechaInicio.toString()), 1).toISOString()}
-          fechaFin={addDays(parseISO(vacacionToSolicitar.FechaFin.toString()), 1).toISOString()}
-        />
-      )}
+      
 
       {vacacionToDelete && (
         <ConfirmarEliminacionModal

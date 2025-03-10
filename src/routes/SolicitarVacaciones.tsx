@@ -19,7 +19,7 @@ function SolicitarVacaciones() {
   const { cod_emp } = useAuth();
   const [vacaciones, setVacaciones] = useState<Vacacion[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [hasPreviousRequest, setHasPreviousRequest] = useState<boolean>(false);
+  const [hasPreviousRequest, setHasPreviousRequest] = useState<boolean>(true);
 
   useEffect(() => {
     if (cod_emp) {
@@ -59,6 +59,7 @@ function SolicitarVacaciones() {
       console.error('Error al verificar solicitudes previas:', error);
     }
   };
+  
 
   return (
     <>

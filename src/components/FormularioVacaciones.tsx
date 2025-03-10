@@ -1,19 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthProvider';
-import { Form, Button, Alert, Card, AlertHeading } from 'react-bootstrap';
+import { Form, Button, Alert, Card } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/FormularioVacaciones.css';
 import ConfirmarSolicitudModal from './ConfirmarSolicitudModal';
 import DatePicker from "react-widgets/DatePicker";
 import 'react-widgets/styles.css';
-import { parseISO,addDays, isBefore, isEqual } from 'date-fns';
+import { parseISO, addDays, isBefore, isEqual } from 'date-fns';
+import { IoCalendarSharp } from "react-icons/io5";
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
+import stylesLoading from "../css/loading.module.css";
+import { Mosaic } from "react-loading-indicators";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import ICON from '../assets/confetti.json';
+import { Player } from '@lordicon/react';
+import { PiProhibitFill } from "react-icons/pi";
 
 const apiUrl = import.meta.env.VITE_API_URL;
+
 interface FormularioVacacionesProps {
   fetchVacaciones: () => void;
   hasPreviousRequest: boolean;
   checkPreviousRequest: () => void;
+}
+
+interface Periodos {
+  ID_Periodo: number;
+  AÑO: number;
+  DIAS: number;
+  DIAS_DIPONIBLES: number;
+  ETIQUETA: string;
 }
 
 const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaciones, hasPreviousRequest, checkPreviousRequest }) => {
@@ -25,13 +44,30 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
   const [diasCausados, setDiasCausados] = useState<number | null>(null);
   const [diasDisfrutados, setDiasDisfrutados] = useState<number | null>(null);
   const [diasHabiles, setDiasHabiles] = useState<number | null>(null);
-  
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [fechaMaximaFin, setFechaMaximaFin] = useState<string | null>(null);
-  
+  const [fechaProlongada, setfechaProlongada] = useState<string | null>(null);
+  const [periodos, setPeriodos] = useState<Periodos[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingDocument, setLoadingDocument] = useState<boolean>(true);
+  const playerRef = useRef<Player>(null);
+  const [selectedPeriodos, setSelectedPeriodos] = useState<any>([]);
+  const [errorPeriodos, setErrorPeriodos] = useState<string | null>(null);
+  useEffect(() => {
+    playerRef.current?.playFromBeginning();
+  }, [success]);
+
+
+
+  useEffect(() => {
+    if (fechaInicio) {
+      handleFechaInicioChange(new Date(fechaInicio), selectedPeriodos);
+    }
+  }, [fechaInicio]);
   useEffect(() => {
     const fetchDiasVacaciones = async () => {
-      try {
+      setLoadingDocument(true);
+      try {    
         const response = await axios.get(`${apiUrl}/vacaciones/dias/${cod_emp}`);
         const causados = response.data.causados;
         const disfrutados = response.data.disfrutados;
@@ -40,6 +76,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
         setDiasHabiles(causados - disfrutados);
         console.log(response.data);
         console.log(causados - disfrutados);
+        setLoadingDocument(false);
       } catch (error) {
         console.error('Error al cargar los dias disponibles:', error);
       }
@@ -53,63 +90,194 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       setDiasHabiles(diasCausados - diasDisfrutados);
     }
   }, [diasCausados, diasDisfrutados]);
-
-  const handleFechaInicioChange = async (date: Date | null | undefined) => {
-    if (date) {
-      setFechaInicio(date.toISOString());
-      if (diasHabiles !== null) {
-        try {
-          const response = await axios.get(`${apiUrl}/vacaciones/fechaMaximaFin`, {
-            params: {
-              fechaInicio: date.toISOString(),
-              diasDisfrutar: diasHabiles
-            }
-          });
-          setFechaMaximaFin(response.data.fechaMaximaFin);
-          setError(null);
-        } catch (error) {
-          console.error('Error al calcular la fecha máxima de fin de vacaciones:', error);
-          setError('Error al calcular la fecha máxima de fin de vacaciones.');
-        }
+  
+  useEffect(() => {
+    const fetchPeriodos = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/vacaciones/periodos/id/${cod_emp}`);
+        setPeriodos(response.data as Periodos[]);
+      } catch (error) {
+        console.error('Error al cargar los periodos:', error);
       }
-    } else {
-      setFechaInicio(null);
+    };
+
+    fetchPeriodos();
+  }, [cod_emp]);
+
+  async function calcularFechaMaximaFin(date: Date | null | undefined, selectedOptions: any): Promise<{ fechaMaximaFin: Date | null, totalDias: number }> {
+    try {
+      const totalDias = selectedOptions.reduce((acc: number, option: any) => acc + option.value, 0);
+      const response = await axios.get(`${apiUrl}/vacaciones/fechaMaximaFin`, {
+        params: {
+          fechaInicio: date ? date.toISOString() : null,
+          diasDisfrutar: totalDias
+        }
+      });
+      setError(null);
+      setLoading(false);
+      return { fechaMaximaFin: response.data.fechaMaximaFin, totalDias };
+    } catch (error) {
+      console.error('Error al calcular la fecha máxima de fin de vacaciones:', error);
+      setError('Error al calcular la fecha fin de vacaciones.');
+      setLoading(true);
+      return { fechaMaximaFin: null, totalDias: 0 };
+    }
+  }
+  
+  async function calcularFechaProlongada(fechaInicio: string, totalDias: number): Promise<Date | null> {
+    try {
+
+      const response = await axios.get(`${apiUrl}/vacaciones/fechaMaximaFin`, {
+        params: {
+          fechaInicio,
+          diasDisfrutar: totalDias + 5
+        }
+      });
+      setError(null);
+      setLoading(false);
+      return response.data.fechaMaximaFin;
+    } catch (error) {
+      console.error('Error al calcular la fecha prolongada:', error);
+      setError('Error al calcular la fecha prolongada.');
+      return null;
+    }
+  }
+  
+  const handleFechaInicioChange = async (date: Date | null | undefined, selectedOptions: any) => {
+    setFechaInicio(date ? date.toISOString() : null);
+    setFechaFin(null); // Colocar en blanco la fecha de retorno
+
+    if (date && selectedOptions.length > 0) {
+      setLoading(true);
+      const { fechaMaximaFin, totalDias } = await calcularFechaMaximaFin(date, selectedOptions);
+      setFechaMaximaFin(fechaMaximaFin ? new Date(fechaMaximaFin).toISOString() : null);
+  
+      if (fechaMaximaFin) {
+        const fechaProlongada = await calcularFechaProlongada(date.toISOString(), totalDias);
+        setfechaProlongada(fechaProlongada? new Date(fechaProlongada).toISOString() : null);
+      }
+    }
+  };
+  
+  const handlePeriodChange = async(selectedOptions: any) => {
+    if (selectedOptions.length === 0 ) {
+      setSelectedPeriodos([]);
       setFechaMaximaFin(null);
+      setFechaFin(null);
+      setErrorPeriodos(null);
+      return;
+    }
+    if (fechaInicio === null) {
+      setSelectedPeriodos([]);
+      return;
+    }
+    setSelectedPeriodos(selectedOptions);
+    const totalDias = selectedOptions.reduce((acc: number, option: any) => acc + option.value, 0);
+    setDiasHabiles(totalDias);
+    setFechaFin(null);
+
+    // Verificar los periodos seleccionados
+    try {
+      const response = await axios.post(`${apiUrl}/vacaciones/revisionPeriodo`, {
+        cod_emp,
+        periodos: selectedOptions.map((option: any) => option.id)
+      });
+      console.log(response.data);
+      if (response.data.status === 1) {
+        setErrorPeriodos(null);
+      } else {
+        setErrorPeriodos(response.data.resultado);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        setErrorPeriodos(error.response.data.resultado || 'Error revisando los periodos seleccionados.');
+      } else {
+        setErrorPeriodos('Error revisando los periodos seleccionados.');
+      }
+    }
+
+
+
+    if (fechaInicio) {
+      handleFechaInicioChange(new Date(fechaInicio), selectedOptions);
     }
   };
 
-  const handleSubmit = async (tipo: string) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+  useEffect(() => {
+    if (fechaInicio) {
+      handleFechaInicioChange(new Date(fechaInicio), []);
+    }
+  }, [diasHabiles]);
 
+  function SuccessMessage() {
+    playerRef.current?.play();
+    setSuccess('¡Genial! Has solicitado tus días de vacaciones con éxito.');
+    return (
+      <div className="flex flex-col w-full" style={{ display: 'flex', alignItems: 'center', marginBottom: '-20px' }}>
+      <div style={{ flex: 1 }}>
+        <strong><h2 className='' >¡Genial!</h2></strong>
+        <p>Has solicitado tus días de vacaciones con éxito.</p>
+      </div>
+      <Player
+        ref={playerRef}
+        icon={ICON}
+        size={80}
+        onComplete={() => playerRef.current?.playFromBeginning()}
+      />
+      </div>
+    );
+  }
+
+  function ErrorMessage({ data }: { data: string }) {
+    return (
+      <div className="flex flex-col w-full">
+        <strong><h4 className='' >¡Oh no!</h4></strong>
+        <p className="text-sm">Ocurrió un error al solicitar las vacaciones, intentelo de nuevo </p>
+        <p>{data}</p>
+      </div>
+    );
+  }
+
+  const handleConfirmSolicitar = async (tipoConfirmacion: number) => {
+    await handleSubmit('solicitada', tipoConfirmacion);
+    await checkPreviousRequest();
+  };
+
+  const handleMensajeConfirmacion = () => {
+    playerRef.current?.play();
+    return toast.success(<SuccessMessage />);
+  };
+  
+  const handleSubmit = async (tipo: string, tipoConfirmacion: number) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    console.log(JSON.stringify(tipoConfirmacion));
     const startDate = fechaInicio ? new Date(fechaInicio) : null;
     const endDate = fechaFin ? new Date(fechaFin) : null;
-
+  
     if (!fechaInicio || !fechaFin) {
-      setError('Debe llenar todos los campos.');
-      setSuccess(null); 
+      alert('Debe llenar todos los campos.');
+      setSuccess(null);
       return;
     }
-    
-    
+  
     if (startDate && isBefore(startDate, today) && !isEqual(startDate, today)) {
-      setError('La fecha de inicio no puede ser anterior a la fecha actual o el dia de hoy.');
-      setSuccess(null); 
+      alert('La fecha de inicio no puede ser anterior a la fecha actual o el dia de hoy.');
+      setSuccess(null);
       return;
     }
-    
+  
     if (endDate && isBefore(endDate, today) && !isEqual(endDate, today)) {
-      setError('La fecha de fin no puede ser anterior a la fecha actual o el dia de hoy.');
-      setSuccess(null); 
+      alert('La fecha de fin no puede ser anterior a la fecha actual o el dia de hoy.');
+      setSuccess(null);
       return;
     }
-
+  
     if (startDate && endDate && isBefore(endDate, startDate)) {
-      setError('La fecha de fin no puede ser anterior a la fecha de inicio.');
-      setSuccess(null); 
+      alert('La fecha de fin no puede ser anterior a la fecha de inicio.');
+      setSuccess(null);
       return;
     }
-    
     if (diasHabiles !== null ) {
       try {
         const response = await axios.post(`${apiUrl}/vacaciones/revisionRangoCalendario`, {
@@ -134,128 +302,105 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
         return;
       }
     }
-    
-    if(diasHabiles === null) {
-      setError('Cargando días hábiles disponibles...');
-      setSuccess(null);
-      return;
-    }
-    
-    if(tipo==='solicitada'){
-      try {
-        const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
-        const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada');
-        if (hasRequest) {
-          setError('Ya tiene una solicitud de vacaciones pendiente. ');
-          setSuccess(null);
-          return;
-        }
-      } catch (error) {
-        console.error('Error al verificar solicitudes previas:', error);
-        setError('Error al verificar solicitudes previas.');
-        setSuccess(null);
-        return;
-      }
-    }
 
-    try {
-      await axios.post(`${apiUrl}/vacaciones`, {
-        cod_emp,
-        FechaInicio: fechaInicio,
-        FechaFin: fechaFin ? new Date(fechaFin).toISOString() : null,
-        Estado: tipo
-      });
-      
-      setFechaInicio('');
-      setFechaFin('');
-      setSuccess(`Vacaciones ${tipo} exitosamente`);
-      setFechaMaximaFin(null);
-      setError(null);
-      fetchVacaciones(); 
-      if (tipo === 'solicitada') {
-        setShowConfirmModal(false);
-        await checkPreviousRequest();
+  
+    setFechaInicio('');
+    setFechaFin('');
+    setFechaMaximaFin(null);
+    setError(null);
+  
+    setLoading(true);
+    
+    
+    await toast.promise(
+      axios.post(`${apiUrl}/vacaciones`, { cod_emp, fechaInicio,fechaFin: fechaMaximaFin,fechaRetorno: fechaFin, tipoConfirmacion }),
+      {
+        pending: 'Enviando solicitud...',
+        success: {
+          render() {
+            setLoading(false);
+            return <SuccessMessage />;
+          },
+          
+        },
+        error: {
+          render({ data }: { data: any }) {
+            setLoading(false);
+            return <ErrorMessage data={data.message} />;
+          }
+        }
       }
-    } catch (error) {
-      console.error(`Error ${tipo} vacaciones:`, error);
-      setError(`Error ${tipo} vacaciones`);
-      setSuccess(null); 
+    );
+  
+    fetchVacaciones();
+    if (tipo === 'solicitada') {
+      setShowConfirmModal(false);
+      await checkPreviousRequest();
     }
   };
 
-const handleConfirmSolicitar = async () => {
-  await handleSubmit('solicitada');
-  await checkPreviousRequest();
-};
+  const animatedComponents = makeAnimated();
 
   return (
     <>
-      <Card bg="light" className='form-container' border='dark' >
-        <Card.Header ><h3>Registrar/Solicitar Vacaciones</h3></Card.Header>
-        <br/>
-        {success && <Alert variant="success" onClose={() => setSuccess(null)}  dismissible>{success}</Alert>}
-        {error && <Alert variant="danger" onClose={()=> setError(null)}  dismissible><AlertHeading>Error <hr/></AlertHeading>{error}</Alert>}
+      <ToastContainer
+        closeOnClick
+        autoClose={8000}
+        pauseOnFocusLoss={false}
+        theme="colored"
+      />
+      {!loadingDocument ? (
+      <Card bg="light" className='form-container' border='dark'>
+        {!hasPreviousRequest && diasHabiles ?
+          (<>
+          <Card.Header><h2> Solicita tus vacaciones aquí</h2></Card.Header>
+            <br />
+            </>
+          ):
+          hasPreviousRequest ?( 
+            (<Alert variant='primary'  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%', textAlign: 'center' }}>
+            <DotLottieReact
+            src="/assets/relojArena.json"
+            loop
+            autoplay
+            width={'auto'}
+            height={150}
+            speed={0.5}
+            style={{marginTop:'-50px'}}
+            />
+            <h4 style={{marginTop:'-50px'}}>Tu solicitud de vacaciones está siendo procesada. </h4>
+            </Alert>)):(<Alert variant='danger'  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%', textAlign: 'center' }}>
+              <PiProhibitFill size={80}/>
+            <h4>Lamentablemente no tienes vacaciones disponibles en este momento.</h4>
+            
+            </Alert>)
+
+        }
+        
+        
+
+        {!hasPreviousRequest && diasHabiles ? (
         <Card.Body>
           <div className="vacation-days">
-            <Alert variant='primary'>
-              <h5>Días de Vacaciones</h5>
-              <hr />
-              <p><strong>Causados:</strong> {diasCausados !== null ? diasCausados : 'Cargando...'}</p>
-              <p><strong>Disfrutados:</strong> {diasDisfrutados !== null ? diasDisfrutados : 'Cargando...'}</p>
-              <p><strong>Días hábiles disponibles:</strong> {diasHabiles !== null ? diasHabiles : 'Cargando...'}</p>
+            <Alert variant='primary' style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%', textAlign: 'center' }}>
+              <IoCalendarSharp size={80} />
+              <br />
+              <h4>Selecciona el rango de fechas para tus vacaciones</h4>
             </Alert>
           </div>
-          { diasHabiles !== null && diasHabiles > 0 && (
-                <Form>
+          <hr />
+          { (diasHabiles !== null && periodos) && (
+            <Form>
               <Form.Group controlId="fechaInicio">
-                  <Form.Label>Fecha Inicio:</Form.Label>
-                  <DatePicker
-                    placeholder="dd/mm/yyyy"
-                    value={fechaInicio ? parseISO(fechaInicio) : null}
-                    valueFormat={{day:"numeric", month: "numeric", year: "numeric" }}
-                    onChange={handleFechaInicioChange}
-                    min={new Date()}
-                    parse={(str) => {
-                      if (!str) return undefined; 
-                      const [day, month, year] = str.split('/').map(Number);
-                      const today = new Date();
-                      const parsedDate = new Date(
-                        year || today.getFullYear(),
-                        (month ? month - 1 : today.getMonth()),
-                        day
-                      );
-                      const startDate = fechaInicio ? parseISO(fechaInicio) : today;
-                      if (parsedDate < startDate) {
-                        return startDate;
-                      }
-                      return parsedDate;
-                  }}
-                  />
-                {fechaMaximaFin  &&    (
-                  <>
-                  <br/>
-                  <Alert variant="warning">
-                    Limite de fecha fin: {addDays(parseISO((fechaMaximaFin)),1).toLocaleDateString()}
-                  </Alert>
-                  </>
-                )}
-              </Form.Group>
-              {!fechaMaximaFin &&  (
-                <br/>
-              )}
-              <Form.Group controlId="fechaFin">
-                <Form.Label>Fecha Fin:</Form.Label>
-                <DatePicker 
-                  placeholder='dd/mm/yyyy'
-                  value={fechaFin ? new Date(fechaFin) : null}
-                  onChange={(date: Date | null | undefined) => {
-                    setFechaFin(date ? date.toISOString() : null);
-                  }}
-                  valueFormat={{day:"numeric", month: "numeric", year: "numeric" }}
-                  min={fechaInicio ? new Date(fechaInicio) : new Date()}
-                  max={fechaMaximaFin ? addDays(new Date(fechaMaximaFin),1) : undefined} 
+                <Form.Label>Fecha Inicio:</Form.Label>
+                <DatePicker
+                  placeholder="dd/mm/yyyy"
+                  value={fechaInicio ? parseISO(fechaInicio) : null}
+                  valueFormat={{ day: "numeric", month: "numeric", year: "numeric" }}
+                  onChange={(date) => handleFechaInicioChange(date, [])}
+                  min={new Date()}
                   parse={(str) => {
-                    if (!str) return undefined; 
+                    if (!str) return undefined;
                     const [day, month, year] = str.split('/').map(Number);
                     const today = new Date();
                     const parsedDate = new Date(
@@ -263,7 +408,7 @@ const handleConfirmSolicitar = async () => {
                       (month ? month - 1 : today.getMonth()),
                       day
                     );
-                    const startDate = fechaInicio ? new Date(fechaInicio) : today;
+                    const startDate = fechaInicio ? parseISO(fechaInicio) : today;
                     if (parsedDate < startDate) {
                       return startDate;
                     }
@@ -271,41 +416,111 @@ const handleConfirmSolicitar = async () => {
                   }}
                 />
               </Form.Group>
-              <div className="button-group">
-                
-                {!hasPreviousRequest && diasHabiles !== null && diasHabiles > 0 && (
+
+              <br />
+              
+              
+              <Form.Group>
+                <Form.Label>Periodo a tomar:</Form.Label>
+                <Select
+                  key={JSON.stringify(periodos)}
+                  isMulti
+                  closeMenuOnSelect={false}
+                  components={animatedComponents}
+                  placeholder='Seleccione el periodo'
+                  value={selectedPeriodos}
+                  options={periodos ? periodos.map((periodo: Periodos) => ({ id:periodo.ID_Periodo,value: periodo.DIAS, label: periodo.ETIQUETA + ' (' + periodo.DIAS + ')' })) : []}
+                  onChange={handlePeriodChange}
+                  menuPlacement="auto"
+                />
+              </Form.Group>
+              {!errorPeriodos && fechaMaximaFin && diasHabiles > 0 && fechaInicio ? (
                 <>
-                  {(!fechaInicio || !fechaFin) ? (
-                  <Button variant="primary" onClick={() => setError('Debe llenar todos los campos.')} style={{ width: "100%"}}>Solicitar</Button>
-                  ) : (
-                  <>
-                    <Button variant="primary" onClick={() => setShowConfirmModal(true)} style={{ width: "100%"}}>Solicitar</Button>
-                  </>
-                  )}
+                <div className={`alert ${errorPeriodos ? 'alert-exit' : 'alert-enter'}`}>
+                  <Alert variant="warning">
+                    Fecha fin de Vacaciones: {addDays(parseISO((fechaMaximaFin)), 1).toLocaleDateString()}
+                  </Alert>
+                </div>
                 </>
+              ) : (
+                errorPeriodos ? (
+                  <div className={`alert ${errorPeriodos ? 'alert-enter' : 'alert-exit'}`}>
+                    <Alert variant="danger">{errorPeriodos}</Alert>
+                  </div>
+                ):(<br/>)
+              )}
+              {!loading ? (
+                <Form.Group controlId="fechaFin">
+                  <Form.Label>Fecha de Retorno:</Form.Label>
+                  <DatePicker
+                    placeholder='dd/mm/yyyy'
+                    value={fechaFin ? new Date(fechaFin) : null}
+                    onChange={(date: Date | null | undefined) => {
+                      setFechaFin(date ? date.toISOString() : null);
+                    }}
+                    valueFormat={{ day: "numeric", month: "numeric", year: "numeric" }}
+                    min={fechaInicio ? new Date(fechaInicio) : undefined}
+                    max={fechaMaximaFin && fechaProlongada ? addDays(new Date(fechaProlongada), 1) : undefined}
+                    parse={(str) => {
+                      if (!str) return undefined;
+                      const [day, month, year] = str.split('/').map(Number);
+                      const today = new Date();
+                      const parsedDate = new Date(
+                        year || today.getFullYear(),
+                        (month ? month - 1 : today.getMonth()),
+                        day
+                      );
+                      const startDate = fechaInicio ? new Date(fechaInicio) : today;
+                      if (parsedDate < startDate) {
+                        return startDate;
+                      }
+                      return parsedDate;
+                    }}
+                    disabled={fechaMaximaFin === null || !diasHabiles || !fechaInicio || errorPeriodos!==null}
+                  />
+                </Form.Group>
+              ) : (
+                <div className={stylesLoading.loadingDocument}>
+                  <Mosaic color={["#003391", "#1A5FFA", "#33CCCC", "#1A3FFA"]} size="small" text="" textColor="#0d1bff" />
+                </div>
+              )}
+              <div className="button-group">
+                {!hasPreviousRequest && diasHabiles !== null && (
+                  <>
+                    {(!fechaInicio || !fechaFin) ? (
+                      <>
+                        <Button variant="primary" onClick={() => alert('Debe llenar todos los campos.')} style={{ width: "100%" }}>Solicitar</Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button variant="primary" onClick={() => setShowConfirmModal(true)} style={{ width: "100%" }}>Solicitar</Button>
+                      </>
+                    )}
+                  </>
                 )}
               </div>
             </Form>
-            )
-          }
-          
+          )}
         </Card.Body>
-      </Card>
+      ) : null}
+      </Card>):(
+        <div className={stylesLoading.loadingContainer2}><Mosaic color={["#003391", "#1A5FFA", "#33CCCC", "#1A3FFA"]} size="large" text="" textColor="#0d1bff" /></div>
+      )}
 
       <ConfirmarSolicitudModal
-        show={showConfirmModal}
-        handleClose={() => setShowConfirmModal(false)}
-        handleConfirm={handleConfirmSolicitar}
-        cod_emp={cod_emp}
-        error={error}
-        setError={setError}
-        fechaInicio={fechaInicio}
-        fechaFin={fechaFin}
-      />
+      show={showConfirmModal}
+      handleClose={() => setShowConfirmModal(false)}
+      handleConfirm={handleConfirmSolicitar}
+      cod_emp={cod_emp}
+      error={error}
+      setError={setError}
+      fechaInicio={fechaInicio}
+      fechaFin={fechaMaximaFin}
+      fechaRetorno={fechaFin ? addDays(new Date(fechaFin), -1).toISOString() : null}
+    />
 
     </>
   );
-
 };
 
 export default FormularioVacaciones;
