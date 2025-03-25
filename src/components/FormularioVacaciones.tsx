@@ -283,7 +283,8 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
         const response = await axios.post(`${apiUrl}/vacaciones/revisionRangoCalendario`, {
           fechaInicio: startDate,
           fechaFin: endDate,
-          cod_emp: cod_emp
+          cod_emp: cod_emp,
+          tipo: tipoConfirmacion
         });
         const { status, resultado } = response.data;
         console.log(status, resultado);
@@ -313,7 +314,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     
     
     await toast.promise(
-      axios.post(`${apiUrl}/vacaciones`, { cod_emp, fechaInicio,fechaFin: fechaMaximaFin,fechaRetorno: fechaFin, tipoConfirmacion }),
+      axios.post(`${apiUrl}/vacaciones`, { cod_emp, fechaInicio,fechaFin: fechaMaximaFin,fechaRetorno: endDate, tipoConfirmacion }),
       {
         pending: 'Enviando solicitud...',
         success: {
@@ -429,9 +430,10 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
                   components={animatedComponents}
                   placeholder='Seleccione el periodo'
                   value={selectedPeriodos}
-                  options={periodos ? periodos.map((periodo: Periodos) => ({ id:periodo.ID_Periodo,value: periodo.DIAS, label: periodo.ETIQUETA + ' (' + periodo.DIAS + ')' })) : []}
+                  options={periodos ? periodos.map((periodo: Periodos) => ({ id:periodo.ID_Periodo,value: periodo.DIAS, label: periodo.ETIQUETA + ' (' + periodo.DIAS +  ' días)' })) : []}
                   onChange={handlePeriodChange}
-                  menuPlacement="auto"
+                  menuPlacement="top"
+
                 />
               </Form.Group>
               {!errorPeriodos && fechaMaximaFin && diasHabiles > 0 && fechaInicio ? (

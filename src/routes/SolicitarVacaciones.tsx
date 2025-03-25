@@ -12,7 +12,10 @@ export interface Vacacion {
   VacacionID: number;
   FechaInicio: Date;
   FechaFin: Date;
+  FechaRetorno: Date;
   Estado: string;
+  DiasDisfrutar: number;
+  DiasPagar: number;
 }
 
 function SolicitarVacaciones() {
