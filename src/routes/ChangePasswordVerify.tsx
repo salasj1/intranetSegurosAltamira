@@ -98,8 +98,10 @@ function ChangePasswordVerify() {
         } else {
           setError('Error en el servidor, por favor intenta más tarde');
         }
+        setContador(5);
+        setBotonHabilitado(true);
       } else {
-        setError('Error en el servidor, por favor intenta más tarde');
+        setError('Error en el servidor, por favor intenta de nuevo');
       }
     }
   };

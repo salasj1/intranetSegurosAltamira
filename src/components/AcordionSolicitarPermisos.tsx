@@ -58,7 +58,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     Motivo: '',
     descripcion: '',
     otroMotivo: '',
-    descontable: false // Nuevo campo para el checkbox
+    descontable: false 
   });
   const [showModal, setShowModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
@@ -67,7 +67,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
   const [otroMotivoError, setOtroMotivoError] = useState<string | null>(null); // Nuevo estado para errores específicos de otroMotivo
   const [diasNoDisfrutados, setDiasNoDisfrutados] = useState<number | null>(null);
   const [motivosPermiso, setMotivosPermiso] = useState<MotivoPermiso[]>([]);
-  
+  const [isLoading, setIsLoading] = useState(false); 
   const descontableRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -112,10 +112,11 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
   };
 
   const handleSubmit = async () => {
-    if(formData.Motivo === 'Otro' && formData.otroMotivo) {
-      formData.Motivo = formData.otroMotivo;
-    }
+    setIsLoading(true); // Activar el estado de carga
     try {
+      if (formData.Motivo === 'Otro' && formData.otroMotivo) {
+        formData.Motivo = formData.otroMotivo;
+      }
       await axios.post(`${apiUrl}/permisos`, { ...formData, cod_emp });
       setAlertMessage('Permiso solicitado exitosamente');
       setAlertVariant('success');
@@ -127,6 +128,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
       setAlertMessage('Error al solicitar permiso');
       setAlertVariant('danger');
     } finally {
+      setIsLoading(false); // Desactivar el estado de carga
       setShowModal(false);
     }
   };
@@ -156,25 +158,22 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     handleMotivosPermiso();
   }, [cod_emp]);
   
-  const handleConfirm = async(e: React.FormEvent<HTMLFormElement>) => {
+  const handleConfirm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newErrors: string[] = [];
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+    today.setHours(0, 0, 0, 0);
 
     if (!formData.Fecha_inicio) {
       newErrors.push('La fecha de inicio es requerida');
     }
-    
+
     const startDate = new Date(formData.Fecha_inicio);
     startDate.setDate(startDate.getDate() + 1);
     const endDate = new Date(formData.Fecha_Fin);
     endDate.setDate(endDate.getDate() + 1);
     if (startDate < today) {
       newErrors.push('La fecha de inicio no puede ser anterior a la fecha actual');
-    } else {
-      console.log(new Date(formData.Fecha_inicio));
-      console.log(today);
     }
 
     if (!formData.Fecha_Fin) {
@@ -195,27 +194,6 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
 
     if (formData.Motivo === 'Otro' && !formData.otroMotivo) {
       newErrors.push('El motivo adicional es requerido');
-    }
-
-   
-    if(formData.descontable){
-      
-      handleDiasNoDisfrutados();
-  
-      if (diasNoDisfrutados === null) {
-        newErrors.push('Error al evaluar los días no disfrutados');
-      }
-      
-        if (diasNoDisfrutados !== null &&  differenceInDays(endDate, startDate) > diasNoDisfrutados) {
-          newErrors.push('No tiene días no disfrutados para descontar. Tienes: '+ diasNoDisfrutados + ' días disponibles y estas solicitando: ' + differenceInDays(endDate, startDate) + ' días');
-        }
-      
-    } 
-
-    
-
-    if (otroMotivoError) {
-      newErrors.push(otroMotivoError);
     }
 
     if (newErrors.length > 0) {
@@ -343,6 +321,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
         show={showModal}
         handleClose={() => setShowModal(false)}
         handleConfirm={handleSubmit}
+        isLoading={isLoading} // Pasar el estado de carga al modal
       />
     </>
   );
