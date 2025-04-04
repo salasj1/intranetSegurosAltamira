@@ -30,7 +30,12 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
   useEffect(() => {
     if (error) {
       setSuccess(null);
-      setError(error);
+      console.log(error);
+      if (typeof error === 'object' && (error as any)?.response?.data?.message) {
+        setError((error as any)?.response?.data?.message || 'Error desconocido');
+      } else {
+        setError(String(error));
+      }
     }
   }, [error, setError]);
 

@@ -243,10 +243,10 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     await checkPreviousRequest();
   };
 
-  const handleMensajeConfirmacion = () => {
+/*   const handleMensajeConfirmacion = () => {
     playerRef.current?.play();
     return toast.success(<SuccessMessage />);
-  };
+  }; */
   
   const handleSubmit = async (tipo: string, tipoConfirmacion: number) => {
     const today = new Date();
@@ -305,34 +305,35 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     }
 
   
-    setFechaInicio('');
-    setFechaFin('');
-    setFechaMaximaFin(null);
-    setError(null);
-  
     setLoading(true);
     
     
     await toast.promise(
-      axios.post(`${apiUrl}/vacaciones`, { cod_emp, fechaInicio,fechaFin: fechaMaximaFin,fechaRetorno: endDate, tipoConfirmacion }),
+      axios.post(`${apiUrl}/vacaciones`, { cod_emp, fechaInicio, fechaFin: fechaMaximaFin, fechaRetorno: endDate, tipoConfirmacion }),
       {
         pending: 'Enviando solicitud...',
         success: {
           render() {
             setLoading(false);
+            setFechaInicio('');
+            setFechaFin('');
+            setFechaMaximaFin(null);
+            setError(null);
             return <SuccessMessage />;
           },
-          
         },
         error: {
           render({ data }: { data: any }) {
             setLoading(false);
-            return <ErrorMessage data={data.message} />;
-          }
-        }
+            setError(data.response?.data?.message || 'Error al solicitar vacaciones');
+            return <ErrorMessage data={ data.response?.data?.message || 'Error al solicitar vacaciones'} />;
+          
+          },
+        },
       }
     );
   
+
     fetchVacaciones();
     if (tipo === 'solicitada') {
       setShowConfirmModal(false);

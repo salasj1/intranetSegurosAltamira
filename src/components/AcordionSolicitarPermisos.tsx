@@ -8,7 +8,7 @@ import { useAuth } from '../auth/AuthProvider';
 import ConfirmModal from './ModalConfirmarSolicitarPermisos';
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
-import { differenceInDays } from 'date-fns';
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
 interface CustomToggleProps {

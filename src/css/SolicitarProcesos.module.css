@@ -17,17 +17,18 @@
 }
 
 .canvas h1 {
-    margin-left: -60%;
-    max-width: 100%; 
-    box-sizing: border-box; 
-    text-overflow: ellipsis; 
-    white-space: nowrap; 
+    margin-left: -20%;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-family: "Gotham", Sans-serif;
+    font-size: 3.5vw; /* Tamaño de fuente relativo al ancho de la ventana */
+    text-align: center; /* Centrar el texto */
 }
 
 .canvas h3 {
     position: relative;
-
     max-width: 100%; 
     box-sizing: border-box; 
     text-overflow: ellipsis; 
@@ -47,6 +48,8 @@
 
     .canvas h1 {
         margin-left: 0;
+        font-size: 5vw; /* Ajustar el tamaño de la fuente en pantallas medianas */
+        flex-grow: 1;
     }
 }
 
@@ -58,6 +61,8 @@
 
     .canvas h1 {
         margin-left: 0;
+        font-size: 6vw; /* Ajustar el tamaño de la fuente en pantallas pequeñas */
+        flex-grow: 1; /* Permitir que el texto crezca si es necesario */
     }
 }
 

@@ -15,7 +15,7 @@ function SolicitarPermisos() {
     <>
       <NavbarEmpresa />
       <div className={styles.canvas}>
-        <h1 className={styles.h1}>Solicitar Permisos</h1>
+        <h1 className={styles.h1}>Solicitar Permisos/ Vacaciones no Disfrutados</h1>
         <AcordionSolicitarPermiso onRefresh={handleRefresh} />
         <br />
         <br />

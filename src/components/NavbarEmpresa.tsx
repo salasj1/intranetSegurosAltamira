@@ -56,12 +56,12 @@ function NavbarEmpresa() {
 
     return (
         <>
-            <div className='NavbarEmpresa'>
-                <Navbar bg='light' data-bs-theme='light' id='Navegador'>
+   
+                <Navbar bg='light' data-bs-theme='light' id='Navegador' className='NavbarEmpresa'>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '70%', width: 'auto' }}>
                         <Navbar.Brand className='imagenEmpresa'>
                             <Link to="/home">
-                                <img src={logoEmpresa} alt='Logo Empresa' />
+                                <img className='logo' src={logoEmpresa} alt='Logo Empresa' />
                             </Link>
                         </Navbar.Brand>
 
@@ -109,28 +109,26 @@ function NavbarEmpresa() {
 
                                             <Col>
                                                 <NavDropdown title='Procesos' className={isSolicitudesActive() ? 'nav-dropdown-active' : ''}>
-                                                    <NavDropdown title='Vacaciones' id='submenu' className={isSolicitudesActive() ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end'>
+                                                    <NavDropdown title='Pago de Vacaciones' id='submenu' className={isSolicitudesActive() ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end'>
                                                         <NavDropdown.Item as={Link} to='/SolicitarVacaciones' className='cuadroItem'>
-                                                            Solicitar Vacaciones
+                                                            Solicitar
                                                         </NavDropdown.Item>
                                                         {auth.tipo === 'Supervisor' || auth.RRHH === 1 ? (
                                                             <NavDropdown.Item as={Link} to='/AprobarVacaciones' className='cuadroItem'>
-                                                                Aprobar Vacaciones
+                                                                Aprobar
                                                             </NavDropdown.Item>
                                                         ) : null}
                                                         {auth.RRHH === 1 ? (<>
                                                             <NavDropdown.Item as={Link} to='/ProcesarVacaciones' className='cuadroItem'>
-                                                                Procesar Vacaciones
+                                                                Procesar
                                                             </NavDropdown.Item>
-                                                            <NavDropdown.Item as={Link} to='/RetornoVacaciones' className='cuadroItem'>
-                                                                Retorno de Vacaciones
-                                                            </NavDropdown.Item>
+                                                            
                                                         </>
                                                         ) : null}
                                                     </NavDropdown>
-                                                    <NavDropdown title='Permisos' id='submenu' className={isSolicitudesActive() ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end'>
+                                                    <NavDropdown title='Permisos o Disfrute' id='submenu' className={isSolicitudesActive() ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end' style={{ width: "100%" }}>
                                                         <NavDropdown.Item as={Link} to='/SolicitarPermisos' className='cuadroItem'>
-                                                            Solicitar Permisos
+                                                            Solicitar Permisos/ Vacaciones no Disfrutados
                                                         </NavDropdown.Item>
                                                         {auth.tipo === 'Supervisor' || auth.RRHH === 1 ? (
                                                             <NavDropdown.Item as={Link} to='/AprobarPermisos' className='cuadroItem'>
@@ -178,7 +176,7 @@ function NavbarEmpresa() {
                         </Offcanvas.Body>
                     </Offcanvas>
                 </Navbar>
-            </div>
+        
         </>
     );
 }

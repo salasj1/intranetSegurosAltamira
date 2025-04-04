@@ -59,18 +59,35 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
   const filteredData = sortedData.filter(item => {
     const fechaInicioFormateada = format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy');
     const fechaFinFormateada = format(addDays(parseISO(item.FechaFin.toString()), 1), 'dd/MM/yyyy');
-  
+
+    const isFilterActive = 
+      searchVacacionID || 
+      searchFechaInicio || 
+      searchFechaFin || 
+      searchCodEmp || 
+      searchApellido || 
+      searchNombre || 
+      searchdiasDisfrutar || 
+      searchdiasPagar || 
+      searchEstado || 
+      searchNombreSupervisor || 
+      searchApellidoSupervisor;
+
     return (
       (item.Estado === 'Aprobada' || item.Estado === 'Procesada') &&
-      item.VacacionID.toString().includes(searchVacacionID) &&
-      fechaInicioFormateada.includes(searchFechaInicio) &&
-      fechaFinFormateada.includes(searchFechaFin) &&
-      item.ci.toLowerCase().includes(searchCodEmp.toLowerCase()) &&
-      item.apellidos_empleado.toLowerCase().includes(searchApellido.toLowerCase()) &&
-      item.nombres_empleado.toLowerCase().includes(searchNombre.toLowerCase()) &&
-      item.diasDisfrutar.toString().includes(searchdiasDisfrutar) &&
-      item.diasPagar.toString().includes(searchdiasPagar)
-
+      (!isFilterActive || (
+        item.VacacionID.toString().includes(searchVacacionID) &&
+        fechaInicioFormateada.includes(searchFechaInicio) &&
+        fechaFinFormateada.includes(searchFechaFin) &&
+        item.ci.toLowerCase().includes(searchCodEmp.toLowerCase()) &&
+        item.apellidos_empleado.toLowerCase().includes(searchApellido.toLowerCase()) &&
+        item.nombres_empleado.toLowerCase().includes(searchNombre.toLowerCase()) &&
+        item.diasDisfrutar.toString().includes(searchdiasDisfrutar) &&
+        item.diasPagar.toString().includes(searchdiasPagar) &&
+        item.Estado.toLowerCase().includes(searchEstado.toLowerCase()) &&
+        (item.nombres_supervisor?.toLowerCase().includes(searchNombreSupervisor.toLowerCase()) || (!isFilterActive && item.nombres_supervisor === null)) &&
+        (item.apellidos_supervisor?.toLowerCase().includes(searchApellidoSupervisor.toLowerCase()) || (!isFilterActive && item.apellidos_supervisor === null))
+      ))
     );
   });
 
@@ -339,7 +356,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
                 <td>{format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy')}</td>
                 <td>{format(addDays(parseISO(item.FechaFin.toString()), 1), 'dd/MM/yyyy')}</td>
                 <td>{item.Estado}</td>
-                <td>{item.nombre_supervisor }</td>
+                <td>{item.nombres_supervisor }</td>
                 <td>{item.apellidos_supervisor}</td>
                 <td>{item.diasDisfrutar}</td>
                 <td>{item.diasPagar}</td>

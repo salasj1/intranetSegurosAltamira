@@ -3,7 +3,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 import { CSSTransition } from 'react-transition-group';
-
+import { Mosaic } from "react-loading-indicators"; 
+import styles from '../css/loading.module.css'; 
 export interface Usuario {
   id: number;
   username: string;
@@ -26,10 +27,10 @@ function ChangePasswordVerify() {
   const [passwordTemp, setPasswordTemp] = useState('');
   const [passwordManual, setPasswordManual] = useState('');
   const [passwordManualConfirm, setPasswordManualConfirm] = useState('');
-  const [contador, setContador] = useState<number>(60); // Contador inicial de 60 segundos
+  const [contador, setContador] = useState<number>(15); // Reducir el contador inicial a 15 segundos
   const [botonHabilitado, setBotonHabilitado] = useState<boolean>(false);
   const [mensaje, setMensaje] = useState<string>('');
-
+  const [isLoading, setIsLoading] = useState<boolean>(false); 
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,36 +74,36 @@ function ChangePasswordVerify() {
       return () => clearTimeout(timer);
     } else {
       setBotonHabilitado(true);
-      setMensaje('');
+      setMensaje(''); // Limpiar mensaje cuando el contador llegue a 0
     }
   }, [contador]);
 
   const handleEnvioCodigo = async () => {
+    setIsLoading(true); // Activar el estado de carga
     try {
       const result = await axios.put(`${apiUrl}/changepassword1/${usuarioData?.cod_emp}`, { correo: usuarioData?.correo });
       console.log(result);
       if (result.status === 200) {
         setError('');
         setMensaje('Código enviado exitosamente');
-        setContador(60); // Reiniciar el contador
+        setContador(15); // Reiniciar el contador a 15 segundos
         setBotonHabilitado(false); // Deshabilitar el botón nuevamente
       } else {
         setError('Error en el servidor, por favor intenta más tarde');
       }
-      console.log("enviado")
     } catch (err) {
       console.error(err);
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 500) {
-          setError(err.message);
+          setError('Error en el servidor: ' + err.message);
         } else {
           setError('Error en el servidor, por favor intenta más tarde');
         }
-        setContador(5);
-        setBotonHabilitado(true);
       } else {
         setError('Error en el servidor, por favor intenta de nuevo');
       }
+    } finally {
+      setIsLoading(false); // Desactivar el estado de carga
     }
   };
 
@@ -173,7 +174,7 @@ function ChangePasswordVerify() {
 
   return (
     <CSSTransition in={inProp} timeout={1000} classNames="fade" unmountOnExit>
-      <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="d-flex justify-content-center align-items-center vh-100" style={{zoom: '1.1'}}>
         <div className="card p-4 shadow" style={{ width: '30rem', margin: '0 auto' }}>
           <div className="d-flex justify-content-start">
             {
@@ -231,19 +232,24 @@ function ChangePasswordVerify() {
               } />
             <br />
             <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-              <Button variant="outline-primary" onClick={handleEnvioCodigo} disabled={!botonHabilitado}>
-                Volver a enviar código
-              </Button>
-              <Button variant="primary" onClick={() => { handleVerifyCodigoTemp() }}>Aceptar</Button>
-              <br />
+              {isLoading ? (
+                <div className={styles.loadingDocument} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <Mosaic color={["#003391", "#1A5FFA", "#33CCCC", "#1A3FFA"]} size="medium" text="" textColor="#0d1bff" />
+                  <h2 style={{ color: "#003391" }}>Enviando código...</h2>
+                </div>
+              ) : (
+                <>
+                  <Button variant="outline-primary" onClick={handleEnvioCodigo} disabled={!botonHabilitado}>
+                    {!botonHabilitado? `Reenviar código en (${contador}) segundos` : 'Reenviar código'}
+                  </Button>
+                  <Button variant="primary" onClick={() => { handleVerifyCodigoTemp() }}>Aceptar</Button>
+                </>
+              )}
             </div>
             <br />
-            {contador > 0 && <Alert>
-              {!botonHabilitado && <p>Espera {contador} segundos para reenviar el código.</p>}
-              <p>{mensaje}</p>
-            </Alert>}
-          </>
-          }
+            {mensaje && <Alert variant="success">{mensaje}</Alert>}
+            {error && <Alert variant="danger">{error}</Alert>}
+          </>}
 
           {show3 && <>
             <p style={{ color: "rgb(63 63 65)", fontSize: "18px" }}>¿Desea cambiar la contraseña temporal por una manual?</p>

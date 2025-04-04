@@ -13,6 +13,7 @@ interface AuthContextType {
     tipo: string | null;
     RRHH: number | null;
     email: string  | '';
+    isAdmin: boolean;
     login: (usuario: string, password: string) => Promise<boolean | undefined>;
     signup: (email: string, usuario: string, password: string, confirmPassword: string) => Promise<string | boolean | undefined>;
     logout: () => void;
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextType>({
     tipo: null,
     RRHH: null,
     email: '',
+    isAdmin: false,
     login: async () => false,
     signup: async () => false,
     logout: () => {}
@@ -44,6 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [RRHH, setRRHH] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [email, setEmail] = useState<string | ''>('');
+    const [isAdmin, setIsAdmin] = useState(false);
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const storedNombreCompleto = localStorage.getItem('nombre_completo');
@@ -53,17 +56,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const storedDesDepart = localStorage.getItem('des_depart');
         const storedTipo = localStorage.getItem('tipo');
         const storedRRHH = localStorage.getItem('RRHH');
-        const storedEmail = localStorage.getItem('email'); 
+        const storedEmail = localStorage.getItem('email');
+        const storedIsAdmin = localStorage.getItem('isAdmin') === 'true';
+    
         if (storedToken && storedNombreCompleto && storedCargoEmpleado && storedCodEmp && storedFechaIng && storedDesDepart && storedTipo && storedRRHH && storedEmail) {
             setIsAuthenticated(true);
             setNombreCompleto(storedNombreCompleto);
             setCargoEmpleado(storedCargoEmpleado);
-            setCodEmp(storedCodEmp); 
+            setCodEmp(storedCodEmp);
             setFechaIng(storedFechaIng);
             setDesDepart(storedDesDepart);
             setTipo(storedTipo);
             setRRHH(parseInt(storedRRHH));
-            setEmail(storedEmail); 
+            setEmail(storedEmail);
+            setIsAdmin(storedIsAdmin);
         }
         setLoading(false);
     }, []);
@@ -80,7 +86,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setDesDepart(response.data.des_depart);
                 setTipo(response.data.tipo);
                 setRRHH(response.data.RRHH);
-                setEmail(response.data.email); // Asegúrate de que este valor se está estableciendo
+                setEmail(response.data.email);
+                setIsAdmin(response.data.isAdmin || false);         // Asegúrate de que este valor se está estableciendo
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('nombre_completo', response.data.nombre_completo);
                 localStorage.setItem('cargo_empleado', response.data.des_cargo);
@@ -88,8 +95,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem('fecha_ing', response.data.fecha_ing);
                 localStorage.setItem('des_depart', response.data.des_depart);
                 localStorage.setItem('tipo', response.data.tipo);
-                localStorage.setItem('RRHH', response.data.RRHH.toString());
+                localStorage.setItem('RRHH', response.data.RRHH);
                 localStorage.setItem('email', response.data.email); // Asegúrate de que este valor se está almacenando
+                localStorage.setItem('isAdmin', response.data.isAdmin ? 'true' : 'false');
                 return true;
             } else {
                 return false;
@@ -145,6 +153,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setTipo(null);
         setRRHH(null);
         setEmail('');
+        setIsAdmin(false);
         localStorage.removeItem('token');
         localStorage.removeItem('nombre_completo');
         localStorage.removeItem('cargo_empleado');
@@ -154,6 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('tipo');
         localStorage.removeItem('RRHH');
         localStorage.removeItem('email');
+        localStorage.removeItem('isAdmin');
     };
 
     if (loading) {
@@ -165,7 +175,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, nombre_completo, cargo_empleado, cod_emp, fecha_ing, des_depart, tipo, RRHH,email, login, signup, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, nombre_completo, cargo_empleado, cod_emp, fecha_ing, des_depart, tipo, RRHH,email,  isAdmin, login, signup, logout }}>
             {children}
         </AuthContext.Provider>
     );
