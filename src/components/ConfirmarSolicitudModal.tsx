@@ -1,6 +1,7 @@
 
 
 import axios from 'axios';
+import { addDays } from 'date-fns';
 import React, { useEffect } from 'react';
 import { Modal, Button, Alert } from 'react-bootstrap';
 
@@ -60,7 +61,7 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
             <p><strong>ID de Vacaciones:</strong> {vacacionID}</p>
           )}
             <p><strong>Fecha de Inicio:</strong> {fechaInicio ? new Date(fechaInicio).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
-            <p><strong>Fecha de Fin:</strong> {fechaFin ? new Date(fechaFin).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
+            <p><strong>Fecha de Fin:</strong> {fechaFin ? addDays(fechaFin,1).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
         </Alert>
         {success === null && 'Está seguro de que desea solicitar estas vacaciones?'}
       </Modal.Body>
