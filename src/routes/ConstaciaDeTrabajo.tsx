@@ -13,6 +13,7 @@ import NavbarEmpresa from '../components/NavbarEmpresa';
 import generateConstanciaPDF from '../components/FormatoConstancia';
 import Select from 'react-select';
 import { Mosaic } from "react-loading-indicators";
+import { toast, ToastContainer } from 'react-toastify';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function ConstaciaDeTrabajo() {
@@ -115,27 +116,44 @@ function ConstaciaDeTrabajo() {
       formData.append('cod_emp', cod_emp || '');
       formData.append('correo', correoSecundario);
       formData.append('fecha', new Date().toLocaleDateString('es-ES'));
+  
+      // Mostrar el toast de "esperando"
+      const toastId = toast.loading('Enviando correo...');
+  
       try {
         const response = await axios.post(`${apiUrl}/send-constancia-trabajo`, formData, {
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+            'Content-Type': 'multipart/form-data',
+          },
         });
-
+  
         if (response.data.success) {
-          setShowAlert(true);
-          alert('Correo enviado exitosamente');
+          // Actualizar el toast a "satisfactorio"
+          toast.update(toastId, {
+            render: 'Correo enviado exitosamente',
+            type: 'success',
+            isLoading: false,
+            autoClose: 5000,
+          });
         } else {
-          alert('Error enviando el correo');
-          console.error('Error enviando el correo:', response.data.message);
+          // Actualizar el toast a "error"
+          toast.update(toastId, {
+            render: 'Error enviando el correo',
+            type: 'error',
+            isLoading: false,
+            autoClose: 5000,
+          });
+          console.error('Error enviando el correo secundario:', response.data.message);
         }
       } catch (error) {
-        console.error('Error sending secondary email:', error);
-        if (axios.isAxiosError(error)) {
-          if (error.response?.status === 400 || error.response?.status === 404) {
-            console.error(error)
-          }
-        }
+        console.error('Error enviando el correo:', error);
+        // Actualizar el toast a "error"
+        toast.update(toastId, {
+          render: 'Error enviando el correo',
+          type: 'error',
+          isLoading: false,
+          autoClose: 5000,
+        });
       }
     }
   };
@@ -149,6 +167,7 @@ function ConstaciaDeTrabajo() {
 
   return (
     <>
+      <ToastContainer />
       <NavbarEmpresa />
       <div className={styles.canvas}>
         <h1 className={styles.h1Prestaciones}>Constancia de Trabajo</h1>

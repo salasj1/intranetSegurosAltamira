@@ -1,10 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Alert, Button, Form } from "react-bootstrap";
+import { Alert, Button, Form, InputGroup } from "react-bootstrap";
 import { CSSTransition } from 'react-transition-group';
 import { Mosaic } from "react-loading-indicators"; 
 import styles from '../css/loading.module.css'; 
+import { FaEye } from "react-icons/fa";
+import { IoMdEyeOff } from "react-icons/io";
 export interface Usuario {
   id: number;
   username: string;
@@ -31,6 +33,8 @@ function ChangePasswordVerify() {
   const [botonHabilitado, setBotonHabilitado] = useState<boolean>(false);
   const [mensaje, setMensaje] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false); 
+  const [showPassword1, setShowPassword1] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -81,11 +85,15 @@ function ChangePasswordVerify() {
   const handleEnvioCodigo = async () => {
     setIsLoading(true); // Activar el estado de carga
     try {
-      const result = await axios.put(`${apiUrl}/changepassword1/${usuarioData?.cod_emp}`, { correo: usuarioData?.correo });
+      
+      const ipResponse = await axios.get('https://api.ipify.org?format=json');
+      const userIp = ipResponse.data.ip;
+      console.log("IP del usuario: ", userIp);
+      const result = await axios.put(`${apiUrl}/changepassword1/${usuarioData?.cod_emp}`, { correo: usuarioData?.correo,ip: userIp  });
       console.log(result);
       if (result.status === 200) {
         setError('');
-        setMensaje('Código enviado exitosamente');
+        setMensaje('Código enviado exitosamente. Revisa tu correo empresarial');
         setContador(15); // Reiniciar el contador a 15 segundos
         setBotonHabilitado(false); // Deshabilitar el botón nuevamente
       } else {
@@ -95,7 +103,7 @@ function ChangePasswordVerify() {
       console.error(err);
       if (axios.isAxiosError(err)) {
         if (err.response?.status === 500) {
-          setError('Error en el servidor: ' + err.message);
+          setError('Error en el servidor: ' + err?.response?.data?.message);
         } else {
           setError('Error en el servidor, por favor intenta más tarde');
         }
@@ -248,7 +256,6 @@ function ChangePasswordVerify() {
             </div>
             <br />
             {mensaje && <Alert variant="success">{mensaje}</Alert>}
-            {error && <Alert variant="danger">{error}</Alert>}
           </>}
 
           {show3 && <>
@@ -261,18 +268,35 @@ function ChangePasswordVerify() {
 
           {show4 && <>
             <p style={{ color: "rgb(63 63 65)", fontSize: "18px" }}>Realicemos el cambio de contraseña manual</p>
-            
+            <InputGroup  className="mb-3" >
             <Form.Control
-              type="password"
+              type={showPassword1 ? "text" : "password"} 
               placeholder="Introduce la nueva contraseña"
               value={passwordManual} onChange={(e) => setPasswordManual(e.target.value)
               } />
+              <button 
+                type="button" 
+                className="btn btn-link p-0" 
+                onClick={() => setShowPassword1(!showPassword1)}
+                style={{ textDecoration: 'none', color: '#003896', backgroundColor: '#F8F9FA',borderColor: 'rgb(0,0,0,0.3)'  }}>
+                {showPassword1 ?  <FaEye /> : <IoMdEyeOff /> }
+            </button>
+            </InputGroup>
             <br />
+            <InputGroup  className="mb-3" >
             <Form.Control
-              type="password"
+              type={showPassword2 ? "text" : "password"} 
               placeholder="Confirma la nueva contraseña"
               value={passwordManualConfirm} onChange={(e) => setPasswordManualConfirm(e.target.value)
               } />
+              <button 
+                type="button" 
+                className="btn btn-link p-0" 
+                onClick={() => setShowPassword2(!showPassword2)}
+                style={{ textDecoration: 'none', color: '#003896', backgroundColor: '#F8F9FA', borderColor: 'rgb(0,0,0,0.3)' }}>
+                {showPassword2 ?  <FaEye /> : <IoMdEyeOff /> }
+            </button>
+            </InputGroup>
             <br />
             <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
               <Button variant="secondary" onClick={() => {setShow3(true);setShow4(false);}}>Cancelar</Button>

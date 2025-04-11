@@ -8,7 +8,10 @@ import { useAuth } from '../auth/AuthProvider';
 import ConfirmModal from './ModalConfirmarSolicitarPermisos';
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
-
+import { ToastContainer, toast } from 'react-toastify';
+import { Player } from '@lordicon/react';
+import 'react-toastify/dist/ReactToastify.css';
+import ICON from '../assets/confetti.json';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 interface CustomToggleProps {
@@ -21,6 +24,7 @@ interface MotivoPermiso {
   tipo: string;
   activo: boolean;
 }
+
 interface AcordionSolicitarPermisoProps {
   onRefresh: () => void;
 }
@@ -39,13 +43,11 @@ function CustomToggle({ children, eventKey }: CustomToggleProps) {
       onClick={decoratedOnClick}
     >
       {isOpen ? (
-      <MdOutlineKeyboardArrowUp style={{ fontSize: '1.5em', marginRight:"5px" }} />
+        <MdOutlineKeyboardArrowUp style={{ fontSize: '1.5em', marginRight: "5px" }} />
       ) : (
-      <MdKeyboardArrowDown style={{ fontSize: '1.5em',  marginRight:"5px" }} />
+        <MdKeyboardArrowDown style={{ fontSize: '1.5em', marginRight: "5px" }} />
       )}
-      {isOpen ? 'Cancelar Permiso' :children}
-
-      
+      {isOpen ? 'Cancelar Permiso' : children}
     </Button>
   );
 }
@@ -58,17 +60,23 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     Motivo: '',
     descripcion: '',
     otroMotivo: '',
-    descontable: false 
+    descontable: false
   });
   const [showModal, setShowModal] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const [alertVariant, setAlertVariant] = useState<'success' | 'danger' | null>(null);
+  const [alertVariant,setAlertVariant] = useState<'success' | 'danger' | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
-  const [otroMotivoError, setOtroMotivoError] = useState<string | null>(null); // Nuevo estado para errores específicos de otroMotivo
+  const [otroMotivoError, setOtroMotivoError] = useState<string | null>(null);
   const [diasNoDisfrutados, setDiasNoDisfrutados] = useState<number | null>(null);
   const [motivosPermiso, setMotivosPermiso] = useState<MotivoPermiso[]>([]);
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const descontableRef = useRef<HTMLInputElement>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const playerRef = useRef<Player>(null);
+
+useEffect(() => {
+    playerRef.current?.playFromBeginning();
+  }, [success]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -76,13 +84,12 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     if (name === 'otroMotivo') {
       const wordCount = value.trim().split(/\s+/).length;
       if (wordCount > 3) {
-        setOtroMotivoError('El motivo no puede tener más de tres palabras'); 
+        setOtroMotivoError('El motivo no puede tener más de tres palabras');
       } else if (value.length > 50) {
         setOtroMotivoError('Mucha longitud');
       } else {
         setOtroMotivoError(null);
       }
-
     }
 
     if (type === 'checkbox') {
@@ -106,35 +113,97 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
       Motivo: '',
       descripcion: '',
       otroMotivo: '',
-      descontable: false // Resetear el nuevo campo
+      descontable: false
     });
-    setOtroMotivoError(null); // Resetear el error específico de otroMotivo
+    setOtroMotivoError(null);
   };
 
-  const handleSubmit = async () => {
-    setIsLoading(true); // Activar el estado de carga
-    try {
-      if (formData.Motivo === 'Otro' && formData.otroMotivo) {
-        formData.Motivo = formData.otroMotivo;
-      }
-      await axios.post(`${apiUrl}/permisos`, { ...formData, cod_emp });
-      setAlertMessage('Permiso solicitado exitosamente');
-      setAlertVariant('success');
-      handleDiasNoDisfrutados();
-      resetForm();
-      onRefresh();
-    } catch (error) {
-      console.error('Error al solicitar permiso:', error);
-      setAlertMessage('Error al solicitar permiso');
-      setAlertVariant('danger');
-    } finally {
-      setIsLoading(false); // Desactivar el estado de carga
-      setShowModal(false);
+  function SuccessMessage() {
+    useEffect(() => {
+      // Reproducir la animación desde el principio
+      playerRef.current?.playFromBeginning();
+    }, []);
+  
+    return (
+      <div className="flex flex-col w-full" style={{ display: 'flex', alignItems: 'center', marginBottom: '-20px' }}>
+        <div style={{ flex: 1 }}>
+          <strong>
+            <h2 className="">¡Genial!</h2>
+          </strong>
+          <p>Permiso solicitado exitosamente.</p>
+        </div>
+        <Player
+          ref={playerRef}
+          icon={ICON}
+          size={80}
+          onComplete={() => playerRef.current?.playFromBeginning()}
+        />
+      </div>
+    );
+  }
+  
+    function ErrorMessage({ data }: { data: string }) {
+      return (
+        <div className="flex flex-col w-full">
+          <strong><h4 className='' >¡Oh no!</h4></strong>
+          <p className="text-sm">Ocurrió un error al solicitar el permiso, intentelo de nuevo </p>
+          <p>{data}</p>
+        </div>
+      );
     }
-  };
+    
+    const handleSubmit = async () => {
+      const toastId = toast.loading('Enviando solicitud de permiso...');
+      setIsLoading(true);
+    
+      try {
+        if (formData.Motivo === 'Otro' && formData.otroMotivo) {
+          formData.Motivo = formData.otroMotivo;
+        }
+    
+        const response = await axios.post(`${apiUrl}/permisos`, { ...formData, cod_emp });
+        setAlertMessage(null);
+        setAlertVariant(null);
+        handleDiasNoDisfrutados();
+    
+        // Actualizar el toast.pending a success
+        toast.update(toastId, {
+          render: <SuccessMessage />,
+          type: 'success',
+          isLoading: false,
+          autoClose: 5000,
+        });
+    
+        // Reiniciar el estado `success` después de un tiempo
+        setTimeout(() => {
+          setSuccess(null);
+        }, 1000);
+    
+        // Verificar si hubo un error al enviar el correo
+        if (response.data.emailError) {
+          toast.error('No se logró enviar el correo automáticamente. Por favor, notifique a su supervisor.');
+        }
+    
+        resetForm();
+        onRefresh();
+      } catch (error) {
+        // Actualizar el toast.pending a error
+        console.error('Error al solicitar permiso:', error);
+        setAlertMessage('Error al solicitar permiso');
+        setAlertVariant('danger');
+        toast.update(toastId, {
+          render: <ErrorMessage data={(error as any)?.response?.data?.Mensaje || 'Error al solicitar Permisos'} />,
+          type: 'error',
+          isLoading: false,
+          autoClose: 5000,
+        });
+      } finally {
+        setIsLoading(false);
+        setShowModal(false);
+      }
+    };
 
   const handleDiasNoDisfrutados = async () => {
-    // Calcular dias no disfrutados
     try {
       const response = await axios.get(`${apiUrl}/vacaciones/CalculrDiasNoDisfrutadosVacaciones/${cod_emp}`);
       setDiasNoDisfrutados(response.data.diasNoDisfrutados);
@@ -146,7 +215,6 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
   const handleMotivosPermiso = async () => {
     try {
       const response = await axios.get(`${apiUrl}/permisos/motivos`);
-      console.log(response.data);
       setMotivosPermiso(response.data);
     } catch (error) {
       console.error('Error al obtener los motivos de permiso:', error);
@@ -157,7 +225,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
     handleDiasNoDisfrutados();
     handleMotivosPermiso();
   }, [cod_emp]);
-  
+
   const handleConfirm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const newErrors: string[] = [];
@@ -206,8 +274,9 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
 
   return (
     <>
+      <ToastContainer />
       <Accordion defaultActiveKey={null} flush className={style.accordion}>
-        <Card bg='primary' className={style.accordionItem} style={{borderRadius:'0px'}}>
+        <Card bg='primary' className={style.accordionItem} style={{ borderRadius: '0px' }}>
           <Card.Header className={style.cardHeader}>
             <CustomToggle eventKey="0">Solicitar Permiso</CustomToggle>
           </Card.Header>
@@ -223,11 +292,11 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                   <ul>
                     {errors.map((error, index) => (
                       <li key={index}>{error}</li>
-                    ))} 
+                    ))}
                   </ul>
                 </Alert>
               )}
-              
+
               <Form onSubmit={handleConfirm}>
                 <div className={style.formGroup}>
                   <Form.Group controlId="formFechas">
@@ -248,11 +317,10 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                       onChange={handleChange}
                     />
                   </Form.Group>
-                  
                 </div>
-                <br/>
+                <br />
                 <Form.Group className="mb-3" controlId="formSelect">
-                  <Form.Label>Razon del Motivo</Form.Label>
+                  <Form.Label>Razón del Motivo</Form.Label>
                   <div className={style.formControl}>
                     <Form.Control
                       as="select"
@@ -260,16 +328,16 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
                       value={formData.Motivo}
                       onChange={handleChange}
                       placeholder='Seleccione una opción'
-                      style={{color:'black'}}
+                      style={{ color: 'black' }}
                     >
                       <option value="">Seleccione una opción</option>
                       {motivosPermiso.map((motivo) => (
-                        <option key={motivo.id} value={motivo.tipo} style={{color:'black'}}>
+                        <option key={motivo.id} value={motivo.tipo} style={{ color: 'black' }}>
                           {motivo.tipo}
-                      </option>
+                        </option>
                       ))}
                     </Form.Control>
-                    
+
                     {formData.Motivo === 'Otro' && (
                       <>
                         <Form.Control
@@ -321,7 +389,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
         show={showModal}
         handleClose={() => setShowModal(false)}
         handleConfirm={handleSubmit}
-        isLoading={isLoading} // Pasar el estado de carga al modal
+        isLoading={isLoading}
       />
     </>
   );

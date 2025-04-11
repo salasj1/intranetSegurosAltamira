@@ -96,8 +96,9 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
       </Modal.Header>
       <Modal.Body>
         {isLoading ? ( // Mostrar el estado de carga si isLoading es true
-          <div className={stylesLoading.loadingDocument}>
+          <div className={stylesLoading.loadingDocument} style={{display: 'flex',flexDirection:'column', alignItems: 'center',justifyContent: 'center', gap:'15px', textAlign:'center'}}>
             <Mosaic color={["#003391", "#1A5FFA", "#33CCCC", "#1A3FFA"]} size="small" text="" textColor="#0d1bff" />
+            <h5>Procesando su solicitud, por favor espere un momento y no recargue la página.</h5>
           </div>
         ) : (
           <>

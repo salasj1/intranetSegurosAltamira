@@ -12,7 +12,7 @@ import NavbarEmpresa from '../components/NavbarEmpresa';
 import generatePrestacionesPDF from '../components/FormatoPrestaciones';
 import stylesLoading from "../css/loading.module.css";
 import { Mosaic } from "react-loading-indicators";
-
+import { toast, ToastContainer } from 'react-toastify';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function Prestaciones() {
@@ -108,28 +108,44 @@ function Prestaciones() {
       formData.append('pdf', pdfBlob, `prestaciones_${cod_empSinEspacios}_${anio}.pdf`);
       formData.append('cod_emp', cod_emp || '');
       formData.append('correo_secundario', correoSecundario);
-
+  
+      // Mostrar el toast de "esperando"
+      const toastId = toast.loading('Enviando correo...');
+  
       try {
         const response = await axios.post(`${apiUrl}/send-prestaciones-secundario`, formData, {
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+            'Content-Type': 'multipart/form-data',
+          },
         });
-
+  
         if (response.data.success) {
-          setShowAlert(true);
-          alert('Correo enviado exitosamente');
+          // Actualizar el toast a "satisfactorio"
+          toast.update(toastId, {
+            render: 'Correo enviado exitosamente',
+            type: 'success',
+            isLoading: false,
+            autoClose: 5000,
+          });
         } else {
-          alert('Error enviando el correo secundario');
-          console.error('Error sending secondary email');
+          // Actualizar el toast a "error"
+          toast.update(toastId, {
+            render: 'Error enviando el correo',
+            type: 'error',
+            isLoading: false,
+            autoClose: 5000,
+          });
+          console.error('Error enviando el correo secundario:', response.data.message);
         }
       } catch (error) {
-        console.error('Error sending secondary email:', error);
-        if (axios.isAxiosError(error)) {
-          if (error.response?.status === 400 || error.response?.status === 404) {
-            console.error(error)
-          }
-        }
+        console.error('Error enviando el correo:', error);
+        // Actualizar el toast a "error"
+        toast.update(toastId, {
+          render: 'Error enviando el correo',
+          type: 'error',
+          isLoading: false,
+          autoClose: 5000,
+        });
       }
     }
   };
@@ -138,6 +154,7 @@ function Prestaciones() {
 
   return (
     <>
+    <ToastContainer />
       <NavbarEmpresa />
       <div className={styles.canvas}>
         <h1 style={{ textAlign: "center" }} className={styles.h1Prestaciones}>Movimientos de Prestaciones Sociales</h1>

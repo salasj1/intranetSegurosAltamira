@@ -308,30 +308,48 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     setLoading(true);
     
     
-    await toast.promise(
-      axios.post(`${apiUrl}/vacaciones`, { cod_emp, fechaInicio, fechaFin: fechaMaximaFin, fechaRetorno: endDate, tipoConfirmacion }),
-      {
-        pending: 'Enviando solicitud...',
-        success: {
-          render() {
-            setLoading(false);
-            setFechaInicio('');
-            setFechaFin('');
-            setFechaMaximaFin(null);
-            setError(null);
-            return <SuccessMessage />;
-          },
-        },
-        error: {
-          render({ data }: { data: any }) {
-            setLoading(false);
-            setError(data.response?.data?.message || 'Error al solicitar vacaciones');
-            return <ErrorMessage data={ data.response?.data?.message || 'Error al solicitar vacaciones'} />;
-          
-          },
-        },
-      }
-    );
+  // Mostrar el toast.pending
+  const toastId = toast.loading('Enviando solicitud...');
+
+  try {
+    const response = await axios.post(`${apiUrl}/vacaciones`, {
+      cod_emp,
+      fechaInicio,
+      fechaFin: fechaMaximaFin,
+      fechaRetorno: endDate,
+      tipoConfirmacion,
+    });
+
+    // Actualizar el toast.pending a success
+    toast.update(toastId, {
+      render: <SuccessMessage />,
+      type: 'success',
+      isLoading: false,
+      autoClose: 5000,
+    });
+
+    setLoading(false);
+    setFechaInicio('');
+    setFechaFin('');
+    setFechaMaximaFin(null);
+    setError(null);
+
+    // Verificar si hubo un error al enviar el correo
+    if (response.data.emailError) {
+      toast.error('No se logró enviar el correo automáticamente. Por favor, notifique a su supervisor.');
+    }
+  } catch (error) {
+    // Actualizar el toast.pending a error
+    toast.update(toastId, {
+      render: <ErrorMessage data={(error as any)?.response?.data?.Mensaje || 'Error al solicitar Vacaciones'} />,
+      type: 'error',
+      isLoading: false,
+      autoClose: 5000,
+    });
+
+    setLoading(false);
+    setError('Error al solicitar vacaciones. Intente de nuevo.');
+  }
   
 
     fetchVacaciones();

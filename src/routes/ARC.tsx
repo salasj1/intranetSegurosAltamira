@@ -8,6 +8,7 @@ import generateARCPDF from '../components/FormatoARC';
 import styles from '../css/ARC.module.css';
 import stylesLoading from "../css/loading.module.css";
 import { Mosaic } from "react-loading-indicators";
+import { toast, ToastContainer } from 'react-toastify';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function ARC() {
@@ -123,35 +124,55 @@ function ARC() {
 };
 
 const handleSendSecondaryEmail = async () => {
-    if (!pdfBlob || !correoSecundario) return;
-    setIsPdfLoading(true);
-    try {
-        const formData = new FormData();
-        formData.append('pdf', pdfBlob, `ARC_${cod_empSinEspacios}_${fechaARC}.pdf`);
-        formData.append('cod_emp', cod_emp || '');
-        formData.append('correo_secundario', correoSecundario);
-        formData.append('fecha', fechaARC);
+  if (!pdfBlob || !correoSecundario) return;
 
-        const response = await fetch(`${apiUrl}/send-arc-secundario`, {
-            method: 'POST',
-            body: formData
-        });
-        const result = await response.json();
-        if (result.success) {
-            setShowAlert(true);
-        }
-        if (result.success) {
-          alert('Correo enviado exitosamente');
-        } else {
-          alert('Error enviando el correo');
-          const responseData = await response.json();
-          console.error('Error enviando el correo secundario:', responseData.message);
-        }
-    } catch (error) {
-        console.error('Error sending ARC email to secondary email:', error);
-    } finally {
-        setIsPdfLoading(false);
-    }
+  // Mostrar el toast de "esperando"
+  const toastId = toast.loading('Enviando correo...');
+
+  setIsPdfLoading(true);
+  try {
+      const formData = new FormData();
+      formData.append('pdf', pdfBlob, `ARC_${cod_empSinEspacios}_${fechaARC}.pdf`);
+      formData.append('cod_emp', cod_emp || '');
+      formData.append('correo_secundario', correoSecundario);
+      formData.append('fecha', fechaARC);
+
+      const response = await fetch(`${apiUrl}/send-arc-secundario`, {
+          method: 'POST',
+          body: formData
+      });
+      const result = await response.json();
+
+      if (result.success) {
+          // Actualizar el toast a "satisfactorio"
+          toast.update(toastId, {
+              render: 'Correo enviado exitosamente',
+              type: 'success',
+              isLoading: false,
+              autoClose: 5000,
+          });
+      } else {
+          // Actualizar el toast a "error"
+          toast.update(toastId, {
+              render: 'Error enviando el correo',
+              type: 'error',
+              isLoading: false,
+              autoClose: 5000,
+          });
+          console.error('Error enviando el correo secundario:', result.message);
+      }
+  } catch (error) {
+      console.error('Error enviando el correo secundario:', error);
+      // Actualizar el toast a "error"
+      toast.update(toastId, {
+          render: 'Error enviando el correo',
+          type: 'error',
+          isLoading: false,
+          autoClose: 5000,
+      });
+  } finally {
+      setIsPdfLoading(false);
+  }
 };
 
 
@@ -159,6 +180,7 @@ const handleSendSecondaryEmail = async () => {
 
   return (
     <>
+    <ToastContainer />
       <NavbarEmpresa />
       <div className={styles.canvas}>
         <h1 style={{ textAlign: "center" }} className={styles.h1ARC}>Comprobante de Agente de Retención (ARC)</h1>
