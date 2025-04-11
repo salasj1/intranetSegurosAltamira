@@ -29,12 +29,15 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
   const [searchEstado, setSearchEstado] = useState('');
   const [searchNombreSupervisor, setSearchNombreSupervisor] = useState('');
   const [searchApellidoSupervisor, setSearchApellidoSupervisor] = useState('');
+  const [searchdiasDisfrutar, setDiasDisfrutar] = useState('');
+  const [searchdiasPagar, setDiasPagar] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectedVacacion, setSelectedVacacion] = useState<Vacacion | null>(null);
   const [action, setAction] = useState<'approve' | 'reject'>('approve');
   const { cod_emp } = useAuth();
   const [error, setError] = useState<string | null>('');
   useEffect(() => {
+    vacaciones.map(item => (console.log(item)));
     fetchVacaciones();
   }, []);
 
@@ -56,17 +59,35 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
   const filteredData = sortedData.filter(item => {
     const fechaInicioFormateada = format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy');
     const fechaFinFormateada = format(addDays(parseISO(item.FechaFin.toString()), 1), 'dd/MM/yyyy');
-  
+
+    const isFilterActive = 
+      searchVacacionID || 
+      searchFechaInicio || 
+      searchFechaFin || 
+      searchCodEmp || 
+      searchApellido || 
+      searchNombre || 
+      searchdiasDisfrutar || 
+      searchdiasPagar || 
+      searchEstado || 
+      searchNombreSupervisor || 
+      searchApellidoSupervisor;
+
     return (
       (item.Estado === 'Aprobada' || item.Estado === 'Procesada') &&
-      item.VacacionID.toString().includes(searchVacacionID) &&
-      fechaInicioFormateada.includes(searchFechaInicio) &&
-      fechaFinFormateada.includes(searchFechaFin) &&
-      item.ci.toLowerCase().includes(searchCodEmp.toLowerCase()) &&
-      item.apellidos_empleado.toLowerCase().includes(searchApellido.toLowerCase()) &&
-      item.nombres_empleado.toLowerCase().includes(searchNombre.toLowerCase()) &&
-      item.nombres_supervisor.toLowerCase().includes(searchNombreSupervisor.toLowerCase()) &&
-      item.apellidos_supervisor.toLowerCase().includes(searchApellidoSupervisor.toLowerCase())
+      (!isFilterActive || (
+        item.VacacionID.toString().includes(searchVacacionID) &&
+        fechaInicioFormateada.includes(searchFechaInicio) &&
+        fechaFinFormateada.includes(searchFechaFin) &&
+        item.ci.toLowerCase().includes(searchCodEmp.toLowerCase()) &&
+        item.apellidos_empleado.toLowerCase().includes(searchApellido.toLowerCase()) &&
+        item.nombres_empleado.toLowerCase().includes(searchNombre.toLowerCase()) &&
+        item.diasDisfrutar.toString().includes(searchdiasDisfrutar) &&
+        item.diasPagar.toString().includes(searchdiasPagar) &&
+        item.Estado.toLowerCase().includes(searchEstado.toLowerCase()) &&
+        (item.nombres_supervisor?.toLowerCase().includes(searchNombreSupervisor.toLowerCase()) || (!isFilterActive && item.nombres_supervisor === null)) &&
+        (item.apellidos_supervisor?.toLowerCase().includes(searchApellidoSupervisor.toLowerCase()) || (!isFilterActive && item.apellidos_supervisor === null))
+      ))
     );
   });
 
@@ -232,6 +253,24 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
                 onChange={(e) => setSearchApellidoSupervisor(e.target.value)}
               />
               </th>
+              <th>
+              <Form.Control
+                className={styles.search}
+                type="text"
+                placeholder="Buscar por Cantidad de días..."
+                value={searchdiasDisfrutar}
+                onChange={(e) => setDiasDisfrutar(e.target.value)}
+              />
+            </th>
+            <th>
+              <Form.Control
+                className={styles.search}
+                type="text"
+                placeholder="Buscar por Cantidad de días..."
+                value={searchdiasPagar}
+                onChange={(e) => setDiasPagar(e.target.value)}
+              />
+            </th>
               <th></th>
             </tr>
           </thead>
@@ -291,6 +330,18 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
                 )}
               </th>
+              <th id={styles.headTable} onClick={() => requestSort('diasDisfrutar')} className='titulo' style={{ marginLeft:"5px" }}>
+                Cantidad días a Disfrutar
+                {sortConfig.key === 'diasDisfrutar' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                )}
+              </th>
+              <th id={styles.headTable} onClick={() => requestSort('diasPagar')} className='titulo' style={{ marginLeft:"5px" }}>
+                Cantidad días a Pagar
+                {sortConfig.key === 'diasPagar' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                )}
+              </th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -305,8 +356,10 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
                 <td>{format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy')}</td>
                 <td>{format(addDays(parseISO(item.FechaFin.toString()), 1), 'dd/MM/yyyy')}</td>
                 <td>{item.Estado}</td>
-                <td>{item.nombres_supervisor}</td>
+                <td>{item.nombres_supervisor }</td>
                 <td>{item.apellidos_supervisor}</td>
+                <td>{item.diasDisfrutar}</td>
+                <td>{item.diasPagar}</td>
                 <td>
                   {
                     item.Estado === 'Aprobada' && (
@@ -333,7 +386,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
           handleClose={() => setShowModal(false)}
           handleConfirm={handleConfirm}
           action={action}
-          DiasVacaciones={selectedVacacion.DiasVacaciones}
+          DiasVacaciones={selectedVacacion.diasDisfrutar}
           vacacionID={selectedVacacion.VacacionID}
           nombreEmpleado={`${selectedVacacion.nombres_empleado} ${selectedVacacion.apellidos_empleado}`}
           ci={selectedVacacion.ci}

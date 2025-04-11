@@ -14,6 +14,7 @@ import { Navigate } from 'react-router-dom';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { useState } from 'react';
 import '../css/Hamburguesa.css';
+import { Link } from 'react-router-dom';
 function NavbarEmpresa() {
     const auth = useAuth();
 
@@ -55,33 +56,33 @@ function NavbarEmpresa() {
 
     return (
         <>
-            <div className='NavbarEmpresa'>
-                <Navbar bg='light' data-bs-theme='light' id='Navegador'>
+   
+                <Navbar bg='light' data-bs-theme='light' id='Navegador' className='NavbarEmpresa'>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '70%', width: 'auto' }}>
-                        <Navbar.Brand className='imagenEmpresa' href='/home'>
-                            <img src={logoEmpresa} alt='Logo Empresa' />
+                        <Navbar.Brand className='imagenEmpresa'>
+                            <Link to="/home">
+                                <img className='logo' src={logoEmpresa} alt='Logo Empresa' />
+                            </Link>
                         </Navbar.Brand>
 
-                        <Button variant='primary' className='d-lg-none abrir-boton'  onClick={handleShow}>
-                        <div className="icon nav-icon-3">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
+                        <Button variant='primary' className='d-lg-none abrir-boton' onClick={handleShow}>
+                            <div className="icon nav-icon-3">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
                         </Button>
                     </div>
-                       
-                    
-                    
+
                     <Offcanvas show={show} onHide={handleClose} responsive='lg'>
                         <Offcanvas.Header closeButton className='offcanvas-header'>
-                        <Nav className='right-div'>
-                            <div className='user-info'>{auth.nombre_completo?.replace(/,/g, '') || 'Nombre completo'}</div>
-                            <div className='user-info'>{auth.cargo_empleado || 'Cargo del Empleado'}</div>
-                            <Navbar.Brand>
-                                <Notificaciones /> 
-                            </Navbar.Brand>
-                        </Nav>
+                            <Nav className='right-div'>
+                                <div className='user-info'>{auth.nombre_completo?.replace(/,/g, '') || 'Nombre completo'}</div>
+                                <div className='user-info'>{auth.cargo_empleado || 'Cargo del Empleado'}</div>
+                                <Navbar.Brand>
+                                    <Notificaciones />
+                                </Navbar.Brand>
+                            </Nav>
                         </Offcanvas.Header>
                         <Offcanvas.Body>
                             <Container>
@@ -91,16 +92,16 @@ function NavbarEmpresa() {
                                         <Nav className='me-auto'>
                                             <Col>
                                                 <NavDropdown title='Consultas' className={isConsultasActive() ? 'nav-dropdown-active' : ''}>
-                                                    <NavDropdown.Item href='/RecibodePago' className='cuadroItem'>
+                                                    <NavDropdown.Item as={Link} to='/RecibodePago' className='cuadroItem'>
                                                         Recibo de pago
                                                     </NavDropdown.Item>
-                                                    <NavDropdown.Item href='/Prestaciones' className='cuadroItem'>
+                                                    <NavDropdown.Item as={Link} to='/Prestaciones' className='cuadroItem'>
                                                         Prestaciones Sociales
                                                     </NavDropdown.Item>
-                                                    <NavDropdown.Item href="/ConstanciaDeTrabajo" className='cuadroItem'>
-                                                    Constancia de Trabajo
+                                                    <NavDropdown.Item as={Link} to="/ConstanciaDeTrabajo" className='cuadroItem'>
+                                                        Constancia de Trabajo
                                                     </NavDropdown.Item>
-                                                    <NavDropdown.Item href='/ARC' className='cuadroItem'>
+                                                    <NavDropdown.Item as={Link} to='/ARC' className='cuadroItem'>
                                                         Comprobante de Agente de Retención (ARC)
                                                     </NavDropdown.Item>
                                                 </NavDropdown>
@@ -108,36 +109,34 @@ function NavbarEmpresa() {
 
                                             <Col>
                                                 <NavDropdown title='Procesos' className={isSolicitudesActive() ? 'nav-dropdown-active' : ''}>
-                                                    <NavDropdown title='Vacaciones' id='submenu' className={isSolicitudesActive() ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end'>
-                                                        <NavDropdown.Item href='/SolicitarVacaciones' className='cuadroItem'>
-                                                            Solicitar Vacaciones
+                                                    <NavDropdown title='Pago de Vacaciones' id='submenu' className={isSolicitudesActive() ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end'>
+                                                        <NavDropdown.Item as={Link} to='/SolicitarVacaciones' className='cuadroItem'>
+                                                            Solicitar
                                                         </NavDropdown.Item>
                                                         {auth.tipo === 'Supervisor' || auth.RRHH === 1 ? (
-                                                            <NavDropdown.Item href='/AprobarVacaciones' className='cuadroItem'>
-                                                                Aprobar Vacaciones
+                                                            <NavDropdown.Item as={Link} to='/AprobarVacaciones' className='cuadroItem'>
+                                                                Aprobar
                                                             </NavDropdown.Item>
                                                         ) : null}
                                                         {auth.RRHH === 1 ? (<>
-                                                            <NavDropdown.Item href='/ProcesarVacaciones' className='cuadroItem'>
-                                                                Procesar Vacaciones
+                                                            <NavDropdown.Item as={Link} to='/ProcesarVacaciones' className='cuadroItem'>
+                                                                Procesar
                                                             </NavDropdown.Item>
-                                                            <NavDropdown.Item href='/RetornoVacaciones' className='cuadroItem'>
-                                                                Retorno de Vacaciones
-                                                            </NavDropdown.Item>
-                                                            </>
+                                                            
+                                                        </>
                                                         ) : null}
                                                     </NavDropdown>
-                                                    <NavDropdown title='Permisos' id='submenu' className={isSolicitudesActive() ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end'>
-                                                        <NavDropdown.Item href='/SolicitarPermisos' className='cuadroItem'>
-                                                            Solicitar Permisos
+                                                    <NavDropdown title='Permisos o Disfrute' id='submenu' className={isSolicitudesActive() ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end' style={{ width: "100%" }}>
+                                                        <NavDropdown.Item as={Link} to='/SolicitarPermisos' className='cuadroItem'>
+                                                            Solicitar Permisos/ Vacaciones no Disfrutados
                                                         </NavDropdown.Item>
                                                         {auth.tipo === 'Supervisor' || auth.RRHH === 1 ? (
-                                                            <NavDropdown.Item href='/AprobarPermisos' className='cuadroItem'>
+                                                            <NavDropdown.Item as={Link} to='/AprobarPermisos' className='cuadroItem'>
                                                                 Aprobar Permisos
                                                             </NavDropdown.Item>
                                                         ) : null}
                                                         {auth.RRHH === 1 ? (
-                                                            <NavDropdown.Item href='/ProcesarPermisos' className='cuadroItem'>
+                                                            <NavDropdown.Item as={Link} to='/ProcesarPermisos' className='cuadroItem'>
                                                                 Procesar Permisos
                                                             </NavDropdown.Item>
                                                         ) : null}
@@ -146,27 +145,26 @@ function NavbarEmpresa() {
                                             </Col>
 
                                             <Col>
-                                                <Nav.Link href='/DirectorioEmpleados' className={isActive('/DirectorioEmpleados') ? 'active textoNavlink' : 'textoNavlink'}>
+                                                <Nav.Link as={Link} to='/DirectorioEmpleados' className={isActive('/DirectorioEmpleados') ? 'active textoNavlink' : 'textoNavlink'}>
                                                     Directorio de Empleados
                                                 </Nav.Link>
                                             </Col>
                                             {auth.RRHH === 1 ? (
                                                 <Col>
-                                                    <Nav.Link href='/ControlSupervision' className={isActive('/ControlSupervision') ? 'active textoNavlink' : 'textoNavlink'}>
+                                                    <Nav.Link as={Link} to='/ControlSupervision' className={isActive('/ControlSupervision') ? 'active textoNavlink' : 'textoNavlink'}>
                                                         Control de Supervisión
                                                     </Nav.Link>
                                                 </Col>
                                             ) : null}
 
-                                            <Col md={auth.RRHH === 1 ? { offset: 4 } : { offset: 6 }} >
+                                            <Col md={auth.RRHH === 1 ? { offset: 4 } : { offset: 6 }}>
                                                 <Nav className='right-div'>
-                                                    <div className= "contenedor-user-info" >
-                                                    <div className='user-info'>{auth.nombre_completo?.replace(/,/g, '') || 'Nombre completo'}</div>
-                                                    <div className='user-info'>{auth.cargo_empleado || 'Cargo del Empleado'}</div>
-                                                    <Navbar.Brand>
-                                                        <Notificaciones /> {/* Usar el nuevo componente */}
-                
-                                                    </Navbar.Brand>
+                                                    <div className="contenedor-user-info">
+                                                        <div className='user-info'>{auth.nombre_completo?.replace(/,/g, '') || 'Nombre completo'}</div>
+                                                        <div className='user-info'>{auth.cargo_empleado || 'Cargo del Empleado'}</div>
+                                                        <Navbar.Brand>
+                                                            <Notificaciones />
+                                                        </Navbar.Brand>
                                                     </div>
                                                     <Nav.Link onClick={handleLogout}>Cerrar Sesión</Nav.Link>
                                                 </Nav>
@@ -178,7 +176,7 @@ function NavbarEmpresa() {
                         </Offcanvas.Body>
                     </Offcanvas>
                 </Navbar>
-            </div>
+        
         </>
     );
 }

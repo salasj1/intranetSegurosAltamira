@@ -12,6 +12,7 @@ import generatePDF from '../components/FormatoRecibodePago';
 import styles from '../css/RecibodePagoDetallado.module.css';
 import stylesLoading from "../css/loading.module.css";
 import { Mosaic } from "react-loading-indicators";
+import { toast, ToastContainer } from 'react-toastify';
 function RecibodePagoDetallado() {
   const { reci_num } = useParams<{ reci_num: string }>();
   const reciNum = reci_num || '';
@@ -126,24 +127,44 @@ function RecibodePagoDetallado() {
       formData.append('correo_secundario', correoSecundario);
       console.log(reciboData[0].fec_emis);
       formData.append('fecha', reciboData[0].fec_emis);
-      
+  
+      // Mostrar el toast de "esperando"
+      const toastId = toast.loading('Enviando correo...');
+  
       try {
         const response = await axios.post(`${apiUrl}/send-recibo-secundario`, formData, {
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-          
+            'Content-Type': 'multipart/form-data',
+          },
         });
-
+  
         if (response.data.success) {
-          alert('Correo enviado exitosamente');
+          // Actualizar el toast a "satisfactorio"
+          toast.update(toastId, {
+            render: 'Correo enviado exitosamente',
+            type: 'success',
+            isLoading: false,
+            autoClose: 5000,
+          });
         } else {
-          alert('Error enviando el correo');
+          // Actualizar el toast a "error"
+          toast.update(toastId, {
+            render: 'Error enviando el correo',
+            type: 'error',
+            isLoading: false,
+            autoClose: 5000,
+          });
           console.error('Error sending secondary email:', response.data.message);
         }
       } catch (error) {
         console.error('Error sending secondary email:', error);
-        
+        // Actualizar el toast a "error"
+        toast.update(toastId, {
+          render: 'Error enviando el correo',
+          type: 'error',
+          isLoading: false,
+          autoClose: 5000,
+        });
       }
     }
   };
@@ -155,6 +176,7 @@ function RecibodePagoDetallado() {
 
   return (
     <>
+    <ToastContainer />
       <NavbarEmpresa />
       <div className={styles.canvas}>
         {error && <Alert variant='danger'>{error}</Alert>}
@@ -162,7 +184,9 @@ function RecibodePagoDetallado() {
         <h1 className={styles.h1Recibo}>Recibo de Pago Nº {reciNum} </h1>
         <div style={{ width: "100%" }}>
           {isLoading ? (
-            <h2>Cargando detalle PDF...</h2>
+            <div className={stylesLoading.loadingDocument} >
+            <Mosaic  color={["#003391","#1A5FFA","#33CCCC","#1A3FFA"]} size="large" text="" textColor="#0d1bff" />
+            </div>
           ) : (
             <>
               {reciboNotFound ? (

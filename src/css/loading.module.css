@@ -11,6 +11,13 @@
     height: 100vh;
 }
 
+.loadingContainer2 {
+    display: flex; 
+    justify-content: center;
+    align-Items: center;
+    height: 10vh;
+}
+
 @media screen and (max-width: 1268px) {
     .loadingDocument {
         height: 50vh;

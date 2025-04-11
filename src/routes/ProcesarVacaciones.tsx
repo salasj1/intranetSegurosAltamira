@@ -10,7 +10,8 @@ import { useAuth } from "../auth/AuthProvider";
 const apiUrl = import.meta.env.VITE_API_URL;
 export interface Vacacion {
     VacacionID: number;
-    DiasVacaciones: number;
+    diasDisfrutar: number;
+    diasPagar: number;
     FechaInicio: Date;
     FechaFin: Date;
     Estado: string;
@@ -41,8 +42,8 @@ function ProcesarVacaciones() {
     const fetchVacaciones = async () => {
         try {
             const response = await axios.get(`${apiUrl}/vacacionesaprobadas`);
-            console.log(response.data);
             setVacaciones(response.data);
+            
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error('Error fetching vacaciones:', error.message);

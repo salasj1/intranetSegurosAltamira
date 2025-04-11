@@ -1,0 +1,29 @@
+.fade-enter {
+  opacity: 0;
+  transform: translateX(100%) translateY(80%) !important;
+}
+.fade-enter-active {
+  opacity: 1;
+  transform: translateX(0) translateY(80%) !important;
+  transition: opacity 500ms, transform 500ms;
+}
+.fade-exit {
+  opacity: 1;
+  transform: translateX(0) translateY(80%) !important;
+}
+.fade-exit-active {
+  opacity: 0;
+  transform: translateX(-100%) translateY(80%) !important;
+  transition: opacity 500ms, transform 500ms;
+}
+
+.phase-container {
+  position: relative;
+  min-height: auto; 
+}
+
+.phase-wrapper {
+  height: 1%;
+  display: flex;
+  flex-direction: column;
+}

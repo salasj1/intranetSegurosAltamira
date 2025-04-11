@@ -245,13 +245,14 @@ img {
     border-bottom-width: 1px;
     color: #003896;
     background-color: #fff;
+    padding: 7px;
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, .05);
 }
 
 #submenu::after {
     float: right; /* Mueve la flecha al lado derecho */
     margin-top: 10px;
-    margin-right: 10px; /* Ajusta el margen derecho según sea necesario */
+    margin-right: -12px; /* Ajusta el margen derecho según sea necesario */
 }
 
 @media screen and (max-width: 1268px) {
