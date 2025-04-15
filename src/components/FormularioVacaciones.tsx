@@ -233,7 +233,10 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       <div className="flex flex-col w-full">
         <strong><h4 className='' >¡Oh no!</h4></strong>
         <p className="text-sm">Ocurrió un error al solicitar las vacaciones, intentelo de nuevo </p>
-        <p>{data}</p>
+        {data &&(
+          <p >Detalle: <br/>{data}</p>
+        )}
+        
       </div>
     );
   }
@@ -333,22 +336,24 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     setFechaFin('');
     setFechaMaximaFin(null);
     setError(null);
-
+    console.log('Solicitud de vacaciones enviada:', response.data.emailError);
     // Verificar si hubo un error al enviar el correo
     if (response.data.emailError) {
       toast.error('No se logró enviar el correo automáticamente. Por favor, notifique a su supervisor.');
+      setError('No se logró enviar el correo automáticamente. Por favor, notifique a su supervisor.');
     }
   } catch (error) {
+    
     // Actualizar el toast.pending a error
     toast.update(toastId, {
-      render: <ErrorMessage data={(error as any)?.response?.data?.Mensaje || 'Error al solicitar Vacaciones'} />,
+      render: () => <ErrorMessage data={(error as any)?.response?.data?.message || 'Error al solicitar Vacaciones'}  />,
       type: 'error',
       isLoading: false,
       autoClose: 5000,
     });
 
     setLoading(false);
-    setError('Error al solicitar vacaciones. Intente de nuevo.');
+    setError((error as any)?.response?.data?.message || 'Error al solicitar vacaciones. Intente de nuevo.');
   }
   
 

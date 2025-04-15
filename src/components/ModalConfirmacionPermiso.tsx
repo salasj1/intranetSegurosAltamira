@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, Alert } from 'react-bootstrap';
 import { format, addDays, parseISO } from 'date-fns';
+import stylesLoading from "../css/loading.module.css";
+import { Mosaic } from "react-loading-indicators";
 
 interface Permiso {
   PermisosID: number;
@@ -22,7 +24,7 @@ interface Permiso {
 interface ModalConfirmacionPermisoProps {
   show: boolean;
   onHide: () => void;
-  onConfirm: (setError: (message: string) => void) => void;
+  onConfirm: (setError: (message: string) => void) => Promise<void>;
   permiso: Permiso | null;
   action: 'approve' | 'reject';
   error: string | null;
@@ -30,7 +32,20 @@ interface ModalConfirmacionPermisoProps {
 }
 
 const ModalConfirmacionPermiso: React.FC<ModalConfirmacionPermisoProps> = ({ show, onHide, onConfirm, permiso, action, error, setError }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Estado de carga
+
   if (!permiso) return null;
+
+  const handleConfirm = async () => {
+    setIsLoading(true); // Activar el estado de carga
+    try {
+      await onConfirm(setError);
+    } catch (err) {
+      console.error('Error al confirmar:', err);
+    } finally {
+      setIsLoading(false); // Desactivar el estado de carga
+    }
+  };
 
   return (
     <Modal show={show} onHide={onHide}>
@@ -38,27 +53,40 @@ const ModalConfirmacionPermiso: React.FC<ModalConfirmacionPermisoProps> = ({ sho
         <Modal.Title>{action === 'approve' ? 'Aprobar Permiso' : 'Rechazar Permiso'}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
-        <Alert variant={action === 'approve' ? 'primary' : 'secondary'}>
-          <p><strong>ID Permiso:</strong> {permiso.PermisosID}</p>
-          <p><strong>Cédula:</strong> {permiso.ci}</p>
-          <p><strong>Empleado:</strong> {permiso?.nombres +" "+ permiso?.apellidos}</p>
-          <p><strong>Departamento:</strong> {permiso?.departamento}</p>
-          <p><strong>Cargo:</strong> {permiso?.cargo}</p>
-          <p><strong>Título:</strong> {permiso.Titulo}</p>
-          <p><strong>Fecha Inicio:</strong> {format(addDays(parseISO(permiso.Fecha_inicio.toString()), 1), 'dd/MM/yyyy')}</p>
-          <p><strong>Fecha Fin:</strong> {format(addDays(parseISO(permiso.Fecha_Fin.toString()), 1), 'dd/MM/yyyy')}</p>
-          <p><strong>Descontable:</strong> {permiso.descontable ? 'Si' : 'No'}</p>
-        </Alert>
-        <p>¿Está seguro que desea {action === 'approve' ? 'aprobar' : 'rechazar'} el siguiente permiso?</p>
+        {isLoading ? ( // Mostrar el estado de carga si isLoading es true
+          <div className={stylesLoading.loadingDocument} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '15px', textAlign: 'center' }}>
+            <Mosaic color={["#003391", "#1A5FFA", "#33CCCC", "#1A3FFA"]} size="small" text="" textColor="#0d1bff" />
+            <h5>Procesando su solicitud, por favor espere un momento.</h5>
+          </div>
+        ) : (
+          <>
+            {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
+            <Alert variant={action === 'approve' ? 'primary' : 'secondary'}>
+              <p><strong>ID Permiso:</strong> {permiso.PermisosID}</p>
+              <p><strong>Cédula:</strong> {permiso.ci}</p>
+              <p><strong>Empleado:</strong> {permiso?.nombres + " " + permiso?.apellidos}</p>
+              <p><strong>Departamento:</strong> {permiso?.departamento}</p>
+              <p><strong>Cargo:</strong> {permiso?.cargo}</p>
+              <p><strong>Título:</strong> {permiso.Titulo}</p>
+              <p><strong>Fecha Inicio:</strong> {format(addDays(parseISO(permiso.Fecha_inicio.toString()), 1), 'dd/MM/yyyy')}</p>
+              <p><strong>Fecha Fin:</strong> {format(addDays(parseISO(permiso.Fecha_Fin.toString()), 1), 'dd/MM/yyyy')}</p>
+              <p><strong>Descontable:</strong> {permiso.descontable ? 'Si' : 'No'}</p>
+            </Alert>
+            <p>¿Está seguro que desea {action === 'approve' ? 'aprobar' : 'rechazar'} el siguiente permiso?</p>
+          </>
+        )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
-          Cancelar
-        </Button>
-        <Button variant={action === 'approve' ? 'primary' : 'danger'} onClick={() => onConfirm(setError)}>
-          Confirmar
-        </Button>
+        {!isLoading && ( // Ocultar botones si está cargando
+          <>
+            <Button variant="secondary" onClick={onHide}>
+              Cancelar
+            </Button>
+            <Button variant={action === 'approve' ? 'primary' : 'danger'} onClick={handleConfirm}>
+              Confirmar
+            </Button>
+          </>
+        )}
       </Modal.Footer>
     </Modal>
   );

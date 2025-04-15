@@ -182,6 +182,7 @@ useEffect(() => {
         // Verificar si hubo un error al enviar el correo
         if (response.data.emailError) {
           toast.error('No se logró enviar el correo automáticamente. Por favor, notifique a su supervisor.');
+          setErrors(['No se logró enviar el correo automáticamente. Por favor, notifique a su supervisor.']);
         }
     
         resetForm();

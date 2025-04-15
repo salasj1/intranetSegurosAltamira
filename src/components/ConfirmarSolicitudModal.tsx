@@ -64,9 +64,12 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
   };
 
   const handleConfirmAndCheck = async () => {
+    const controller = new AbortController(); // Crear un controlador de abort
+    const signal = controller.signal; // Obtener la señal del controlador
     setIsLoading(true); // Activar el estado de carga
+
     try {
-      const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
+      const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`, { signal });
       const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada' || vacacion.Estado === 'Aprobada');
       if (hasRequest) {
         setError('Ya tiene una solicitud de vacaciones pendiente.');
@@ -77,16 +80,27 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
       if (!hasRequest || error === null) {
         if (vacacionID === undefined) {
           if (tipoConfirmacion !== null) {
-            await handleConfirm(tipoConfirmacion);
+            try {
+              await handleConfirm(tipoConfirmacion);
+            } catch (confirmError) {
+              console.error('Error al confirmar la solicitud:', confirmError);
+              setError((confirmError as any)?.response?.data?.message);
+            }
           }
         }
-        setSuccess('Solicitud enviada con éxito.');
       }
     } catch (error) {
-      setError((error as any)?.message);
+      if (axios.isCancel(error)) {
+        console.log('Solicitud cancelada');
+      } else {
+        setError((error as any)?.response?.data?.message || 'Error al verificar solicitudes');
+      }
     } finally {
       setIsLoading(false); // Desactivar el estado de carga al finalizar
     }
+
+    // Función para abortar la solicitud
+    return () => controller.abort();
   };
 
   return (
@@ -102,9 +116,7 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
           </div>
         ) : (
           <>
-            {success && <Alert variant="success" onClose={() => { }} dismissible>{success}</Alert>}
             {error && <Alert variant="danger" onClose={() => { setError('') }} dismissible>{error}</Alert>}
-
             <Alert variant="primary">
               {vacacionID !== undefined && (
                 <p><strong>ID de Vacaciones:</strong> {vacacionID}</p>
@@ -139,11 +151,11 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
             <Button variant="secondary" onClick={handleClose}>
               Cancelar
             </Button>
-            {!success && (
+            {/* !success && ( */
               <Button variant="primary" onClick={handleConfirmAndCheck}>
                 Confirmar
               </Button>
-            )}
+            /* ) */}
           </>
         )}
       </Modal.Footer>
