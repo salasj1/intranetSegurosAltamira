@@ -4,7 +4,7 @@ import Select from 'react-select';
 import { Alert, Button, Card, Spinner } from 'react-bootstrap';
 import { useAuth } from '../auth/AuthProvider';
 import { FaSignOutAlt } from "react-icons/fa";
-import style from './AdminDashboard.module.css'; // Importar el archivo CSS
+
 function AdminDashboard() {
     const auth = useAuth(); // Acceder al contexto de autenticación
     const [selectedUser, setSelectedUser] = useState('');

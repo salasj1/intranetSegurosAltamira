@@ -211,10 +211,7 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
     setShowModalDelete(true);
   };
 
-  const handleCederSupervision = (empleado: Empleado) => {
-    setSelectedEmpleado(empleado);
-    setShowModalCeder(true);
-  }
+  
   return (
     <>
     <div style={{ display: "flex", justifyContent: "space-between", gap: "10px"}} >
