@@ -17,6 +17,15 @@
     white-space: nowrap; 
     font-family: "Gotham", Sans-serif;
 }
+.btn-change-supervision{
+    border: #0d6efd;
+    background-color: #0d6efd !important;
+}
+.btn-change-supervision:hover{
+    background-color: #0b5ed7 !important;
+    border-color: #0a58ca !important;
+    color: white !important;
+}
 .h1Titulo{
     margin-left: -10% !important;
 }

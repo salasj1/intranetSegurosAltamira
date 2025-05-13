@@ -9,8 +9,14 @@ import AgregarSupervisionModal from "./AgregarSupervisionModal";
 import ModalEditSupervision from "./ModalEditSupervision";
 import ModalDeleteSupervision from "./ModalDeleteSupervisor";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
+import { AiOutlineUserSwitch } from "react-icons/ai";
 import axios from "axios";
+import ModalChangeSupervision from "./ModalChangeSupervision";
+import style2 from '../css/ControlAutorizacion.module.css';
+import ModalCederSupervision from "./ModalCederSupervision";
 
+
+// Ensure the CSS module file contains a definition for "btn-change-supervision"
 const apiUrl = import.meta.env.VITE_API_URL;
 
 interface ListaEmpleadosProps {
@@ -31,8 +37,11 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
   const [showModal, setShowModal] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
+  const [showModalChange, setShowModalChange] = useState(false);
+  const [showModalCeder, setShowModalCeder] = useState(false);
   const [selectedEmpleado, setSelectedEmpleado] = useState<Empleado | null>(null);
   const [error, setError] = useState<string | null>('');
+  
   useEffect(() => {
     fetchEmpleados();
   }, []);
@@ -116,8 +125,37 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
     }
   };
 
+  const handleChangeSupervision = async (ID_SUPERVISION: number, supervisors: string[]) => {
+    try{
+      console.log("CHANGE"+ID_SUPERVISION);
+      const response = await fetch(`${apiUrl}/empleados/supervision/supervisor`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ID_SUPERVISION, cod_emp: supervisors }),
+      });
+  
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error('Error al modificar la supervisión');
+        
+      }else{
+        setError('');
+      }
+  
+      fetchEmpleados();
+    }
+    catch (error) {
+      console.error('Error modificando supervisión:', error);
+      setError('Error al modificar la supervisión');
+    }
+  };
+
   const handleModifySupervision = async (ID_SUPERVISION: number, Tipo: string) => {
     try {
+      console.log(ID_SUPERVISION);
       const response = await fetch(`${apiUrl}/empleados/supervision/Tipo`, {
         method: 'PUT',
         headers: {
@@ -155,8 +193,16 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
     }
   };
 
+  const handleChangeClick = (empleado: Empleado) => {
+    
+    setSelectedEmpleado(empleado);
+    console.log(selectedEmpleado?.ID_SUPERVISION);
+    setShowModalChange(true);
+  }
+
   const handleEditClick = (empleado: Empleado) => {
     setSelectedEmpleado(empleado);
+    
     setShowModalEdit(true);
   };
 
@@ -165,9 +211,28 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
     setShowModalDelete(true);
   };
 
+  const handleCederSupervision = (empleado: Empleado) => {
+    setSelectedEmpleado(empleado);
+    setShowModalCeder(true);
+  }
   return (
     <>
+    <div style={{ display: "flex", justifyContent: "space-between", gap: "10px"}} >
+
       <Button variant="primary" onClick={() => setShowModal(true)}>Agregar Nueva Supervisión</Button>
+      <Button
+        variant="primary"
+        onClick={() => setShowModalCeder(true)}
+        className={style2['btn-change-supervision']}
+      >
+      Transferir Supervisión
+      </Button>
+       <ModalCederSupervision
+            show={showModalCeder}
+            handleClose={() => setShowModalCeder(false)}
+            fetchEmpleados={fetchEmpleados}
+      />
+    </div>
       <AgregarSupervisionModal
         show={showModal}
         handleClose={() => setShowModal(false)}
@@ -324,9 +389,13 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
                     <Button variant="primary" onClick={() => handleEditClick(item)}>
                       <FaPencilAlt />
                     </Button>
+                    <Button className={style2['btn-change-supervision']} onClick={() => handleChangeClick(item)}>
+                    <AiOutlineUserSwitch size={25} />
+                    </Button>
                     <Button variant="danger" onClick={() => handleDeleteClick(item)}>
                       <FaTrash />
                     </Button>
+                    
                   </div>
                 </td>
               </tr>
@@ -334,6 +403,17 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
           </tbody>
         </Table>
       </div>
+      
+      {selectedEmpleado && (
+        <ModalChangeSupervision
+          show={showModalChange}
+          handleClose={() => setShowModalChange(false)}
+          cod_emp={selectedEmpleado.cod_emp.toString()}
+          cod_supervisor={selectedEmpleado.cod_supervisor}
+          handleChange={handleChangeSupervision}
+          idSupervision={selectedEmpleado.ID_SUPERVISION}
+        />
+      )}
       {selectedEmpleado && (
         <ModalEditSupervision
           show={showModalEdit}
@@ -352,6 +432,7 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
           handleDelete={handleDeleteSupervision}
         />
       )}
+
     </>
   );
 }

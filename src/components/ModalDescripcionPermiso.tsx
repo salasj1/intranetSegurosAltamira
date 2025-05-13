@@ -72,11 +72,12 @@ const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show,
       fetchPermisos();
       onHide();
     } catch (error) {
-      console.error(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso`);
-      setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso. Cargue de nuevo la página.`);
-      if (axios.isAxiosError(error)) {
-        console.error(error.response);
+      let errorMessage = 'Error al solicitar permiso';
+      if (axios.isAxiosError(error) && error.response?.data) {
+        console.error(error.response.data);
+        errorMessage = error.response.data.message;
       }
+      setError(errorMessage); // Establecer el mensaje de error
     } finally {
       setIsLoading(false); // Desactivar el estado de carga
     }

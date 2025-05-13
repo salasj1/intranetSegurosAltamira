@@ -1,0 +1,56 @@
+/* Card de supervisor */
+.supervisor-card {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: #ffb84d;
+    min-height: 120px;
+    margin-right: 12px;
+    margin-bottom: 12px;
+    transition: box-shadow 0.2s;
+  }
+  
+  .supervisor-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+  }
+  
+  /* Card de empleado */
+  .empleado-card {
+    background: #1976d2;
+    color: #fff;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.2s;
+  }
+  
+  .empleado-card:hover {
+    background: #1565c0;
+  }
+  
+  .modal-fullscreen {
+    width: auto;
+}
+  /* Filtros */
+  .filters {
+    background: #f8f9fa;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+  }
+  
+  .filters input,
+  .filters .css-13cymwt-control {
+    min-width: 160px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 900px) {
+    .supervisor-cards {
+      flex-direction: column;
+    }
+    .supervisor-card {
+      min-width: 90vw;
+    }
+  }

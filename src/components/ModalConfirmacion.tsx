@@ -38,7 +38,11 @@ const ModalConfirmacion: React.FC<ModalConfirmacionProps> = ({ show, onHide, onC
         <Modal.Title>{action === 'approve' ? 'Procesar Permiso' : 'Rechazar Permiso'}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
+              {error && (
+          <Alert variant="danger" onClose={() => setError('')} dismissible>
+            {typeof error === 'string' ? error : 'Ocurrió un error inesperado'}
+          </Alert>
+        )}
         <Alert variant={action === 'approve' ? 'primary' : 'secondary'}>
           <p><strong>ID Permiso:</strong> {permiso.PermisosID}</p>
           <p><strong>Cédula:</strong> {permiso.ci}</p>

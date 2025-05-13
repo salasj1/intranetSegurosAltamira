@@ -1,12 +1,14 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { Alert, Button, Form, InputGroup } from "react-bootstrap";
 import { CSSTransition } from 'react-transition-group';
 import { Mosaic } from "react-loading-indicators"; 
 import styles from '../css/loading.module.css'; 
 import { FaEye } from "react-icons/fa";
 import { IoMdEyeOff } from "react-icons/io";
+
+declare const VANTA: any;
 export interface Usuario {
   id: number;
   username: string;
@@ -18,6 +20,7 @@ export interface Usuario {
 
 function ChangePasswordVerify() {
   const [inProp, setInProp] = useState(false);
+  const [isReady, setIsReady] = useState(false); 
   const [usuario, setUsuario] = useState('');
   const [error, setError] = useState('');
   const [show1, setShow1] = useState(true);
@@ -36,6 +39,8 @@ function ChangePasswordVerify() {
   const [showPassword1, setShowPassword1] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
   const apiUrl = import.meta.env.VITE_API_URL;
+  const vantaRef = useRef<HTMLDivElement>(null); // Referencia para el fondo de Vanta.js
+  const [vantaEffect, setVantaEffect] = useState<any>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +76,51 @@ function ChangePasswordVerify() {
       }
     }
   };
+  useEffect(() => {
+      setInProp(true);
 
+      // Inicializar Vanta.js
+      if (!vantaEffect) {
+          setVantaEffect(
+              VANTA.WAVES({
+                  el: vantaRef.current,
+                  mouseControls: true,
+                  touchControls: true,
+                  gyroControls: false,
+                  minHeight: 200.00,
+                  minWidth: 725.00,
+                  scale: 1,
+                  scaleMobile: 1,
+                  color: 0x36bb
+              
+                })
+          );
+      }
+
+      // Limpiar el efecto al desmontar el componente
+      // Redimensionar el fondo al cambiar el tamaño de la ventana
+  const handleResize = () => {
+      if (vantaEffect) {
+          vantaEffect.resize();
+      }
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  // Simular un pequeño retraso para evitar el glitch
+  const timeout = setTimeout(() => {
+    setIsReady(true); // Mostrar el contenido después de que esté listo
+    setInProp(true); // Activar la animación
+  }, 100); // Ajusta el tiempo según sea necesario
+
+  return () => {
+    if (vantaEffect) vantaEffect.destroy();
+    window.removeEventListener("resize", handleResize);
+    clearTimeout(timeout);
+  };
+}, [vantaEffect]);
+
+  
   useEffect(() => {
     if (contador > 0) {
       const timer = setTimeout(() => setContador(contador - 1), 1000);
@@ -181,6 +230,8 @@ function ChangePasswordVerify() {
   }, [usuarioData]);
 
   return (
+    <div ref={vantaRef} style={{ height: '111.09vh'}} className="responsive-container">
+    {isReady && (
     <CSSTransition in={inProp} timeout={1000} classNames="fade" unmountOnExit>
       <div className="d-flex justify-content-center align-items-center vh-100" style={{zoom: '1.1'}}>
         <div className="card p-4 shadow" style={{ width: '30rem', margin: '0 auto' }}>
@@ -319,6 +370,8 @@ function ChangePasswordVerify() {
         </div>
       </div>
     </CSSTransition>
+    )}
+    </div>
   )
 }
 

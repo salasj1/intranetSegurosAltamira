@@ -24,6 +24,7 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
   const [searchVacacionID, setSearchVacacionID] = useState('');
   const [searchDiasVacaciones, setSearchDiasVacaciones] = useState('');
   const [searchNombre, setSearchNombre] = useState('');
+  const [searchApellido, setSearchApellido] = useState('');
   const [searchCodEmp, setSearchCodEmp] = useState('');
   const [searchFechaInicio, setSearchFechaInicio] = useState('');
   const [searchFechaFin, setSearchFechaFin] = useState('');
@@ -59,7 +60,7 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
     format(addDays(parseISO(item.FechaFin.toString()), 1), 'dd/MM/yyyy').includes(searchFechaFin) &&
     item.Estado.toLowerCase().includes(searchEstado.toLowerCase()) &&
     item.ci.toLowerCase().includes(searchCodEmp.toLowerCase()) &&
-    item.apellidos.toLowerCase().includes(searchNombre.toLowerCase()) &&
+    item.apellidos.toLowerCase().includes(searchApellido.toLowerCase()) &&
     item.nombres.toLowerCase().includes(searchNombre.toLowerCase()) &&
     item.Estado.toLowerCase() !== 'borrado'
   );
@@ -164,8 +165,8 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
                 className={styles.search}
                 type="text"
                 placeholder="Buscar Nombre..."
-                value={searchFechaInicio}
-                onChange={(e) => setSearchFechaInicio(e.target.value)}
+                value={searchNombre}
+                onChange={(e) => setSearchNombre(e.target.value)}
               />
             </th>
             <th>
@@ -173,8 +174,8 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
                 className={styles.search}
                 type="text"
                 placeholder="Buscar Apellido..."
-                value={searchNombre}
-                onChange={(e) => setSearchNombre(e.target.value)}
+                value={searchApellido}
+                onChange={(e) => setSearchApellido(e.target.value)}
               />
             </th>
             <th>

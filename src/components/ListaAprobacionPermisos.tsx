@@ -118,16 +118,12 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
       setShowModal(false);
     } catch (error) {
       console.error(error); 
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 400) {
-          setError(error.response.data);
-        }else if (error.response?.status === 500) {
-          setError(error.response.data.message);
-        } 
-      } else {
-        console.error(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso:`, error);
-        setError(`Error ${action === 'approve' ? 'aprobando' : 'rechazando'} permiso: ${error}`);
+      let errorMessage = 'Error al solicitar permiso';
+      if (axios.isAxiosError(error) && error.response?.data) {
+        console.error(error.response.data);
+        errorMessage = error.response.data;
       }
+      setError(errorMessage);
     }
   };
 

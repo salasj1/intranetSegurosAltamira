@@ -3,7 +3,7 @@ import { Modal, Button, Alert } from 'react-bootstrap';
 import { format, addDays, parseISO } from 'date-fns';
 import stylesLoading from "../css/loading.module.css";
 import { Mosaic } from "react-loading-indicators";
-
+import axios from 'axios';
 interface Permiso {
   PermisosID: number;
   cod_emp: string;
@@ -40,8 +40,16 @@ const ModalConfirmacionPermiso: React.FC<ModalConfirmacionPermisoProps> = ({ sho
     setIsLoading(true); // Activar el estado de carga
     try {
       await onConfirm(setError);
-    } catch (err) {
-      console.error('Error al confirmar:', err);
+    } catch (error) {
+      let errorMessage = 'Error al solicitar permiso';
+      if (axios.isAxiosError(error) && error.response?.data) {
+        console.error(error.response.data);
+        errorMessage = typeof error.response.data === 'string'
+          ? error.response.data
+          : error.response.data.message || errorMessage;
+      }
+      setError(errorMessage); // Establecer el mensaje de error como string
+      console.error('Error al confirmar:', error);
     } finally {
       setIsLoading(false); // Desactivar el estado de carga
     }
@@ -60,7 +68,11 @@ const ModalConfirmacionPermiso: React.FC<ModalConfirmacionPermisoProps> = ({ sho
           </div>
         ) : (
           <>
-            {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
+            {error && (
+              <Alert variant="danger" onClose={() => setError('')} dismissible>
+                {typeof error === 'string' ? error : (error as any).message || 'Ocurrió un error inesperado'}
+              </Alert>
+            )}
             <Alert variant={action === 'approve' ? 'primary' : 'secondary'}>
               <p><strong>ID Permiso:</strong> {permiso.PermisosID}</p>
               <p><strong>Cédula:</strong> {permiso.ci}</p>

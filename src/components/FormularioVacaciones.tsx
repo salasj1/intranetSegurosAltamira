@@ -254,9 +254,8 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
   const handleSubmit = async (tipo: string, tipoConfirmacion: number) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    console.log(JSON.stringify(tipoConfirmacion));
-    const startDate = fechaInicio ? new Date(fechaInicio) : null;
-    const endDate = fechaFin ? new Date(fechaFin) : null;
+    const startDate = fechaInicio ? new Date(fechaInicio.split('T')[0] + 'T00:00:00') : null;
+    const endDate = fechaFin ? new Date(fechaFin.split('T')[0] + 'T00:00:00') : null;
   
     if (!fechaInicio || !fechaFin) {
       alert('Debe llenar todos los campos.');
@@ -343,10 +342,13 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       setError('No se logró enviar el correo automáticamente. Por favor, notifique a su supervisor.');
     }
   } catch (error) {
-    
+    let errorMessage = 'Error al solicitar permiso';
+    if (axios.isAxiosError(error) && error.response) {
+      errorMessage = error.response.data?.message ;
+    } 
     // Actualizar el toast.pending a error
     toast.update(toastId, {
-      render: () => <ErrorMessage data={(error as any)?.response?.data?.message || 'Error al solicitar Vacaciones'}  />,
+      render: () => <ErrorMessage data={errorMessage } />,
       type: 'error',
       isLoading: false,
       autoClose: 5000,
@@ -355,7 +357,6 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     setLoading(false);
     setError((error as any)?.response?.data?.message || 'Error al solicitar vacaciones. Intente de nuevo.');
   }
-  
 
     fetchVacaciones();
     if (tipo === 'solicitada') {
@@ -393,7 +394,12 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
             speed={0.5}
             style={{marginTop:'-50px'}}
             />
-            <h4 style={{marginTop:'-50px'}}>Tu solicitud de vacaciones está siendo procesada. </h4>
+            <div style={{ marginTop: '-50px', textAlign: 'center' }}>
+              <h4>Actualmente tienes una solicitud de vacaciones en proceso </h4>
+              <hr style={{ width: '100%', marginTop: '-5px' }} />
+              <p style={{ marginTop: '-5px', marginBottom: '0' }}>Por favor espera la aprobación de tu supervisor</p>
+              <p style={{ marginTop: '-5px', marginBottom: '0' }}>o Capital Humano</p>
+            </div>
             </Alert>)):(<Alert variant='danger'  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%', textAlign: 'center' }}>
               <PiProhibitFill size={80}/>
             <h4>Lamentablemente no tienes vacaciones disponibles en este momento.</h4>
@@ -542,7 +548,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       setError={setError}
       fechaInicio={fechaInicio}
       fechaFin={fechaMaximaFin}
-      fechaRetorno={fechaFin ? addDays(new Date(fechaFin), -1).toISOString() : null}
+      fechaRetorno={fechaFin }
     />
 
     </>

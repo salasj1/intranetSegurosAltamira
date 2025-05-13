@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card, Container, Row, Col, Form, Button, Modal, Alert } from 'react-bootstrap';
 import axios from 'axios';
-import logoEmpresa from '../assets/icono.png';
+import logoEmpresa from '../assets/logo-login-2.png';
 import styles from '../css/ListaCardEmpleados.module.css';
 import { useAuth } from '../auth/AuthProvider';
 import Select from 'react-select';
@@ -107,7 +107,7 @@ const ListaCardEmpleados: React.FC = () => {
 
   const empleadosFiltrados = empleados.filter(empleado =>
     (!filtros.nombre || empleado.nombre_completo?.toLowerCase().includes(filtros.nombre.toLowerCase())) &&
-    (!filtros.cargo || empleado.des_cargo?.toLowerCase().includes(filtros.cargo.toLowerCase())) &&
+    (!filtros.cargo || empleado.des_cargo?.toLowerCase() === filtros.cargo.toLowerCase()) && // Comparación exacta para el cargo
     (!filtros.departamento || empleado.des_depart?.toLowerCase() === filtros.departamento.toLowerCase()) &&
     (!filtros.correo || (empleado.correo_e?.toLowerCase() || '').includes(filtros.correo.toLowerCase()))
   );
@@ -116,6 +116,7 @@ const ListaCardEmpleados: React.FC = () => {
 
   const nombresUnicos = Array.from(new Set(empleados
     .filter(empleado => 
+      (!filtros.cargo || empleado.des_cargo === filtros.cargo) &&
       (!filtros.nombre || empleado.nombre_completo === filtros.nombre) &&
       (!filtros.departamento || empleado.des_depart === filtros.departamento) &&
       (!filtros.correo || empleado.correo_e === filtros.correo)
@@ -126,6 +127,7 @@ const ListaCardEmpleados: React.FC = () => {
 
   const cargosUnicos = Array.from(new Set(empleados
     .filter(empleado => 
+      (!filtros.cargo || empleado.des_cargo === filtros.cargo) &&
       (!filtros.nombre || empleado.nombre_completo === filtros.nombre) &&
       (!filtros.departamento || empleado.des_depart === filtros.departamento) &&
       (!filtros.correo || empleado.correo_e === filtros.correo)
@@ -135,6 +137,7 @@ const ListaCardEmpleados: React.FC = () => {
 
   const departamentosUnicos = Array.from(new Set(empleados
     .filter(empleado => 
+      (!filtros.cargo || empleado.des_cargo === filtros.cargo) &&
       (!filtros.nombre || empleado.nombre_completo === filtros.nombre) &&
       (!filtros.departamento || empleado.des_depart === filtros.departamento) &&
       (!filtros.correo || empleado.correo_e === filtros.correo)
@@ -144,6 +147,7 @@ const ListaCardEmpleados: React.FC = () => {
 
   const correosUnicos = Array.from(new Set(empleados
     .filter(empleado => 
+      (!filtros.cargo || empleado.des_cargo === filtros.cargo) &&
       (!filtros.nombre || empleado.nombre_completo === filtros.nombre) &&
       (!filtros.departamento || empleado.des_depart === filtros.departamento) &&
       (!filtros.correo || empleado.correo_e === filtros.correo)
@@ -157,10 +161,16 @@ const ListaCardEmpleados: React.FC = () => {
         <Container className='containerEmpleados'>
           <Form>
             <Row className='formRow'>
+            {/* <div style={{backgroundColor:'white', height:'0.1px', marginBottom:'15px'}}/>
+                <p style={{ color: 'white', fontSize: '20px', marginBottom: '20px' }}>
+                Bienvenido al directorio de empleados. Aquí puedes buscar y filtrar empleados por nombre, cargo, departamento o correo electrónico. 
+                Si tienes permisos de Recursos Humanos, también puedes editar o eliminar el número de teléfono de los empleados.
+                </p>
               
+              <div style={{backgroundColor:'white', height:'5px', marginBottom:'15px'}}/> */}
               <Col >
                 <Form.Group controlId="filtroDepartamento">
-                  <Form.Label>Departamento</Form.Label>
+                  <Form.Label style={{color:'white', fontSize:'18px'}}>Departamento</Form.Label>
                   <Select
                     name="departamento"
                     value={filtros.departamento ? { label: filtros.departamento, value: filtros.departamento } : null}
@@ -173,7 +183,7 @@ const ListaCardEmpleados: React.FC = () => {
               </Col>
               <Col lg={3} >
                 <Form.Group controlId="filtroNombre">
-                  <Form.Label>Nombre completo</Form.Label>
+                  <Form.Label style={{color:'white',fontSize:'18px'}}>Nombre completo</Form.Label>
                   <Select
                     name="nombre"
                     value={filtros.nombre ? { label: filtros.nombre, value: filtros.nombre } : null}
@@ -186,7 +196,7 @@ const ListaCardEmpleados: React.FC = () => {
               </Col>
               <Col >
                 <Form.Group controlId="filtroCargo">
-                  <Form.Label>Cargo</Form.Label>
+                  <Form.Label style={{color:'white',fontSize:'18px'}}>Cargo</Form.Label>
                   <Select
                     name="cargo"
                     value={filtros.cargo ? { label: filtros.cargo, value: filtros.cargo } : null}
@@ -199,7 +209,7 @@ const ListaCardEmpleados: React.FC = () => {
               </Col>
               <Col lg={4}>
                 <Form.Group controlId="filtroCorreo">
-                  <Form.Label>Correo</Form.Label>
+                  <Form.Label style={{color:'white',fontSize:'18px'}}>Correo</Form.Label>
                   <Select
                   name="correo"
                   value={filtros.correo ? { label: filtros.correo, value: filtros.correo } : null}
@@ -216,10 +226,12 @@ const ListaCardEmpleados: React.FC = () => {
             <Row>
               {empleadosFiltrados.map((empleado, index) => (
                 <Col key={index} sm={12} md={6} lg={4}>
+                  
                   <Card
                     bg="primary"
                     border="primary"
-                    className={`${styles.cardEmpleado} ${empleadosParaEliminar.includes(index) ? styles.fadeOut : ''}`}
+                    className={`${styles.cardEmpleado}  ${empleadosParaEliminar.includes(index) ? styles.fadeOut : ''}`}
+                    style={{ boxShadow: '5px 5px 10px rgba(0 ,114, 255)' }}
                   >
                     <Card.Header>
                       <Card.Title className='cardHeaderEmpleado'>
@@ -250,7 +262,7 @@ const ListaCardEmpleados: React.FC = () => {
       </div>
 
       <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
+        <Modal.Header closeButton style={{borderBottom:0}} className={styles['card-header']}>
           <Modal.Title>Editar Teléfono</Modal.Title>
         </Modal.Header>
         <Modal.Body>

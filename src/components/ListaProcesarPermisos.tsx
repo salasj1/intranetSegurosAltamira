@@ -113,24 +113,26 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
     try {
       if (action === 'approve') {
         await axios.put(`${apiUrl}/permisos/${selectedPermiso.PermisosID}/process`, {
-          cod_RRHH: cod_emp
+          cod_RRHH: cod_emp,
         });
       } else {
         await axios.put(`${apiUrl}/permisos/${selectedPermiso.PermisosID}/reject2`, {
-          cod_supervisor: cod_emp
+          cod_supervisor: cod_emp,
         });
       }
       fetchPermisos();
       setShowModal(false);
     } catch (error) {
       console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso:`, error);
-      if (axios.isAxiosError(error)) {
-        console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso:`, error?.message);
-        setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${error?.message}`);
-      } else {
-        console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso:`, error);
-        setError(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso: ${error}`);
+  
+      let errorMessage = 'Error al procesar el permiso';
+      if (axios.isAxiosError(error) && error.response?.data) {
+        // Extraer el mensaje del error
+        errorMessage = typeof error.response.data === 'string'
+          ? error.response.data
+          : error.response.data.message || errorMessage;
       }
+      setError(errorMessage); // Asegurarse de que sea un string
     }
   };
 

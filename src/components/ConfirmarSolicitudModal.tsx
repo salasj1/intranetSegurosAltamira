@@ -46,12 +46,18 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
   }, [show, vacacionID]);
 
   const handleMensajeConfirmacion = async () => {
+    console.log("fechaFin", fechaFin);
+    console.log("fechaRetorno", fechaRetorno);
+    const fechaRetornoDate = fechaRetorno ? new Date(fechaRetorno) : new Date();
+    const fechaRetornoT00 = fechaRetornoDate.toISOString().split('T')[0] + 'T00:00:00.000Z';
+    // Asegurarse de que fechaRetorno tenga la hora en 00:00
+    
     try {
       const response = await axios.get(`${apiUrl}/vacaciones/InfoConfirmacionSolicitudVacaciones`, {
         params: {
           fechaInicio,
           fechaFin,
-          fechaRetorno: fechaRetorno ? addDays(new Date(fechaRetorno), 1).toISOString() : null,
+          fechaRetorno: fechaRetorno ? fechaRetornoT00 : null,
         }
       });
       setMensaje(response.data.Mensaje);
@@ -64,12 +70,9 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
   };
 
   const handleConfirmAndCheck = async () => {
-    const controller = new AbortController(); // Crear un controlador de abort
-    const signal = controller.signal; // Obtener la señal del controlador
     setIsLoading(true); // Activar el estado de carga
-
     try {
-      const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`, { signal });
+      const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
       const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada' || vacacion.Estado === 'Aprobada');
       if (hasRequest) {
         setError('Ya tiene una solicitud de vacaciones pendiente.');
@@ -84,23 +87,16 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
               await handleConfirm(tipoConfirmacion);
             } catch (confirmError) {
               console.error('Error al confirmar la solicitud:', confirmError);
-              setError((confirmError as any)?.response?.data?.message);
+              setError((confirmError as any)?.response?.data?.message );
             }
           }
         }
       }
     } catch (error) {
-      if (axios.isCancel(error)) {
-        console.log('Solicitud cancelada');
-      } else {
-        setError((error as any)?.response?.data?.message || 'Error al verificar solicitudes');
-      }
+      setError((error as any)?.response?.data?.message || 'Error al verificar solicitudes');
     } finally {
       setIsLoading(false); // Desactivar el estado de carga al finalizar
     }
-
-    // Función para abortar la solicitud
-    return () => controller.abort();
   };
 
   return (
@@ -122,7 +118,7 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
                 <p><strong>ID de Vacaciones:</strong> {vacacionID}</p>
               )}
               <p><strong>Fecha de Inicio de Vacaciones: </strong> {fechaInicio ? new Date(fechaInicio).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
-              {fechaRetorno && <p><strong>Fecha de Retorno de Vacaciones:</strong> {addDays(new Date(fechaRetorno), 1).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>}
+              {fechaRetorno && <p><strong>Fecha de Retorno de Vacaciones:</strong> {new Date(fechaRetorno).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>}
               <p><strong>Fecha de Fin del periodo de Vacaciones:</strong> {fechaFin ? addDays(new Date(fechaFin), 1).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
               {diasDisfrutar && diasDisfrutar !== 0 && <p><strong>Número de días hábiles a Disfrutar: </strong> {diasDisfrutar}  {diasDisfrutar === 1 ? 'día' : 'días'}</p>}
             </Alert>

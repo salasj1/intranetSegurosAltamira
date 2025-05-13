@@ -1,7 +1,7 @@
 import Accordion from 'react-bootstrap/Accordion';
 import style from '../css/accordion.module.css';
 import { useAccordionButton } from 'react-bootstrap/AccordionButton';
-import { Button, Form, Card, Alert, FormCheck } from 'react-bootstrap';
+import { Button, Form, Card, Alert } from 'react-bootstrap';
 import { ReactNode, useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthProvider';
@@ -70,7 +70,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
   const [diasNoDisfrutados, setDiasNoDisfrutados] = useState<number | null>(null);
   const [motivosPermiso, setMotivosPermiso] = useState<MotivoPermiso[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const descontableRef = useRef<HTMLInputElement>(null);
+
   const [success, setSuccess] = useState<string | null>(null);
   const playerRef = useRef<Player>(null);
 
@@ -189,11 +189,18 @@ useEffect(() => {
         onRefresh();
       } catch (error) {
         // Actualizar el toast.pending a error
-        console.error('Error al solicitar permiso:', error);
-        setAlertMessage('Error al solicitar permiso');
+        let errorMessage = 'Error al solicitar permiso';
+        
+        if (axios.isAxiosError(error) && error.response) {
+          setAlertMessage(error.response.data?.message);
+         errorMessage = error.response.data?.message ;
+        } else {
+          setAlertMessage('Ocurrió un error inesperado');
+        }
         setAlertVariant('danger');
+        console.error('Error al solicitar permiso:', errorMessage);
         toast.update(toastId, {
-          render: <ErrorMessage data={(error as any)?.response?.data?.Mensaje || 'Error al solicitar Permisos'} />,
+          render: () => <ErrorMessage data={errorMessage } />,
           type: 'error',
           isLoading: false,
           autoClose: 5000,
@@ -206,8 +213,8 @@ useEffect(() => {
 
   const handleDiasNoDisfrutados = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/vacaciones/CalculrDiasNoDisfrutadosVacaciones/${cod_emp}`);
-      setDiasNoDisfrutados(response.data.diasNoDisfrutados);
+      const response = await axios.get(`${apiUrl}/permisos/DiasVacacionesNoDisfrutados/${cod_emp}`);
+      setDiasNoDisfrutados(response.data[0]?.DiasVacasPendientes || 0);
     } catch (error) {
       console.error('Error al obtener los días no disfrutados:', error);
     }
@@ -275,7 +282,11 @@ useEffect(() => {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer 
+        autoClose={8000}
+        pauseOnFocusLoss={false}
+        theme="colored"
+        />
       <Accordion defaultActiveKey={null} flush className={style.accordion}>
         <Card bg='primary' className={style.accordionItem} style={{ borderRadius: '0px' }}>
           <Card.Header className={style.cardHeader}>
@@ -332,11 +343,15 @@ useEffect(() => {
                       style={{ color: 'black' }}
                     >
                       <option value="">Seleccione una opción</option>
-                      {motivosPermiso.map((motivo) => (
-                        <option key={motivo.id} value={motivo.tipo} style={{ color: 'black' }}>
-                          {motivo.tipo}
+                        {motivosPermiso.map((motivo) => (
+                        <option
+                          key={motivo.id}
+                          value={motivo.tipo }
+                          style={{ color: 'black' }}
+                        >
+                          {motivo.id === 6 ? motivo.tipo+" ("+diasNoDisfrutados?.toString()+" días hábiles)" || '' : motivo.tipo}
                         </option>
-                      ))}
+                        ))}
                     </Form.Control>
 
                     {formData.Motivo === 'Otro' && (
@@ -355,17 +370,6 @@ useEffect(() => {
                       </>
                     )}
                   </div>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="formDiasNoDisfrutados">
-                  {(diasNoDisfrutados !== null && diasNoDisfrutados > 0) && (
-                    <FormCheck
-                      ref={descontableRef}
-                      label={`Descontarlo de los días no disfrutados en Vacaciones (${diasNoDisfrutados} días disponibles)`}
-                      name="descontable"
-                      checked={formData.descontable}
-                      onChange={() => setFormData({ ...formData, descontable: descontableRef.current?.checked || false })}
-                    />
-                  )}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formDescripcion">
                   <Form.Label>Descripción (opcional)</Form.Label>
