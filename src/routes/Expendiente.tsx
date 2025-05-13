@@ -1,4 +1,3 @@
-import { Temporal } from '@js-temporal/polyfill';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Button, Card, Col, Collapse, Form, InputGroup, Row/*, Tooltip, TooltipProps*/ } from "react-bootstrap";
@@ -24,6 +23,7 @@ export interface TiposDocumento {
   id: number;
   nombre: string;
   estatus: string;
+  fechaVencimiento?: boolean | number;
 }
 
 export interface DatosPersonales {
@@ -52,11 +52,11 @@ const Expendiente = () => {
   const [validatedFiles, setValidatedFiles] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
   const [tiposDocumentos, setTiposDocumentos] = useState<TiposDocumento[]>([]);
+  const [tiposConVencimiento, setTiposConVencimiento] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [fileInputs, setFileInputs] = useState<number[]>([0]);
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [phase, setPhase] = useState(1); // Estado para controlar la fase actual
-  const [updatePeriod, setUpdatePeriod] = useState<number | null>(null); // Estado para el periodo de actualización
   const [datosPersonales, setDatosPersonales] = useState<DatosPersonales | null>(null);
   const [prefRIF, setPrefRIF] = useState<string>('J');
   const [rutaACasa, setRutaACasa] = useState<string[]>(['']);
@@ -92,7 +92,7 @@ const camposRequeridos = [
 ];
 
 const [cambiosDetectados, setCambiosDetectados] = useState<any[]>([]);
-const [erroresDatos, setErroresDatos] = useState<string[]>([]);
+const [, setErroresDatos] = useState<string[]>([]);
 const [datosOriginales, setDatosOriginales] = useState<DatosPersonales | null>(null);
 
 // Guardar datos originales al cargar
@@ -174,7 +174,6 @@ function handleAbrirModalConfirmar() {
   if (errores.length > 0) {
     showToast(errores.join('\n'), 'error');
     return;
-
   }
   const cambios = compararDatos();
   setCambiosDetectados(cambios);
@@ -243,8 +242,9 @@ function handleAbrirModalConfirmar() {
 
     const fetchTiposDocumentos = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/google-drive/tiposDocumentos`);
-        setTiposDocumentos(response.data);
+        const res = await axios.get(`${apiUrl}/google-drive/tiposDocumentos`);
+        setTiposDocumentos(res.data || []);
+        setTiposConVencimiento((res.data || []).filter((t: any) => t.fechaVencimiento === true || t.fechaVencimiento === 1).map((t: any) => t.nombre));
       } catch (error) {
         console.error('Error fetching tipos de documentos:', error);
       }
@@ -336,10 +336,7 @@ function handleAbrirModalConfirmar() {
     }
 
     // Validar fecha de vencimiento para CEDULA y RIF (obligatorio)
-    if (
-      (selectedDocument === "Cedula" || selectedDocument === "Rif") &&
-      (!fechaVencimiento || fechaVencimiento.trim() === "")
-    ) {
+    if (selectedDocument && tiposConVencimiento.includes(selectedDocument) && (!fechaVencimiento || fechaVencimiento.trim() === "")) {
       showToast("Debe seleccionar la fecha de vencimiento para este documento.", "error");
       return;
     }
@@ -350,7 +347,11 @@ function handleAbrirModalConfirmar() {
     files.forEach((file) => {
       formData.append('archivos', file);
     });
-    formData.append('cod_emp', cod_emp);
+    if (cod_emp) {
+        formData.append('cod_emp', cod_emp);
+    } else {
+        console.error('cod_emp is null or undefined.');
+    }
     if (datosPersonales?.cedula) {
       formData.append('cedula', datosPersonales.cedula);
     }
@@ -359,15 +360,11 @@ function handleAbrirModalConfirmar() {
     }
 
     // Solo para CEDULA y RIF
-    if ((selectedDocument === "Cedula" || selectedDocument === "Rif") && fechaVencimiento) {
+    if (selectedDocument && (tiposConVencimiento.includes(selectedDocument) && fechaVencimiento)) {
       formData.append('fecha_vencimiento', fechaVencimiento);
     }
     
-    if (selectedDocument === 'OTROS ARCHIVOS' && updatePeriod !== null) {
-      const today = Temporal.Now.plainDateISO();
-      const updatedDate = today.add({ days: updatePeriod });
-      formData.append('fecha_actualizacion', updatedDate.toString());
-    }
+    
     
     console.log('formData:', formData.get('fecha_actualizacion'));
     try {
@@ -634,10 +631,7 @@ function handleAbrirModalConfirmar() {
     }
 
     // Validar fecha de vencimiento para CEDULA y RIF (obligatorio al actualizar)
-    if (
-      (selectedDocument === "Cedula" || selectedDocument === "Rif") &&
-      (!fechaVencimiento || fechaVencimiento.trim() === "")
-    ) {
+    if (tiposConVencimiento.includes(selectedDocument) && (!fechaVencimiento || fechaVencimiento.trim() === "")) {
       showToast("Debe seleccionar la fecha de vencimiento para este documento.", "error");
       return;
     }
@@ -645,6 +639,7 @@ function handleAbrirModalConfirmar() {
     setUploading(true); // <-- Inicia animación de loading
 
     const formData = new FormData();
+    
     formData.append('archivo', files[index]);
     formData.append('cedula', datosPersonales.cedula);
     formData.append('tipo_documento', selectedDocument);
@@ -656,13 +651,12 @@ function handleAbrirModalConfirmar() {
       return;
     }
     // Enviar fecha de vencimiento si es Cedula o Rif
-    if (
-      (selectedDocument === "Cedula" || selectedDocument === "Rif") &&
-      fechaVencimiento
-    ) {
+    if (tiposConVencimiento.includes(selectedDocument) && fechaVencimiento) {
       formData.append('fecha_vencimiento', fechaVencimiento);
     }
-
+    if(cod_emp) {
+      formData.append('cod_emp', cod_emp);
+    }
     try {
       const response = await fetch(`${apiUrl}/google-drive/actualizar-archivo`, {
         method: 'POST',
@@ -884,7 +878,14 @@ function handleAbrirModalConfirmar() {
                         <Col lg={4}>
                           <Form.Group controlId="formEmail">
                             <Form.Label>Email</Form.Label>
-                            <Form.Control type="email" placeholder="Email" defaultValue={datosPersonales?.email || ''} disabled={bloquearCambioDatos} />
+                            <Form.Control type="email" placeholder="Email" defaultValue={datosPersonales?.email || ''} disabled={bloquearCambioDatos} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                              if (datosPersonales) {
+                                setDatosPersonales({
+                                  ...datosPersonales,
+                                  email: e.target.value
+                                });
+                              }
+                            }} />
                           </Form.Group>
                         </Col>
                         <Col lg={3}>
@@ -1153,8 +1154,7 @@ function handleAbrirModalConfirmar() {
                         <br/>
                         <Form.Label style={{  color: 'rgb(51, 51, 51)' , fontWeight: 'bold'}}>{palabrasClave[selectedDocument] || selectedDocument}</Form.Label>
                         <Row>
-                          {(selectedDocument === 'Cedula' || selectedDocument === 'Rif')&& (!driveFile && !checkingDrive) &&
-                            <>
+                          {tiposConVencimiento.includes(selectedDocument || '') && (!driveFile && !checkingDrive) && (
                             <Col lg={3}>
                               <Form.Label style={{ fontWeight: 'bold' }}>Fecha de Vencimiento</Form.Label>
                               <Form.Control
@@ -1162,11 +1162,10 @@ function handleAbrirModalConfirmar() {
                                 required
                                 value={fechaVencimiento}
                                 onChange={e => setFechaVencimiento(e.target.value)}
-                                />
+                              />
                             </Col>
-                            </>
-                          }
-                        </Row>             
+                          )}
+                        </Row>
                         {fileInputs.map((index) => (
                         <div key={index}>
                           {checkingDrive ? (
@@ -1219,7 +1218,7 @@ function handleAbrirModalConfirmar() {
                                 </Button>
                                 <Collapse in={!!showActualizarArchivo[index]}>
                                   <div id={`collapse-actualizar-archivo-${index}`}>
-                                    {(selectedDocument === 'Cedula' || selectedDocument === 'Rif') && 
+                                    {tiposConVencimiento.includes(selectedDocument || '') && (
                                       <Col lg={3}>
                                         <Form.Label style={{ fontWeight: 'bold' }}>Fecha de Vencimiento</Form.Label>
                                         <Form.Control
@@ -1229,7 +1228,7 @@ function handleAbrirModalConfirmar() {
                                           onChange={e => setFechaVencimiento(e.target.value)}
                                         />
                                       </Col>
-                                    }
+                                    )}
                                     <Form.Label style={{ fontWeight: 'bold' }}>Selecciona el nuevo archivo</Form.Label>
                                     <Form.Control
                                       style={{ marginBottom: '10px' }}

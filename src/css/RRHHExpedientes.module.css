@@ -1,8 +1,91 @@
-/* Estilos Generales */
-.tituloRRHH {
+/* Animated Counter Styles */
+.counterBoxRRHH {
+  transition: box-shadow 0.2s, transform 0.3s cubic-bezier(.4,2,.6,1), background 0.3s;
+  box-shadow: 0 4px 24px #00339133, 0 1.5px 6px #1A5FFA22;
+  background: linear-gradient(135deg, #eaf1ff 60%, #dbeafe 100%);
   color: #003391;
-  margin-bottom: 24px;
-  font-family: "Gotham", Sans-serif;
+  border: 3px solid #1A5FFA;
+  border-radius: 22px;
+  min-width: 110px;
+  min-height: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 2.2rem;
+  margin: 0 18px 12px 18px;
+  position: relative;
+  overflow: hidden;
+  animation: counterPop 0.2s cubic-bezier(.4,2,.6,1);
+}
+
+@keyframes counterPop {
+  0% { transform: scale(0.85); opacity: 0.7; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.counterLabelRRHH {
+  font-size: 18px;
+  font-weight: 500;
+  color: #1A5FFA;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px #fff, 0 0.5px 0 #00339122;
+  text-align: center;
+  padding: 0 6px;
+}
+/* Accordion y tabla de solicitudes de cambio */
+.accordionSolicitudesRRHH {
+  margin-top: 32px;
+  margin-bottom: 8px;
+  width: 500px;
+ 
+}
+
+.accordionEmpleadosVencidos {
+  margin-top: 32px;
+  margin-bottom: 8px;
+  width: 100%;
+ 
+}
+
+
+.accordionBodySolicitudesRRHH {
+  background: #cbdbff;
+  padding: 18px 18px 8px 18px;
+}
+.accordionBodyVencidosRRHH {
+  background: #cbdbff;
+  padding: 0;
+}
+
+.selectSolicitudesRRHH {
+  min-width: 220px;
+  margin-bottom: 8px;
+}
+
+.tableSolicitudesRRHH {
+  margin-top: 0 !important;
+}
+
+.trSolicitudesRRHH {
+  cursor: pointer;
+}
+
+.trSolicitudesRRHH:hover, .trSolicitudesRRHH:hover td {
+  background: #487cf7;
+  color: #fff;
+}
+
+.tdNoSolicitudesRRHH {
+  text-align: center;
+  color: #888;
+}
+/* Estilos Generales */
+.tituloRRHH{
+  color: #003391;
 }
 
 .layoutRRHH {
@@ -16,8 +99,13 @@
 }
 .SubtituloRRHH {
   color: #003391;
+  
+}
+.accordionTitle {
+  font-size: 20px;
 
 }
+
 .seccionRRHH {
   color: #ff7b00;
 
@@ -29,7 +117,7 @@
   border-radius: 8px;
   flex: 1;
   min-width: 900px;
-  min-height: 76vh;
+  height: 76vh;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -72,12 +160,24 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  margin-bottom: 24px;
   background: #f8fafc;
   border-radius: 8px;
   /* overflow: hidden; */
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   position: relative;
+}
+
+.tablaScrollRRHH {
+  /* max-height: 320px; */ /* Aproximadamente 5 filas de 60px + header */
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+}
+
+.theadSolicitudes{
+  position: sticky;
+  top: 0;
 }
 
 .thRRHH {
@@ -97,6 +197,8 @@
   background: #fff;
   vertical-align: middle;
 }
+
+
 
 .tdAltRRHH {
   background: #f1f5fa;
@@ -250,6 +352,42 @@
   margin-bottom: 18px;
 }
 
+.estadoRRHH {
+  display: inline-block;
+  min-width: 110px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 15px;
+  text-align: center;
+  border: 2px solid transparent;
+  letter-spacing: 0.5px;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.estadoPendiente {
+  background: #fff7e6;
+  color: #ff9800;
+  border-color: #ff9800;
+}
+
+.estadoAprobado {
+  background: #e6fff2;
+  color: #188648;
+  border-color: #1bbf63;
+}
+
+.estadoRechazado {
+  background: #ffeaea;
+  color: #e53935;
+  border-color: #e53935;
+}
+
+.imagenPlaceholderRRHH{
+  width: 350px;
+  height: auto;
+  
+}
 
 @keyframes detalleFadeIn {
   from {
@@ -293,5 +431,8 @@
   }
   .placeholderRRHH{
     min-width: 50%;
+  }
+  .accordionSolicitudesRRHH{
+    width: 100%;
   }
 }

@@ -9,9 +9,10 @@ import imagen from '../assets/inspect.webp';
 import { FiUser, FiBriefcase,  FiMail, FiPhone, FiCalendar, FiMapPin, FiCreditCard, FiPrinter } from "react-icons/fi";
 import { MdApartment } from "react-icons/md";
 import { toast, ToastContainer } from 'react-toastify';
-import {  Alert } from 'react-bootstrap';
+import {  Alert, Accordion } from 'react-bootstrap';
 import { printExpediente } from '../utils/printExpediente';
 import { printRutograma } from '../utils/printRutograma';
+import AnimatedCounter from '../components/AnimatedCounter';
 
 interface Empleado {
   cod_emp: string;
@@ -19,6 +20,7 @@ interface Empleado {
   cedula: string;
 }
 interface SolicitudCambio {
+  id: number;
   cod_emp: string;
   etiqueta: string;
   solicitud: string;
@@ -66,7 +68,56 @@ const RRHHExpedientes: React.FC = () => {
   const [archivos, setArchivos] = useState<Archivo[]>([]);
   const [loading, setLoading] = useState(false);
   const [archivosLoading, setArchivosLoading] = useState(false);
+  // Empleados con documentos vencidos (dinámico)
+  const [empleadosVencidos, setEmpleadosVencidos] = useState<any[]>([]);
+  const [loadingVencidos, setLoadingVencidos] = useState(false);
+  const [tiposVencimiento, setTiposVencimiento] = useState<string[]>([]);
+  const [filtroDocumentosVencidos, setFiltroDocumentosVencidos] = useState<string[]>([]);
+  // Diccionario para mostrar nombres amigables de tipos de documentos
+const tipoDocLabel: Record<string, string> = {
+  Cedula: "Cédula",
+  Rif: "RIF",
+  CertificadoAdministracionRiesgo: "Certificado Administración de Riesgos",
+  CertificadoAdministracionDeRiesgos: "Certificado Administración de Riesgos",
+  // Puedes agregar más equivalencias si tu backend los nombra diferente
+};
 
+const mostrarTipoDoc = (tipo: string) => tipoDocLabel[tipo] || tipo;
+  // Opciones para el filtro de documentos vencidos (aplica el label bonito)
+  const opcionesDocumentosVencidos = tiposVencimiento.map(tipo => ({
+    value: tipo,
+    label: mostrarTipoDoc(tipo)
+  }));
+  // Filtrar empleados según los tipos de documentos seleccionados
+  const empleadosVencidosFiltrados = filtroDocumentosVencidos.length === 0
+    ? empleadosVencidos
+    : empleadosVencidos.filter(emp => {
+        // Verifica si el empleado tiene al menos un documento vencido del tipo seleccionado
+        return filtroDocumentosVencidos.some(tipoSel => {
+          return Object.keys(emp.documentosVencidos || {}).some(tipoDoc => {
+            return (tiposVencimiento.find(t => t.toLowerCase() === tipoDoc) || tipoDoc) === tipoSel;
+          });
+        });
+      });
+
+  useEffect(() => {
+    setLoadingVencidos(true);
+    axios.get(`${apiUrl}/google-drive/empleados-documentos-vencidos-sheet`)
+      .then(res => {
+        setEmpleadosVencidos(res.data.empleados || []);
+      })
+      .catch(() => setEmpleadosVencidos([]))
+      .finally(() => setLoadingVencidos(false));
+  }, []);
+  // Cargar tipos de documentos con fechaVencimiento=true
+  useEffect(() => {
+    axios.get(`${apiUrl}/google-drive/tiposDocumentos`).then(res => {
+      const tipos = (res.data || []).filter((t: any) => t.fechaVencimiento === true || t.fechaVencimiento === 1).map((t: any) => t.nombre);
+      setTiposVencimiento(tipos);
+      // Selección por defecto: Rif y Cedula si existen
+      setFiltroDocumentosVencidos(tipos.filter((t: string) => ["Rif", "Cedula"].includes(t)));
+    });
+  }, []);
   // Diccionario de palabras clave para documentos
   const palabrasClaveDict: Record<string, string> = {
     CertificadoAdministracionRiesgo: "Certificado Administración de Riesgo",
@@ -77,7 +128,7 @@ const RRHHExpedientes: React.FC = () => {
     ConstanciaResidencia: "Constancia de Residencia",
     SolicitudCedula: "Solicitud de Cédula"
   };
-
+  
 
   // Animación de panel de detalle
   const [animating, setAnimating] = useState<'in' | 'out' | null>(null);
@@ -102,6 +153,73 @@ const RRHHExpedientes: React.FC = () => {
     label: `${emp.nombre_completo} (${emp.cedula.replace(/\./g, '')})`,
     data: emp
   }));
+
+  // Utilidad para obtener el nombre completo de un empleado por cod_emp para el accordion de vencidos
+  const [nombresVencidos, setNombresVencidos] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (!empleadosVencidos || empleadosVencidos.length === 0) {
+      setNombresVencidos({});
+      return;
+    }
+    const fetchNombres = async () => {
+      const nuevosNombres: Record<string, string> = {};
+      
+     
+      await Promise.all(
+        empleadosVencidos.map(async (emp: any) => {
+          // Buscar cod_emp de forma robusta
+          const codEmp = emp.cod_emp || emp.COD_EMP || emp.cedula || emp.CEDULA;
+          if (codEmp && !nuevosNombres[codEmp]) {
+            try {
+              const res = await axios.get(`${apiUrl}/empleados/nombre-completo/${codEmp}`);
+              nuevosNombres[codEmp] = res.data.nombre_completo;
+            } catch {
+              nuevosNombres[codEmp] = emp.nombre_completo || emp.NOMBRE_COMPLETO || emp.cedula || emp.CEDULA || codEmp;
+            }
+          }
+        })
+      );
+      setNombresVencidos(nuevosNombres);
+    };
+    fetchNombres();
+  }, [empleadosVencidos]);
+  // Empleados con solicitudes de cambio
+  const [empleadosConSolicitudes, setEmpleadosConSolicitudes] = useState<any[]>([]);
+  const [filtroSolicitudes, setFiltroSolicitudes] = useState<any | null>(null);
+  const cargarEmpleadosConSolicitudes = () => {
+    axios.get(`${apiUrl}/expediente/empleados-con-solicitudes-cambio`)
+      .then(res => setEmpleadosConSolicitudes(res.data))
+      .catch(() => setEmpleadosConSolicitudes([]));
+  };
+  useEffect(() => {
+    cargarEmpleadosConSolicitudes();
+  }, []);
+
+  // Opciones para el mini-buscador de la tabla de solicitudes
+  const empleadosSolicitudesOptions = empleadosConSolicitudes
+    .map(emp => ({
+      value: emp.cod_emp,
+      label: `${emp.nombres} ${emp.apellidos}`,
+      estatus: emp.estatus
+    }))
+    .sort((a, b) => {
+      // Ordenar por estatus (Incompleto primero), luego por nombre completo
+      if (a.estatus !== b.estatus) {
+        return a.estatus === 'Incompleto' ? -1 : 1;
+      }
+      return a.label.localeCompare(b.label, 'es', { sensitivity: 'base' });
+    });
+
+  // Filtrar empleados según el mini-buscador
+  const empleadosConSolicitudesFiltrados = filtroSolicitudes
+    ? empleadosConSolicitudes.filter(emp => emp.cod_emp === filtroSolicitudes.value)
+    : empleadosConSolicitudes;
+
+  // Handler para seleccionar desde la tabla de solicitudes
+  const handleSeleccionarDesdeTabla = (cod_emp: string) => {
+    const emp = empleados.find(e => e.cod_emp === cod_emp);
+    if (emp) handleSeleccionarEmpleado(emp);
+  };
 
   // Animación y carga de datos al seleccionar empleado
   const handleSeleccionarEmpleado = (empleado: Empleado | null) => {
@@ -136,7 +254,6 @@ const RRHHExpedientes: React.FC = () => {
     axios.get(`${apiUrl}/expediente/solicitudes-cambio/${empleado.cod_emp}`)
       .then(res => setSolicitudes(res.data))
       .catch(() => setSolicitudes([]));
-
     axios.get(`${apiUrl}/expediente/datos-personales/${empleado.cod_emp}`)
       .then(res => {
         setDatosPersonales(res.data.datos);
@@ -183,12 +300,38 @@ const RRHHExpedientes: React.FC = () => {
   }, [empleadoSeleccionado]);
 
   // Handlers para aprobar/rechazar solicitudes y rutas
-  const handleAprobarSolicitud = (solicitud: SolicitudCambio) => {
-    toast.info(`Aprobar solicitud: ${solicitud.etiqueta}`);
+  const handleAprobarSolicitud = async (solicitud: SolicitudCambio) => {
+    try {
+      await axios.put(`${apiUrl}/expediente/actualizarDatosPersonales/${(solicitud as any).id}`);
+      toast.success(`Solicitud aprobada correctamente`);
+      // Refresca solicitudes y datos personales
+      if (empleadoSeleccionado) {
+        await cargarEmpleado(empleadoSeleccionado);
+        // Si ya no quedan solicitudes pendientes, recargar la tabla de empleados con solicitudes
+        const nuevasSolicitudes = await axios.get(`${apiUrl}/expediente/solicitudes-cambio/${empleadoSeleccionado.cod_emp}`);
+        const quedanPendientes = nuevasSolicitudes.data.some((s: any) => s.status === 0);
+        if (!quedanPendientes) cargarEmpleadosConSolicitudes();
+      }
+    } catch (error) {
+      toast.error('Error al aprobar la solicitud');
+    }
     setOpenMenuSolicitud(null);
   };
-  const handleRechazarSolicitud = (solicitud: SolicitudCambio) => {
-    toast.info(`Rechazar solicitud: ${solicitud.etiqueta}`);
+  const handleRechazarSolicitud = async (solicitud: SolicitudCambio) => {
+    try {
+      await axios.put(`${apiUrl}/expediente/rechazarSolicitud/${(solicitud as any).id }`);
+      toast.success(`Solicitud rechazada correctamente`);
+      // Refresca solicitudes y datos personales
+      if (empleadoSeleccionado) {
+        await cargarEmpleado(empleadoSeleccionado);
+        // Si ya no quedan solicitudes pendientes, recargar la tabla de empleados con solicitudes
+        const nuevasSolicitudes = await axios.get(`${apiUrl}/expediente/solicitudes-cambio/${empleadoSeleccionado.cod_emp}`);
+        const quedanPendientes = nuevasSolicitudes.data.some((s: any) => s.status === 0);
+        if (!quedanPendientes) cargarEmpleadosConSolicitudes();
+      }
+    } catch (error) {
+      toast.error('Error al rechazar la solicitud');
+    }
     setOpenMenuSolicitud(null);
   };
   const handleAprobarRuta = (ruta: RutaSolicitud) => {
@@ -213,7 +356,38 @@ const RRHHExpedientes: React.FC = () => {
     return { tipo, fechaCarga, fechaVencimiento, nombreArchivo };
   }
 
+  const EstadoSolicitud: React.FC<{ status: number }> = ({ status }) => {
+    if (status === 0)
+      return <span className={`${styles.estadoRRHH} ${styles.estadoPendiente}`}>Pendiente</span>;
+    if (status === 1)
+      return <span className={`${styles.estadoRRHH} ${styles.estadoAprobado}`}>Aprobado</span>;
+    if (status === 2)
+      return <span className={`${styles.estadoRRHH} ${styles.estadoRechazado}`}>Rechazado</span>;
+    return <span className={styles.estadoRRHH}>Desconocido</span>;
+  };
+
   if (RRHH !== 1) return <div>No autorizado</div>;
+
+  // Calcular resumen de empleados con documentos vencidos por tipo seleccionado
+  const resumenVencidosPorTipo: Record<string, number> = {};
+  filtroDocumentosVencidos.forEach(tipoSel => {
+    resumenVencidosPorTipo[tipoSel] = empleadosVencidos.filter(emp =>
+      Object.keys(emp.documentosVencidos || {}).some(tipoDoc =>
+        (tiposVencimiento.find(t => t.toLowerCase() === tipoDoc) || tipoDoc) === tipoSel
+      )
+    ).length;
+  });
+  // Calcular total de empleados con al menos un documento vencido según filtro
+  const totalVencidos = empleadosVencidosFiltrados.length;
+  // Calcular total de documentos vencidos según filtro
+  const totalDocumentosVencidos = empleadosVencidosFiltrados.reduce((acc, emp) => {
+    const docsFiltrados = filtroDocumentosVencidos.length === 0
+      ? Object.entries(emp.documentosVencidos || {})
+      : Object.entries(emp.documentosVencidos || {}).filter(([tipo]) =>
+          filtroDocumentosVencidos.includes(tiposVencimiento.find(t => t.toLowerCase() === tipo) || tipo)
+        );
+    return acc + docsFiltrados.length;
+  }, 0);
 
   return (
     <>
@@ -266,10 +440,164 @@ const RRHHExpedientes: React.FC = () => {
                 option.label.toLowerCase().includes(inputValue.toLowerCase())
               }
             />
+
+            {/* Accordion para la tabla de empleados con solicitudes de cambio y mini-buscador */}
+            <Accordion  className={styles.accordionSolicitudesRRHH}>
+              <Accordion.Item eventKey="0">
+                <Accordion.Header>
+                  <span className={`${styles.SubtituloRRHH} ${styles.accordionTitle}`}>Empleados con Solicitudes de Cambio</span>
+                </Accordion.Header>
+                <Accordion.Body className={styles.accordionBodySolicitudesRRHH}>
+                  <Select
+                    options={empleadosSolicitudesOptions}
+                    placeholder="Filtrar por nombre..."
+                    isClearable
+                    value={filtroSolicitudes}
+                    onChange={setFiltroSolicitudes}
+                    className={styles.selectSolicitudesRRHH}
+                    classNamePrefix="react-select"
+                    noOptionsMessage={() => "No hay coincidencias"}
+                    filterOption={(option, inputValue) =>
+                      option.label.toLowerCase().includes(inputValue.toLowerCase())
+                    }
+                  />
+                  <div className={styles.tablaScrollRRHH} >
+                    <table className={styles.tableRRHH + ' ' + styles.tableSolicitudesRRHH}>
+                      <thead className={styles.theadSolicitudes}>
+                        <tr>
+                          <th className={styles.thRRHH}>Nombre y Apellido</th>
+                          <th className={styles.thRRHH}>Estatus</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {empleadosConSolicitudesFiltrados.length === 0 ? (
+                          <tr><td colSpan={2} className={styles.tdNoSolicitudesRRHH}>No hay empleados con solicitudes</td></tr>
+                        ) : empleadosConSolicitudesFiltrados.map((emp) => (
+                          <tr key={emp.cod_emp} className={styles.trSolicitudesRRHH} onClick={() => handleSeleccionarDesdeTabla(emp.cod_emp)}>
+                            <td className={styles.tdRRHH}>{emp.nombres} {emp.apellidos}</td>
+                            <td className={styles.tdRRHH}>
+                              {emp.estatus === 'Incompleto' ? (
+                                <span className={`${styles.estadoRRHH} ${styles.estadoPendiente}`}>Incompleto</span>
+                              ) : (
+                                <span className={`${styles.estadoRRHH} ${styles.estadoAprobado}`}>Completo</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </Accordion.Body>
+              </Accordion.Item>
+            {/* Accordion para empleados con documentos vencidos */}
+            <Accordion.Item eventKey="1">
+              <Accordion.Header>
+                <span className={`${styles.SubtituloRRHH} ${styles.accordionTitle}`}>Empleados con Documentos Vencidos</span>
+              </Accordion.Header>
+              <Accordion.Body className={styles.accordionBodySolicitudesRRHH}>
+                {/* Filtro de documentos vencidos */}
+                <div style={{ marginBottom: 16 }}>
+                  <Select
+                    isMulti
+                    options={opcionesDocumentosVencidos}
+                    value={opcionesDocumentosVencidos.filter(opt => filtroDocumentosVencidos.includes(opt.value))}
+                    onChange={opts => setFiltroDocumentosVencidos(opts.map((o:any) => o.value))}
+                    placeholder="Filtrar por tipo de documento..."
+                    classNamePrefix="react-select"
+                    styles={{ menu: base => ({ ...base, zIndex: 9999 }) }}
+                  />
+                </div>
+                
+                {loadingVencidos ? (
+                  <div className={styles.archivosLoadingRRHH}>
+                    <Mosaic color={["#003391", "#1A5FFA", "#33CCCC", "#1A3FFA"]} size="medium" text="" textColor="#0d1bff" />
+                    <span className={styles.archivosLoadingTextRRHH}>Cargando empleados con documentos vencidos, puede tardar unos minutos, por favor espere...</span>
+                  </div>
+                ) : empleadosVencidosFiltrados.length === 0 ? (
+                  <div className={styles.tdNoSolicitudesRRHH}>No hay empleados con documentos vencidos para el filtro seleccionado</div>
+                ) : (<>
+                  {/* Resumen de empleados con documentos vencidos por tipo */}
+                  {filtroDocumentosVencidos.length > 0 && (
+                    <div style={{ marginBottom: 24, display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                      <AnimatedCounter value={totalVencidos} label="Total empleados con documentos vencidos seleccionados" />
+                      <div style={{ color: '#003391', fontWeight: 600, fontSize: 18, margin: '8px 0 0 0' }}>
+                        Total documentos vencidos: {totalDocumentosVencidos}
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', flexWrap: 'wrap', marginTop: 8 }}>
+                        {filtroDocumentosVencidos.map(tipo => (
+                          <AnimatedCounter
+                            key={tipo}
+                            value={resumenVencidosPorTipo[tipo]}
+                            label={mostrarTipoDoc(tipo)}
+                            color="#1A5FFA"
+                            bgColor="#eaf1ff"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <Accordion alwaysOpen className={styles.accordionEmpleadosVencidos}>
+                    {empleadosVencidosFiltrados.map((emp, idx) => {
+                      const codEmp = emp.cod_emp || emp.COD_EMP || emp.cedula || emp.CEDULA;
+                      // Filtrar solo los documentos vencidos seleccionados
+                      const docsFiltrados = filtroDocumentosVencidos.length === 0
+                      ? Object.entries(emp.documentosVencidos || {})
+                      : Object.entries(emp.documentosVencidos || {}).filter(([tipo]) =>
+                            filtroDocumentosVencidos.includes(tiposVencimiento.find(t => t.toLowerCase() === tipo) || tipo)
+                    );
+                    if (docsFiltrados.length === 0) return null;
+                      return (
+                        <Accordion.Item eventKey={String(idx)} key={codEmp || idx}>
+                          <Accordion.Header>
+                            <span style={{fontWeight:'bold', color:'#003391'}}>
+                              {nombresVencidos[codEmp] || emp.nombre_completo || emp.NOMBRE_COMPLETO || emp.cedula || emp.CEDULA || codEmp}
+                            </span>
+                          </Accordion.Header>
+                          <Accordion.Body className={styles.accordionBodyVencidosRRHH}>
+                            <div className={styles.tablaScrollRRHH}>
+                              <table className={styles.tableRRHH + ' ' + styles.tableSolicitudesRRHH}>
+                                <thead className={styles.theadSolicitudes}>
+                                  <tr>
+                                    <th className={styles.thRRHH}>Documento</th>
+                                    <th className={styles.thRRHH}>Fecha de Vencimiento</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {docsFiltrados.map(([tipo, doc]: any) => (
+                                    <tr
+                                      key={tipo}
+                                      className={styles.trSolicitudesRRHH}
+                                      style={doc.webViewLink ? { cursor: 'pointer' } : undefined}
+                                      onClick={() => {
+                                        if (doc.webViewLink) {
+                                          window.open(doc.webViewLink, '_blank', 'noopener,noreferrer');
+                                        }
+                                      }}
+                                      title={doc.webViewLink ? 'Ver en Drive' : 'No disponible'}
+                                    >
+                                      <td className={styles.tdRRHH}>
+                                        {mostrarTipoDoc(tiposVencimiento.find(t => t.toLowerCase() === tipo) || tipo)}
+                                      </td>
+                                      <td className={styles.tdRRHH}>{doc.fechaVencimiento}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </Accordion.Body>
+                        </Accordion.Item>
+                      );
+                    })}
+                  </Accordion>
+                    </>
+                )}
+              </Accordion.Body>
+            </Accordion.Item>
+            </Accordion>
           </div>
           {!empleadoSeleccionado ? (
             <div className={styles.placeholderRRHH}>
-              <img src={imagen} alt="Selecciona un empleado" style={{ width: '350px' }} />
+              <img src={imagen} alt="Selecciona un empleado" className={styles.imagenPlaceholderRRHH} />
               <h3 className={styles.seccionRRHH}>Selecciona un empleado</h3>
               <p>Para ver sus datos personales, solicitudes de cambio, rutas y archivos asociados.</p>
             </div>
@@ -389,7 +717,8 @@ const RRHHExpedientes: React.FC = () => {
                                 }[sol.solicitud] || "Desconocido"
                               : sol.solicitud}
                           </td>
-                          <td className={styles.tdRRHH}>{sol.status}</td>
+                          
+                          <td className={styles.tdRRHH}><EstadoSolicitud status={sol.status} /></td>
                           <td className={styles.menuCellRRHH}>
                             <span
                               className={`${styles.menuRRHH} ${openMenuSolicitud === idx ? 'open' : ''}`}
@@ -398,7 +727,9 @@ const RRHHExpedientes: React.FC = () => {
                                 setOpenMenuSolicitud(openMenuSolicitud === idx ? null : idx);
                               }}
                             >
-                              <button className={styles.menuBtnRRHH} tabIndex={-1} title="Acciones">⋮</button>
+                              {sol.status === 0 && (
+                                <button className={styles.menuBtnRRHH} tabIndex={-1} title="Acciones">⋮</button>
+                              )}
                               <div
                                 className={styles.dropdownRRHH}
                                 style={{ display: openMenuSolicitud === idx ? 'block' : 'none' }}
@@ -417,7 +748,7 @@ const RRHHExpedientes: React.FC = () => {
                                 >
                                   ❌ Rechazar
                                 </button>
-                              </div>
+                              </div>               
                             </span>
                           </td>
                         </tr>
