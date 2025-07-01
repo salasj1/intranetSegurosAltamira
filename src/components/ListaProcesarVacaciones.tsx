@@ -26,6 +26,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
   const [searchCodEmp, setSearchCodEmp] = useState('');
   const [searchFechaInicio, setSearchFechaInicio] = useState('');
   const [searchFechaFin, setSearchFechaFin] = useState('');
+  const [searchFechaRetorno, setSearchFechaRetorno] = useState('');
   const [searchEstado, setSearchEstado] = useState('');
   const [searchNombreSupervisor, setSearchNombreSupervisor] = useState('');
   const [searchApellidoSupervisor, setSearchApellidoSupervisor] = useState('');
@@ -170,8 +171,9 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
           </Alert>)
         }
         <Table striped bordered hover responsive>
-          <thead>
+          <thead >
             <tr>
+              {/* ID Vacación */}
               <th>
                 <Form.Control
                   className={styles.search}
@@ -181,6 +183,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
                   onChange={(e) => setSearchVacacionID(e.target.value)}
                 />
               </th>
+              {/* Cédula */}
               <th>
                 <Form.Control
                   className={styles.search}
@@ -190,158 +193,197 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
                   onChange={(e) => setSearchCodEmp(e.target.value)}
                 />
               </th>
+              {/* Nombres */}
               <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar Nombre..."
-                value={searchNombre}
-                onChange={(e) => setSearchNombre(e.target.value)}
-              />
+                <Form.Control
+                  className={styles.search}
+                  type="text"
+                  placeholder="Buscar Nombre..."
+                  value={searchNombre}
+                  onChange={(e) => setSearchNombre(e.target.value)}
+                />
               </th>
+              {/* Apellidos */}
               <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar Apellido..."
-                value={searchApellido}
-                onChange={(e) => setSearchApellido(e.target.value)}
-              />
+                <Form.Control
+                  className={styles.search}
+                  type="text"
+                  placeholder="Buscar Apellido..."
+                  value={searchApellido}
+                  onChange={(e) => setSearchApellido(e.target.value)}
+                />
               </th>
-              <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar Fecha Inicio..."
-                value={searchFechaInicio}
-                onChange={(e) => setSearchFechaInicio(e.target.value)}
-              />
+              {/* Nombres del Supervisor */}
+              <th className={styles.stickyHead}>
+                <Form.Control
+                  className={styles.search}
+                  type="text"
+                  placeholder="Buscar Nombre Supervisor..."
+                  value={searchNombreSupervisor}
+                  onChange={(e) => setSearchNombreSupervisor(e.target.value)}
+                />
               </th>
-              <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar Fecha Fin..."
-                value={searchFechaFin}
-                onChange={(e) => setSearchFechaFin(e.target.value)}
-              />
+              {/* Apellido del Supervisor */}
+              <th className={styles.stickyHead}>
+                <Form.Control
+                  className={styles.search}
+                  type="text"
+                  placeholder="Buscar Apellido Supervisor..."
+                  value={searchApellidoSupervisor}
+                  onChange={(e) => setSearchApellidoSupervisor(e.target.value)}
+                />
               </th>
-              <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar Estado..."
-                value={searchEstado}
-                onChange={(e) => setSearchEstado(e.target.value)}
-              />
+              {/* Fecha de Inicio */}
+              <th >
+                <Form.Control
+                  className={styles.search}
+                  type="text"
+                  placeholder="Buscar Fecha Inicio..."
+                  value={searchFechaInicio}
+                  onChange={(e) => setSearchFechaInicio(e.target.value)}
+                />
               </th>
-              <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar Nombre Supervisor..."
-                value={searchNombreSupervisor}
-                onChange={(e) => setSearchNombreSupervisor(e.target.value)}
-              />
+              {/* Fecha Fin */}
+              <th >
+                <Form.Control
+                  className={styles.search}
+                  type="text"
+                  placeholder="Buscar Fecha Fin..."
+                  value={searchFechaFin}
+                  onChange={(e) => setSearchFechaFin(e.target.value)}
+                />
               </th>
-              <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar Apellido Supervisor..."
-                value={searchApellidoSupervisor}
-                onChange={(e) => setSearchApellidoSupervisor(e.target.value)}
-              />
+              {/* Fecha de Retorno */}
+              <th >
+                <Form.Control
+                  className={styles.search}
+                  type="text"
+                  placeholder="Buscar Fecha Retorno..."
+                  value={searchFechaRetorno}
+                  onChange={(e) => setSearchFechaRetorno(e.target.value)}
+                />
               </th>
-              <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar por Cantidad de días..."
-                value={searchdiasDisfrutar}
-                onChange={(e) => setDiasDisfrutar(e.target.value)}
-              />
-            </th>
-            <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar por Cantidad de días..."
-                value={searchdiasPagar}
-                onChange={(e) => setDiasPagar(e.target.value)}
-              />
-            </th>
-              <th></th>
+              {/* Días a Disfrutar */}
+              <th >
+                <Form.Control
+                  className={styles.search}
+                  type="text"
+                  placeholder="Buscar por Cantidad de días..."
+                  value={searchdiasDisfrutar}
+                  onChange={(e) => setDiasDisfrutar(e.target.value)}
+                />
+              </th>
+              {/* Días a Pagar */}
+              <th >
+                <Form.Control
+                  className={styles.search}
+                  type="text"
+                  placeholder="Buscar por Cantidad de días..."
+                  value={searchdiasPagar}
+                  onChange={(e) => setDiasPagar(e.target.value)}
+                />
+              </th>
+              {/* Estado */}
+              <th >
+                <Form.Control
+                  className={styles.search}
+                  type="text"
+                  placeholder="Buscar Estado..."
+                  value={searchEstado}
+                  onChange={(e) => setSearchEstado(e.target.value)}
+                />
+              </th>
+              {/* Acciones */}
+              <th ></th>
             </tr>
           </thead>
-          <thead>
+          <thead className={styles.stickyHead}>
             <tr>
+              {/* ID Vacación */}
               <th id={styles.headTable} onClick={() => requestSort('VacacionID')} className='titulo'>
                 ID Vacación
                 {sortConfig.key === 'VacacionID' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }} />
                 )}
               </th>
+              {/* Cédula */}
               <th id={styles.headTable} onClick={() => requestSort('ci')} className='titulo'>
                 Cédula
                 {sortConfig.key === 'ci' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
                 )}
               </th>
+              {/* Nombres */}
               <th id={styles.headTable} onClick={() => requestSort('nombres_empleado')} className='titulo' style={{ marginLeft:"5px" }}>
                 Nombres
                 {sortConfig.key === 'nombres_empleado' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
                 )}
               </th>
+              {/* Apellidos */}
               <th id={styles.headTable} onClick={() => requestSort('apellidos_empleado')} className='titulo' style={{ marginLeft:"5px" }}>
                 Apellidos
                 {sortConfig.key === 'apellidos_empleado' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }} />
                 )}
               </th>
-              <th id={styles.headTable} onClick={() => requestSort('FechaInicio')} className='titulo' style={{ marginLeft:"5px" }}>
-                Fecha Inicio
-                {sortConfig.key === 'FechaInicio' && (
-                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
-                )}
-              </th>
-              <th id={styles.headTable} onClick={() => requestSort('FechaFin')} className='titulo' style={{ marginLeft:"5px" }}>
-                Fecha Fin
-                {sortConfig.key === 'FechaFin' && (
-                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
-                )}
-              </th>
-              <th id={styles.headTable} onClick={() => requestSort('Estado')} className='titulo' style={{ marginLeft:"5px" }}>
-                Estado
-                {sortConfig.key === 'Estado' && (
-                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
-                )}
-              </th>
+              {/* Nombres del Supervisor */}
               <th id={styles.headTable} onClick={() => requestSort('nombres_supervisor')} className='titulo' style={{ marginLeft:"5px" }}>
                 Nombres del Supervisor
                 {sortConfig.key === 'nombres_supervisor' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
                 )}
               </th>
+              {/* Apellidos del Supervisor */}
               <th id={styles.headTable} onClick={() => requestSort('apellidos_supervisor')} className='titulo' style={{ marginLeft:"5px" }}>
                 Apellidos del Supervisor
                 {sortConfig.key === 'apellidos_supervisor' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
                 )}
               </th>
+              {/* Fecha de Inicio */}
+              <th id={styles.headTable} onClick={() => requestSort('FechaInicio')} className='titulo' style={{ marginLeft:"5px" }}>
+                Fecha Inicio
+                {sortConfig.key === 'FechaInicio' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                )}
+              </th>
+              {/* Fecha Fin */}
+              <th id={styles.headTable} onClick={() => requestSort('FechaFin')} className='titulo' style={{ marginLeft:"5px" }}>
+                Fecha Fin
+                {sortConfig.key === 'FechaFin' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                )}
+              </th>
+              {/* Fecha de Retorno */}
+              <th id={styles.headTable} onClick={() => requestSort('FechaRetorno')} className='titulo' style={{ marginLeft:"5px" }}>
+                Fecha Retorno
+                {sortConfig.key === 'FechaRetorno' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                )}
+              </th>
+              {/* Días a Disfrutar */}
               <th id={styles.headTable} onClick={() => requestSort('diasDisfrutar')} className='titulo' style={{ marginLeft:"5px" }}>
                 Cantidad días a Disfrutar
                 {sortConfig.key === 'diasDisfrutar' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
                 )}
               </th>
+              {/* Días a Pagar */}
               <th id={styles.headTable} onClick={() => requestSort('diasPagar')} className='titulo' style={{ marginLeft:"5px" }}>
                 Cantidad días a Pagar
                 {sortConfig.key === 'diasPagar' && (
                   <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
                 )}
               </th>
+              {/* Estado */}
+              <th id={styles.headTable} onClick={() => requestSort('Estado')} className='titulo' style={{ marginLeft:"5px" }}>
+                Estado
+                {sortConfig.key === 'Estado' && (
+                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                )}
+              </th>
+              {/* Acciones */}
               <th>Acciones</th>
             </tr>
           </thead>
@@ -353,13 +395,18 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
                 <td>{item.ci}</td>
                 <td>{item.nombres_empleado}</td>
                 <td>{item.apellidos_empleado}</td>
+                <td>{item.nombres_supervisor}</td>
+                <td>{item.apellidos_supervisor}</td>
                 <td>{format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy')}</td>
                 <td>{format(addDays(parseISO(item.FechaFin.toString()), 1), 'dd/MM/yyyy')}</td>
-                <td>{item.Estado}</td>
-                <td>{item.nombres_supervisor }</td>
-                <td>{item.apellidos_supervisor}</td>
+                <td>
+                  {item.FechaRetorno
+                    ? format(addDays(parseISO(item.FechaRetorno.toString()), 1), 'dd/MM/yyyy')
+                    : 'Sin definir'}
+                </td>
                 <td>{item.diasDisfrutar}</td>
                 <td>{item.diasPagar}</td>
+                <td>{item.Estado}</td>
                 <td>
                   {
                     item.Estado === 'Aprobada' && (

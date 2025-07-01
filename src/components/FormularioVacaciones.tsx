@@ -130,7 +130,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       const response = await axios.get(`${apiUrl}/vacaciones/fechaMaximaFin`, {
         params: {
           fechaInicio,
-          diasDisfrutar: totalDias + 5
+          diasDisfrutar: totalDias + 6
         }
       });
       setError(null);
@@ -403,7 +403,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
             </Alert>)):(<Alert variant='danger'  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%', textAlign: 'center' }}>
               <PiProhibitFill size={80}/>
             <h4>Lamentablemente no tienes vacaciones disponibles en este momento.</h4>
-            
+          
             </Alert>)
 
         }
@@ -470,7 +470,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
                 <>
                 <div className={`alert ${errorPeriodos ? 'alert-exit' : 'alert-enter'}`}>
                   <Alert variant="warning">
-                    Fecha fin de Vacaciones: {addDays(parseISO((fechaMaximaFin)), 1).toLocaleDateString()}
+                    Fecha Fin del periodo de Vacaciones: {addDays(parseISO((fechaMaximaFin)), 1).toLocaleDateString()}
                   </Alert>
                 </div>
                 </>
@@ -491,7 +491,9 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
                       setFechaFin(date ? date.toISOString() : null);
                     }}
                     valueFormat={{ day: "numeric", month: "numeric", year: "numeric" }}
-                    min={fechaInicio ? new Date(fechaInicio) : undefined}
+                    /* el dia minimo es un dia mas de la fecha de inicio porque la fecha de retorno no puede ser el mismo dia que la fecha de inicio */
+                    min={fechaInicio ? addDays(new Date(fechaInicio), 1) : undefined}
+                    /* el dia maximo es un dia mas de la fecha prolongada porque la fecha de retorno no puede ser el mismo dia que la fecha prolongada */
                     max={fechaMaximaFin && fechaProlongada ? addDays(new Date(fechaProlongada), 1) : undefined}
                     parse={(str) => {
                       if (!str) return undefined;
@@ -502,12 +504,17 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
                         (month ? month - 1 : today.getMonth()),
                         day
                       );
-                      const startDate = fechaInicio ? new Date(fechaInicio) : today;
+                      const startDate = fechaInicio ? addDays(new Date(fechaInicio), 1) : today;
+                      const maxDate = fechaMaximaFin && fechaProlongada ? addDays(new Date(fechaProlongada), 1) : undefined;
+
                       if (parsedDate < startDate) {
                         return startDate;
                       }
+                      if (maxDate && parsedDate > maxDate) {
+                        return maxDate;
+                      }
                       return parsedDate;
-                    }}
+                  }}
                     disabled={fechaMaximaFin === null || !diasHabiles || !fechaInicio || errorPeriodos!==null}
                   />
                 </Form.Group>

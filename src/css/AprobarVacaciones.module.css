@@ -24,6 +24,31 @@ th {
     justify-content: center;
 }
 
+.stickyHead th {
+    position: sticky;
+    top: 100px;
+    background-color: #013897;
+    color: white;
+    z-index: 2;
+}
+/* Ajustes responsivos para sticky head según altura del navbar */
+@media (max-width: 1268px) {
+    .stickyHead th {
+        top: 90px;
+    }
+}
+@media (max-width: 1024px) {
+    .stickyHead th {
+        top: 75px;
+    }
+}
+@media (max-width: 991px) {
+    .stickyHead th {
+        top: 0;
+    }
+}
+
+
 .table-bordered>:not(caption)>*>* {
     border-top-width: 1px;
     border-bottom-width: 1px;

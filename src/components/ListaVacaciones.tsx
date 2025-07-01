@@ -151,7 +151,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
               )}
             </th>
             <th id={styles.headTable} onClick={() => requestSort('FechaFin')} className='titulo'>
-              Fecha Fin
+              Fecha Retorno
               {sortConfig.key === 'FechaFin' && (
                 <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
               )}
@@ -182,7 +182,7 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
             <tr key={item.VacacionID}>
               <td>{item.VacacionID}</td>
               <td>{format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy')}</td>
-              <td>{format(addDays(parseISO(item.FechaRetorno ? item.FechaRetorno.toString() : item.FechaFin.toString()), 1), 'dd/MM/yyyy')}</td>
+                <td>{item.FechaRetorno ? format(addDays(parseISO(item.FechaRetorno.toString()), 1), 'dd/MM/yyyy') : format(addDays(parseISO(item.FechaFin.toString()), 2), 'dd/MM/yyyy')}</td>
               <td>{item.Estado}</td>
               <td>{item.DiasDisfrutar}</td>
               <td>{item.DiasPagar}</td>

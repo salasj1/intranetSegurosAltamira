@@ -14,6 +14,7 @@ export interface Vacacion {
     diasPagar: number;
     FechaInicio: Date;
     FechaFin: Date;
+    FechaRetorno: Date;
     Estado: string;
     cod_emp: string;
     nombre_empleado: string;

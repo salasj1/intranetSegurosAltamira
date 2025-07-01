@@ -46,18 +46,20 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
   }, [show, vacacionID]);
 
   const handleMensajeConfirmacion = async () => {
+    
+    // Asegurarse de que fechaRetorno tenga la hora en 00:00
+    const fechaInicioDate = new Date(fechaInicio || '');
+    const fechaInicioT00 = fechaInicioDate.toISOString().split('T')[0] + 'T00:00:00.000Z';
+    console.log("fechaInicio", fechaInicioT00);
     console.log("fechaFin", fechaFin);
     console.log("fechaRetorno", fechaRetorno);
-    const fechaRetornoDate = fechaRetorno ? new Date(fechaRetorno) : new Date();
-    const fechaRetornoT00 = fechaRetornoDate.toISOString().split('T')[0] + 'T00:00:00.000Z';
-    // Asegurarse de que fechaRetorno tenga la hora en 00:00
-    
+
     try {
       const response = await axios.get(`${apiUrl}/vacaciones/InfoConfirmacionSolicitudVacaciones`, {
         params: {
-          fechaInicio,
-          fechaFin,
-          fechaRetorno: fechaRetorno ? fechaRetornoT00 : null,
+          fechaInicio: fechaInicioT00,
+          fechaFin: fechaFin,
+          fechaRetorno: fechaRetorno ,
         }
       });
       setMensaje(response.data.Mensaje);
@@ -100,7 +102,7 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
   };
 
   return (
-    <Modal show={show} onHide={() => { handleClose(); setError(''); setSuccess(null); }}>
+    <Modal show={show} onHide={() => { handleClose(); setError(''); setSuccess(null); }} >
       <Modal.Header closeButton>
         <Modal.Title>Confirmar Solicitud</Modal.Title>
       </Modal.Header>
@@ -114,24 +116,27 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
           <>
             {error && <Alert variant="danger" onClose={() => { setError('') }} dismissible>{error}</Alert>}
             <Alert variant="primary">
-              {vacacionID !== undefined && (
-                <p><strong>ID de Vacaciones:</strong> {vacacionID}</p>
-              )}
-              <p><strong>Fecha de Inicio de Vacaciones: </strong> {fechaInicio ? new Date(fechaInicio).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
-              {fechaRetorno && <p><strong>Fecha de Retorno de Vacaciones:</strong> {new Date(fechaRetorno).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>}
-              <p><strong>Fecha de Fin del periodo de Vacaciones:</strong> {fechaFin ? addDays(new Date(fechaFin), 1).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
-              {diasDisfrutar && diasDisfrutar !== 0 && <p><strong>Número de días hábiles a Disfrutar: </strong> {diasDisfrutar}  {diasDisfrutar === 1 ? 'día' : 'días'}</p>}
+              <h3>Disfrute de Vacaciones</h3>
+              <p><strong>Desde:</strong> {fechaInicio ? new Date(fechaInicio).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
+              <p><strong>Hasta:</strong> {fechaRetorno ? addDays(new Date(fechaRetorno), -1).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
+              {fechaRetorno && <p><strong>Fecha de Retorno:</strong> {new Date(fechaRetorno).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>}
+              {diasDisfrutar && diasDisfrutar !== 0 && <p><strong>Días hábiles a disfrutar:</strong> {diasDisfrutar} {diasDisfrutar === 1 ? 'día' : 'días'}</p>}
+            </Alert>
+            <Alert variant="primary">
+              <h3>Vacaciones Pagadas</h3>
+              <p><strong>Desde:</strong> {fechaInicio ? new Date(fechaInicio).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
+              <p><strong>Hasta:</strong> {fechaFin ? addDays(new Date(fechaFin), 1).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
             </Alert>
 
             {vacacionID === undefined && (
               <Alert variant='warning' style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <RiInformationLine size={tipoConfirmacion && tipoConfirmacion === 2 ? 140 : 80} style={{ marginRight: '10px' }} />
+                  <RiInformationLine size={mensaje?.includes('permiso') ? 160 : 80} style={{ marginRight: '10px'}} />
                   {mensaje && mensaje.split('@').map((line, index) => (
-                    <React.Fragment key={index}>
-                      {line}
-                      <br />
-                    </React.Fragment>
+                  <React.Fragment key={index}>
+                    {line}
+                    <br />
+                  </React.Fragment>
                   ))}
                 </div>
               </Alert>
