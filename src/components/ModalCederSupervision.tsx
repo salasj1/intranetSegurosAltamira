@@ -168,7 +168,7 @@ const ModalCederSupervision: React.FC<Props> = ({ show, handleClose, fetchEmplea
         
         <div style={{ marginBottom: 20 }}>
           <DotLottieReact
-            src="..\src\assets\woman.lottie"
+            src="/assets/woman.lottie"
             loop
             autoplay
             style={{ margin: "-10% 0 -10% 0" }}

@@ -141,6 +141,16 @@ function NavbarEmpresa() {
                                                             </NavDropdown.Item>
                                                         ) : null}
                                                     </NavDropdown>
+                                                    <NavDropdown title='Expediente' id='submenu' className={isActive('/Expediente') ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end'>
+                                                        <NavDropdown.Item as={Link} to='/Expediente' className='cuadroItem'>
+                                                            Ver Expediente
+                                                        </NavDropdown.Item>
+                                                        {auth.RRHH === 1 ? (
+                                                            <NavDropdown.Item as={Link} to='/GestionExpediente' className='cuadroItem'>
+                                                                Administrar Expediente
+                                                            </NavDropdown.Item>
+                                                        ) : null}
+                                                    </NavDropdown>
                                                 </NavDropdown>
                                             </Col>
 

@@ -4,7 +4,7 @@ import firma from "../assets/firma.png";
 
 import CalibriBase64 from '../fonts/Calibri.base64.ts';
 import { addDays } from 'date-fns';
-const generateConstanciaPDF = (data: any, destinatario: string) => {
+const generateConstanciaPDF = (data: any, persona:string, destinatario: string) => {
   try {
     const doc = new jsPDF('p', 'mm', 'letter');
     if (!data || !data[0]) {
@@ -22,11 +22,19 @@ const generateConstanciaPDF = (data: any, destinatario: string) => {
   doc.setFontSize(12);
   doc.setFontSize(13);
   doc.setFont('calibri', 'normal');
-  let y=55;
-  if (destinatario){
+  let y=55; 
+  console.log('destinatario Form',destinatario);
+  console.log('persona Form',persona);
+  if (destinatario && persona=== 'juridica') {
     y=58;
-    doc.text(`Señores.\n${destinatario}\nPresente.`, 15, y);
-    y+=15;
+    doc.text(`Estimados Señores:\n${destinatario}\nPresente.`, 15, y);
+    y+=10;
+  }
+  if (destinatario && persona=== 'natural') {
+    y=58;
+    
+    doc.text(`Estimado ${destinatario},`, 15, y);
+    
   }
 
   

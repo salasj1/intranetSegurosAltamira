@@ -30,6 +30,8 @@ function ConstaciaDeTrabajo() {
   const [cardDestinatario, setCardDestinatario] = useState<boolean>(false);
   const [navegador, setNavegador] = useState<number>(1);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [Respuesta, setRespuesta] = useState<number>(0);
+  const [persona, setPersona] = useState<string>(''); 
   const anio= new Date().getFullYear();
   
 
@@ -58,14 +60,11 @@ function ConstaciaDeTrabajo() {
     setCorreoSecundario(email || ''); // Inicializar con el valor de email o una cadena vacía
   }, [email]);
 
-  useEffect(() => {
-    generatePdfBlob();
-  }, [constanciaData, mostrarsueldo]);
+
 
   const generatePdfBlob = () => {
     if (constanciaData) {
-      console.log('constanciaData:', constanciaData);
-      const pdf = generateConstanciaPDF(constanciaData, destinatario);
+      const pdf = generateConstanciaPDF(constanciaData, persona, destinatario);
       const pdfBlob = pdf.output('blob');
       setPdfBlob(pdfBlob);
     }
@@ -175,7 +174,25 @@ function ConstaciaDeTrabajo() {
           <Card.Header style={{ background: "#013897", color: 'white', textAlign: "center", fontWeight: 500, fontSize:"22px", borderRadius: "auro" }}>Destino</Card.Header>
           <Card.Body >
             <Card.Text style={{color: "rgb(82, 82, 82)"}} >
-            <p style={{marginBottom:"-4px"}}>Escriba el nombre de la persona a la que va dirigida la constancia de trabajo.</p>
+              {Respuesta===0 && <><p>¿La constancia va dirigida a alguien?</p> 
+              <div style={{ display: "flex", justifyContent: "end", gap: "10px" }}>
+                <Button variant="primary" style={{ width:"100%"}} onClick={() => setRespuesta(1)}>Si</Button>
+                <Button variant="primary" style={{ width:"100%"}} onClick={() => {setRespuesta(3); handleEnviar();}}>No</Button>
+              </div>
+              </>}
+              {Respuesta===1 &&
+              <>
+              <p style={{marginBottom:"-4px"}}>¿Es una persona natural o jurídico?</p>
+              <br />
+              <div style={{ display: "flex", justifyContent: "center", gap: "10px"  }}>
+                <Button variant="primary" style={{ width:"100%"}} onClick={() => {setRespuesta(2);setPersona('natural'); }}>Natural</Button>
+                <Button variant="primary" style={{ width:"100%"}} onClick={() => {setRespuesta(2);setPersona('juridica');}}>Jurídico</Button>
+              </div>
+              </>
+              }
+              {Respuesta===2 &&
+              <>
+              <p style={{marginBottom:"-4px"}}>Escriba el nombre de la persona a la que va dirigida la constancia de trabajo.</p>
               <br />
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <Form.Control
@@ -183,15 +200,18 @@ function ConstaciaDeTrabajo() {
                   placeholder="Destinatario"
                   value={destinatario}
                   onChange={(e) => setDestinatario(e.target.value)}
-                />
+                  />
                 <Button
                   style={{ marginLeft: "10px", borderColor: "#013897",backgroundColor: "#013897", boxShadow: "0 3px 6px 0 rgba(0, 0, 0, .14)" }}
                   variant="primary"
-                  onClick={handleEnviar}
-                >
+                  onClick={()=>handleEnviar()}
+                  >
                   Enviar
                 </Button>
               </div>
+              </>
+              }
+
             </Card.Text>
           </Card.Body>
         </Card>
@@ -294,6 +314,7 @@ function ConstaciaDeTrabajo() {
                   <Nav.Link eventKey="#first" style={{ color: "rgba(255, 255, 255, 0.7)" }} onClick={() => setNavegador(1)}>Mostrar sueldo</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
+
                   <Nav.Link eventKey="#link" style={{ color: "rgba(255, 255, 255, 0.7)" }} onClick={() => setNavegador(2)}>Destino</Nav.Link>
                   </Nav.Item>
                 </Nav>
@@ -320,22 +341,49 @@ function ConstaciaDeTrabajo() {
                   {navegador === 2 && (<>
                     <p style={{marginBottom:"-4px", color: "rgba(255, 255, 255, 0.7)"}}>Escriba el nombre de la persona a la que va dirigida la constancia de trabajo.</p>
                     <br />
-                    <div style={{ display: "flex", justifyContent: "center" }}>
+                    <div style={{ display: "flex", justifyContent: "center" , flexDirection: "column", gap: "10px"}}>
                       <Form.Control
                         type="text"
                         placeholder="Destinatario"
                         value={destinatario}
                         onChange={(e) =>setDestinatario(e.target.value) }
                       />
-                      <Button
-                        style={{ marginLeft: "10px", borderColor: "#013897",backgroundColor: "#013897", boxShadow: "0 3px 6px 0 rgba(0, 0, 0, .14)" }}
-                        variant="primary"
-                        onClick={handleEnviar}
-                      >
-                        Cambiar
-                      </Button>
+                      <div style={{ display: "flex", justifyContent: "space-between", gap: "10px" }}>
+                        <div>
+                          <p style={{color: 'white'}}>¿Que tipo de persona es?</p>
+                          <Form.Check
+                            inline
+                            label="Natural"
+                            name="group1"
+                            type={'radio'}
+                            id={`inline-radio-1`}
+                            onChange={() => setPersona('natural')}
+                            style={{color: 'white'}}
+                            checked={persona === 'natural'}
+                          />
+                          <Form.Check
+                            inline
+                            label="Júridico"
+                            name="group1"
+                            type={'radio'}
+                            id={`inline-radio-2`}
+                            onChange={() => setPersona('juridica')}
+                            style={{color: 'white'}}
+                            checked={persona === 'juridica'}
+                          />
+                        </div>
+                        <div style={{display: "flex", justifyContent:'end', alignItems:'end'}}> 
+                          <Button
+                            style={{ borderColor: "#013897",backgroundColor: "#013897", boxShadow: "0 3px 6px 0 rgba(0, 0, 0, .14)" }}
+                            variant="primary"
+                            onClick={handleEnviar}
+                          >
+                            Cambiar
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-
+                    
                     </>)
                   }
                 </Card.Body>

@@ -1,4 +1,4 @@
-import {  Routes, Route, useLocation } from 'react-router-dom';
+import {  Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Login from './routes/Login.tsx';
 import Home from './routes/Home.tsx';
@@ -21,6 +21,8 @@ import ChangePasswordVerify from './routes/ChangePasswordVerify.tsx';
 import ConstaciaDeTrabajo from './routes/ConstaciaDeTrabajo.tsx';
 import RetornoVacaciones from './routes/RetornoVacaciones.tsx';
 import AdminDashboard from './routes/AdminDashboard.tsx';
+import Expendiente from './routes/Expendiente.tsx';
+import RRHHExpedientes from './routes/RRHHExpedientes';
 
 function App() {
   const location = useLocation();
@@ -45,29 +47,32 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/change-password-verify" element={<ChangePasswordVerify />} />
-        <Route
-          path="/"
-          element={<ProtectedRoute />}
-          children={[
-            <Route key="home" path="home" element={<Home />} />,
-            <Route key="RecibodePago" path="RecibodePago" element={<RecibodePago />} />,
-            <Route key="RecibodePagoDetallado" path="RecibodePago/:reci_num" element={<RecibodePagoDetallado />} />,
-            <Route key="Prestaciones" path="Prestaciones" element={<Prestaciones />} />,
-            <Route key="ConstanciaDeTrabajo" path="ConstanciaDeTrabajo" element={<ConstaciaDeTrabajo />} />,
-            <Route key="ARC" path="ARC" element={<ARC />} />,
-            <Route key="PrestacionesDetallado" path="Prestaciones/:prest_num" element={<RecibodePagoDetallado />} />,
-            <Route key="SolicitarVacaciones" path="SolicitarVacaciones" element={<SolicitarVacaciones />} />,
-            <Route key="AprobarVacaciones" path="AprobarVacaciones" element={<AprobarVacaciones />} />,
-            <Route key="ProcesarVacaciones" path="ProcesarVacaciones" element={<ProcesarVacaciones />} />,
-            <Route key="RetornoVacaciones" path="RetornoVacaciones" element={<RetornoVacaciones />} />,
-            <Route key="SolicitarPermisos" path="SolicitarPermisos" element={<SolicitarPermisos />} />,
-            <Route key="AprobarPermisos" path="AprobarPermisos" element={<AprobarPermisos />} />,
-            <Route key="ProcesarPermisos" path="ProcesarPermisos" element={<ProcesarPermisos />} />,
-            <Route key="DirectorioEmpleados" path="DirectorioEmpleados" element={<DirectorioEmpleados />} />,
-            <Route key="ControlSupervision" path="ControlSupervision" element={<ControlAutorizacion />} />,
-            <Route key="Admin" path="Admin" element={<AdminDashboard />} />,
-          ]}
-        ></Route>
+        <Route path="/" element={<ProtectedRoute />}>
+            <Route path="home" element={<Home />} />
+            <Route path="RecibodePago" element={<RecibodePago />} />
+            <Route path="RecibodePago/:reci_num" element={<RecibodePagoDetallado />} />
+            <Route path="Prestaciones" element={<Prestaciones />} />
+            <Route path="ConstanciaDeTrabajo" element={<ConstaciaDeTrabajo />} />
+            <Route path="ARC" element={<ARC />} />
+            <Route path="Prestaciones/:prest_num" element={<RecibodePagoDetallado />} />
+            <Route path="SolicitarVacaciones" element={<SolicitarVacaciones />} />
+            <Route path="AprobarVacaciones" element={<AprobarVacaciones />} />
+            <Route path="ProcesarVacaciones" element={<ProcesarVacaciones />} />
+            <Route path="RetornoVacaciones" element={<RetornoVacaciones />} />
+            <Route path="SolicitarPermisos" element={<SolicitarPermisos />} />
+            <Route path="AprobarPermisos" element={<AprobarPermisos />} />
+            <Route path="ProcesarPermisos" element={<ProcesarPermisos />} />
+            <Route path="DirectorioEmpleados" element={<DirectorioEmpleados />} />
+            <Route path="ControlSupervision" element={<ControlAutorizacion />} />
+            <Route path="expediente" element={<Expendiente />}>
+              <Route index element={<Navigate to="datos" replace />} />
+              <Route path="datos" element={<Expendiente />} />
+              {/* <Route path="rutas" element={<Expendiente />} /> */}
+              <Route path="documentos" element={<Expendiente />} />
+            </Route>
+            <Route path="Admin" element={<AdminDashboard />} />
+            <Route path="GestionExpediente" element={<RRHHExpedientes />} />
+          </Route>
       </Routes>
     </AuthProvider>
   );

@@ -107,13 +107,13 @@ function RecibodePagoDetallado() {
         });
 
         if (response.data.success) {
-          alert('Correo enviado exitosamente');
+          toast.success('Correo enviado exitosamente');
         } else {
-          alert('Error enviando el correo');
+          toast.error('Error enviando el correo');
         }
       } catch (error) {
         console.error('Error enviando el correo:', error);
-        alert('Error enviando el correo');
+        toast.error('Error enviando el correo');
       }
     }
   };
