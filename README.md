@@ -33,21 +33,30 @@ Además, se encuentra en constante evolución, incorporando nuevos módulos y fu
   - Comprobantes ARC (Agente de Retención)
   - Movimientos de prestaciones sociales
 
-- **Envío de Documentos por Correo Electrónico 📩** 
+- **Envío Automático de Documentos por Correo Electrónico 📩**  
+  El sistema envía correos automáticos mediante tareas programadas (cron) para notificar y recoger documentos vencidos desde Google Drive y llevarlos a la base de datos.
 
-  Los documentos generados pueden ser enviados automáticamente al correo principal o secundario del empleado, comprimidos y protegidos según corresponda.
+- **Portal de Expedientes y Directorio de Empleados 📝**  
+  Acceso a un portal donde se puede visualizar el directorio de expedientes de todos los empleados, incluyendo:
+  - Solicitudes de cambio de datos personales de empleados
+  - Documentos almacenados en Google Drive y registrados en google Sheets y en Base de Datos
+  - Estado de documentos vencidos por empleado y por tipo
+  - Visualización de indicadores como:
+    - Cantidad total de empleados con documentos vencidos
+    - Cantidad total de documentos vencidos (seleccionados y por tipo)
+    - Listado detallado de empleados y documentos afectados
 
 - **Gestión de Permisos y Vacaciones 👍🏖**  
   Solicitud, aprobación y seguimiento de permisos laborales y vacaciones, con notificaciones automáticas en la plataforma y por correo a supervisores y RRHH.
 
 - **Actualización de Datos Personales**  
-  *(En desarrollo* 🚧 *)*  Esta funcionalidad permitirá a los empleados revisar y solicitar cambios en sus datos personales. Se implementarán flujos de validación y bloqueo ante solicitudes pendientes, asegurando la integridad y seguridad de la información. ¡Próximamente disponible ! 
+  Los empleados pueden revisar y solicitar cambios en sus datos personales, con flujos de validación y bloqueo ante solicitudes pendientes, asegurando la integridad y seguridad de la información.
 
 - **Carga y Validación de Documentos**  
-   Integración con Google Drive para la carga, almacenamiento y validación de documentos personales requeridos por la empresa. ¡Próximamente disponible! 
+   Integración con Google Drive para la carga, almacenamiento y validación de documentos personales requeridos por la empresa.
 
 - **Panel de Supervisión🔎**  
-  Módulos para supervisores y RRHH para gestionar solicitudes, aprobar/rechazar trámites y visualizar el estado de  los empleados a su cargo.
+  Módulos para supervisores y RRHH para gestionar solicitudes, aprobar/rechazar trámites y visualizar el estado de rol de los empleados a su cargo.
 
 ## Tecnologías utilizadas
 
@@ -84,12 +93,12 @@ Además, se encuentra en constante evolución, incorporando nuevos módulos y fu
    ```
 3. **Configurar variables de entorno**  
    Completar el archivo `.env` con las credenciales y rutas necesarias.
-4. **Ejecutar el frontend**  
+4. **Ejecutar el backend**  
+   (Ver instrucciones específicas en el repositorio de BackendIntranetSegurosAltamira)
+5. **Ejecutar el frontend**  
    ```sh
    npm run dev
    ```
-5. **Ejecutar el backend**  
-   (Ver instrucciones específicas en la carpeta BackendIntranetSegurosAltamira)
 
 ## Seguridad y privacidad
 
