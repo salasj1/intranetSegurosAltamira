@@ -35,6 +35,7 @@
     "bootstrap": "^5.3.3",
     "date-fns": "^3.6.0",
     "framer-motion": "^12.17.0",
+    "gsap": "^3.13.0",
     "intranetsegurosaltamira": "file:",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",

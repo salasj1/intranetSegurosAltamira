@@ -12,13 +12,7 @@ La **Intranet de Seguros Altamira** es una plataforma web interna desarrollada p
 
 
 
-<div align="center" class="mb-px-10">
-  <video width="800" controls>
-    <source src="./public/assets/VIDEO-PRESENTACION-INTRANET.mp4" type="video/mp4">
-    Tu navegador no soporta la reproducción de videos.
-  </video>
-</div>
-</div>
+
 <br/>
 <div style=" margin-bottom: 25px;">
 Además, se encuentra en constante evolución, incorporando nuevos módulos y funcionalidades según las necesidades de la empresa, con el propósito de seguir optimizando los procesos internos y mejorando la experiencia de los empleados. 🚀
