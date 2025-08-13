@@ -1,0 +1,112 @@
+.NavbarEmpresa {
+    display: flex;
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; 
+
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif !important;
+    
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    
+}
+
+.navbar-expand .navbar-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    /* justify-content: space-around; */
+    width: 100%;
+}
+
+#Navegador {
+    width: 100%;
+}
+
+.imagenEmpresa {
+    position: relative;
+    width: 200px;
+    height: 100px;
+    background-color: #FAC7683D;
+    flex-shrink: 0; /* Prevent the image from shrinking */
+}
+
+.nav-link {
+    font-size: 21px;
+    flex-grow: 1; /* Añadido para permitir que los enlaces crezcan */
+    white-space: nowrap; /* Evita que el texto se envuelva */
+    padding: 0 10px; /* Añade espacio alrededor del texto */
+    margin: 0 5px; /* Añade espacio entre los enlaces */
+    
+}
+.navbar-nav a{
+    font-weight:bold;
+    font-family: "-apple-system",
+                "BlinkMacSystemFont",
+                "Segoe UI",
+                Roboto,
+                Oxygen-Sans,
+                Ubuntu,
+                Cantarell,
+                "Helvetica Neue",
+                sans-serif;
+}
+@media screen and (max-width: 500px) {
+    .nav-link {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    
+    .navbar-expand .navbar-nav, .navbar-brand {
+        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+.nav-link:hover {
+    color: #003896 !important;
+}
+
+.nav-link.show {
+    color: #ff7b00 !important;
+}
+
+.nav-link:active, .nav-link:focus {
+    color: #ff7b00 !important;
+    outline: none;
+}
+
+.right-div {
+    display: flex;
+    flex-direction: column; 
+    margin-left: 1rem;
+    font-weight: 500;
+    white-space: nowrap;
+    
+}
+
+img {
+    width: 100%;
+    height: 100%;
+}
+
+.descripcion {
+    font-family: 'Berlin Sans FB', 'Segoe UI';
+    font-weight: initial !important;
+    color: #000000 !important;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+    
+}
+.divHamburguesa{
+    background-color: #003896;
+    border-radius:  15px 5px ;
+    height: 55px;
+    width: 55px;
+}
