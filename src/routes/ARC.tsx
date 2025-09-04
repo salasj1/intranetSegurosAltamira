@@ -1,0 +1,286 @@
+import { useState, useEffect, useMemo } from 'react';
+import { useAuth } from '../auth/AuthProvider';
+import { zoomPlugin } from '@react-pdf-viewer/zoom';
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+import { Button, Card, Alert, Form } from 'react-bootstrap';
+import NavbarEmpresa from '../components/NavbarEmpresa';
+import generateARCPDF from '../components/FormatoARC';
+import styles from '../css/ARC.module.css';
+import stylesLoading from "../css/loading.module.css";
+import { Mosaic } from "react-loading-indicators";
+import { toast, ToastContainer } from 'react-toastify';
+const apiUrl = import.meta.env.VITE_API_URL;
+
+function ARC() {
+  const [arcData, setArcData] = useState<any>(null);
+  const [, setIsLoading] = useState<boolean>(true);
+  const [isPdfLoading, setIsPdfLoading] = useState<boolean>(true);
+  const [, setShowAlert] = useState<boolean>(false);
+  const [showPdf, setShowPdf] = useState<boolean>(false); 
+  const [error, setError] = useState<string | null>(null);
+  const { cod_emp, email } = useAuth();
+  const [correoSecundario, setCorreoSecundario] = useState<string>('');
+  const [fechaARC, setFechaARC] = useState<string>('');
+  const [tempFechaARC, setTempFechaARC] = useState<string>(''); 
+  const cod_empSinEspacios = cod_emp?.replace(/\s+/g, '');
+
+  useEffect(() => {
+    const isValidYear = /^\d{4}$/.test(fechaARC);
+    if (fechaARC && !isValidYear) {
+      setError('El dato escrito no es un año válido.');
+      setArcData(null);
+      setIsLoading(false);
+      return;
+    }
+
+    if (cod_emp && fechaARC) {
+      fetch(`${apiUrl}/arc/${cod_emp}?fecha=${fechaARC}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (!data || data.length === 0) {
+            setError('No se encontraron datos para la fecha seleccionada.');
+            setArcData(null);
+          } else {
+            setArcData(data);
+            setError(null);
+          }
+          setIsLoading(false);
+        })
+        .catch(error => {
+          console.error(error)
+          if (error.message === 'Network response was not ok') {
+            setError('Error de conexion. Intentelo más tarde');
+          } else if (error.message === 'Failed to fetch') {
+            setError('Error al obtener los datos. Intentelo más tarde');
+          } else {
+
+            setError(error.message);
+          }
+          setIsLoading(false);
+        });
+    }
+  }, [cod_emp, fechaARC]);
+
+  useEffect(() => {
+    setCorreoSecundario(email || ''); // Inicializar con el valor de email o una cadena vacía
+  }, [email]);
+
+  const pdfBlob = useMemo(() => {
+    if (arcData) {
+      const pdf = generateARCPDF(arcData, fechaARC);
+      return pdf.output('blob');
+    }
+    return null;
+  }, [arcData, fechaARC]);
+  
+  const handleDownload = () => {
+    if (arcData) {
+      const pdf = generateARCPDF(arcData, fechaARC);
+      const blob = pdf.output('blob');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ARC_${cod_empSinEspacios}_${fechaARC}.pdf`;
+      a.click();
+      window.open(url, '_blank');
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!pdfBlob) return;
+    setIsPdfLoading(true);
+    try {
+        const formData = new FormData();
+        formData.append('pdf', pdfBlob, `ARC_${cod_empSinEspacios}_${fechaARC}.pdf`);
+        formData.append('cod_emp', cod_emp || '');
+        formData.append('fecha', fechaARC);
+
+        const response = await fetch(`${apiUrl}/send-arc`, {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        if (result.success) {
+            setShowAlert(true);
+        }
+        if (result.success) {
+          alert('Correo enviado exitosamente');
+        } else {
+          alert('Error enviando el correo');
+          const responseData = await response.json();
+          console.error('Error enviando el correo secundario:', responseData.message);
+        }
+    } catch (error) {
+        console.error('Error sending ARC email:', error);
+    } finally {
+        setIsPdfLoading(false);
+    }
+};
+
+const handleSendSecondaryEmail = async () => {
+  if (!pdfBlob || !correoSecundario) return;
+
+  // Mostrar el toast de "esperando"
+  const toastId = toast.loading('Enviando correo...');
+
+  setIsPdfLoading(true);
+  try {
+      const formData = new FormData();
+      formData.append('pdf', pdfBlob, `ARC_${cod_empSinEspacios}_${fechaARC}.pdf`);
+      formData.append('cod_emp', cod_emp || '');
+      formData.append('correo_secundario', correoSecundario);
+      formData.append('fecha', fechaARC);
+
+      const response = await fetch(`${apiUrl}/send-arc-secundario`, {
+          method: 'POST',
+          body: formData
+      });
+      const result = await response.json();
+
+      if (result.success) {
+          // Actualizar el toast a "satisfactorio"
+          toast.update(toastId, {
+              render: 'Correo enviado exitosamente',
+              type: 'success',
+              isLoading: false,
+              autoClose: 5000,
+          });
+      } else {
+          // Actualizar el toast a "error"
+          toast.update(toastId, {
+              render: 'Error enviando el correo',
+              type: 'error',
+              isLoading: false,
+              autoClose: 5000,
+          });
+          console.error('Error enviando el correo secundario:', result.message);
+      }
+  } catch (error) {
+      console.error('Error enviando el correo secundario:', error);
+      // Actualizar el toast a "error"
+      toast.update(toastId, {
+          render: 'Error enviando el correo',
+          type: 'error',
+          isLoading: false,
+          autoClose: 5000,
+      });
+  } finally {
+      setIsPdfLoading(false);
+  }
+};
+
+
+  const zoomPluginInstance = zoomPlugin();
+
+  return (
+    <>
+    <ToastContainer />
+      <NavbarEmpresa />
+      <div className={styles.canvas}>
+        <h1 style={{ textAlign: "center" }} className={styles.h1ARC}>Comprobante de Agente de Retención (ARC)</h1>
+          <div className={styles.cajainput}>
+            <Card className={styles.tarjeticaInput} bg='warning'>
+              <Card.Body>
+                <h4>Seleccione el año del ARC:</h4>
+                <div style={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
+                <Form.Control
+                    className={styles.inputARC}
+                    type="number"
+                    value={tempFechaARC}
+                    onChange={(e) => setTempFechaARC(e.target.value)}
+                    placeholder="AAAA"
+                    min="1992"
+                    max={new Date().getFullYear()}
+                  />    
+                  <Button variant='light' className={styles['pdf-botton-download']} onClick={() => { setFechaARC(tempFechaARC); setIsPdfLoading(true); setShowPdf(true); }}>Buscar</Button>
+                </div>
+              </Card.Body>
+            </Card>
+          </div>
+          {error ? (
+            <Card bg="danger" border="danger" className={styles.Tarjeta}>
+              <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Error</Card.Header>
+              <Card.Body>
+                <Alert variant='danger' style={{ fontSize: "24.5px" }}>
+                  {error}
+                </Alert>
+              </Card.Body>
+            </Card>
+          ) : showPdf && arcData ? (
+            <>
+              <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
+                
+                <div className={styles['pdf-viewer-container']}>
+                  {pdfBlob && (
+                    <>
+                    {isPdfLoading && (
+                      <div className={stylesLoading.loadingDocument} >
+                        <Mosaic  color={["#003391","#1A5FFA","#33CCCC","#1A3FFA"]} size="large" text="" textColor="#0d1bff" />
+                      </div>
+                    )}
+                    <div className={styles.botonesZoom}>
+                      <zoomPluginInstance.ZoomIn>
+                        {({ onClick }) => (
+                          <Button style={{ marginBottom: "2px" }} variant="secondary" onClick={onClick}>+</Button>
+                        )}
+                      </zoomPluginInstance.ZoomIn>
+                      <zoomPluginInstance.ZoomOut>
+                        {({ onClick }) => (
+                          <Button variant="secondary" onClick={onClick}>-</Button>
+                        )}
+                      </zoomPluginInstance.ZoomOut>
+                    </div>
+                      <Viewer
+                        fileUrl={URL.createObjectURL(pdfBlob)}
+                        defaultScale={1}
+                        onDocumentLoad={() => setIsPdfLoading(false)}
+                        plugins={[ zoomPluginInstance]}
+                      />
+                    </>
+                  )}
+                </div>
+              </Worker>
+              <Card bg="primary" border="primary" className={styles.Tarjeta}>
+                <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Ver PDF</Card.Header>
+                <Card.Body className={styles['card-body-buttons']}>
+                  {isPdfLoading ? (
+                    <Alert variant='warning' style={{ fontSize: "24.5px", paddingInline: "148px" }}>
+                      Cargando detalle PDF...
+                    </Alert>
+                  ) : (
+                    <>
+                      <Alert variant='primary' style={{ fontSize: "24.5px" }}>
+                        ¡ARC generado exitosamente! Seleccione una opción para continuar.
+                      </Alert>
+                      <div className={styles['button-group']}>
+                        <Button variant='light' className={styles['pdf-botton-download']} onClick={handleDownload}>Descargar</Button>
+                        <Button variant='warning' onClick={handleSendEmail} className={styles['pdf-botton-download2']} style={{ display: 'none' }}>Enviar al correo</Button>
+                      </div>
+                      <div className={styles['button-group']}>
+                      <Form.Control
+                        size="lg"
+                        type="text"
+                        placeholder="Escriba un correo"
+                        value={correoSecundario} 
+                        onChange={(e) => setCorreoSecundario(e.target.value)} 
+                      />
+                        <Button variant='warning' className={styles['pdf-botton-download3']} onClick={handleSendSecondaryEmail}>Enviar al correo </Button>
+                      </div>
+                    </>
+                  )}
+                </Card.Body>
+              </Card>
+            </>
+          ) : null}
+        </div>
+    </>
+  );
+}
+
+export default ARC;

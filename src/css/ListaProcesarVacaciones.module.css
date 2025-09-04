@@ -1,0 +1,102 @@
+.canvas {
+    position: relative;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+.canvasBuscador {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 25px; /* Añadido margen inferior para separación */
+    width: 50%;
+}
+
+th {
+    text-align: center;
+    justify-content: center;
+}
+
+.table-bordered>:not(caption)>*>* {
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+.table>:not(caption)>*>* {
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+th .search {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 80%;
+    border-color: rgb(59, 59, 59) !important;
+    border-radius: 2px;
+    color: white;
+    margin-left: auto; /* Añadido para centrar horizontalmente */
+    margin-right: auto; /* Añadido para centrar horizontalmente */
+    display: block; /* Añadido para que margin auto funcione */
+}
+
+#headTable {
+    background-color: #013897;
+    color: white;
+}
+
+th .search::placeholder {
+    color: rgb(110, 110, 110);
+}
+
+td {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.tableresponsive {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1250px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+
+.btn-primary {
+    background-color: #f48134 !important;
+    border-color: rgb(244, 129, 52) !important;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .search {
+        width: 75%;
+    }
+}
+
+@media (max-width: 480px) {
+    .search {
+        width: 100%;
+    }
+}
+
+.acciones {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.form-container {
+    border-radius: 2px !important;
+}

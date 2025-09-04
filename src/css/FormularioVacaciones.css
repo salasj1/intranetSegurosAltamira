@@ -1,0 +1,112 @@
+.form-container {     
+    /* background-color: #013897;  */
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 20px;
+    animation: fadeInUp 1s;
+  }
+  
+  .form-container h2 {
+    text-align: center;
+    color: #013897;
+    margin-left: 0;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    
+  }
+  
+  .card-body .form-control {
+    background-color: #F1F2F3;
+}
+
+  .button-group .btn {
+    width: 48%;
+    color: #FFFFFF;
+  }
+  .css-1dyz3mf > div{
+    width: auto !important ;
+  }
+  .react-datepicker__calendar-icon {
+    pointer-events: none; /* Esto asegura que el icono no interfiera con el clic en el input */
+  }
+/* Estilo para el calendario */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0) contrast(100%);
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-clear-button {
+    display: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    cursor: pointer;
+}
+
+.vacation-days {
+  margin-bottom: 20px;
+}
+
+.vacation-days h5 {
+  margin-bottom: 10px;
+}
+
+
+
+@keyframes fadeInUp {
+  from {
+      opacity: 0;
+      transform: translate3d(0,100%,0)
+  }
+
+  to {
+      opacity: 1;
+      transform: none
+  }
+}
+
+.Toastify__toast-icon {
+  width: 45px ;
+  height: 45px ;
+
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+.alert-enter {
+  margin-top: 0;
+  margin-bottom: 0;
+  animation: fadeIn 0.3s forwards;
+}
+
+.alert-exit {
+  margin-top: 0;
+  margin-bottom: 0;
+  animation: fadeOut 0.3s forwards;
+}

@@ -1,0 +1,44 @@
+.loadingContainer {
+    display: flex; 
+    justify-content: center;
+    align-Items: center;
+    height: 100vh;
+}
+.loadingDocument {
+    display: flex; 
+    justify-content: center;
+    align-Items: center;
+    height: 100vh;
+}
+
+.loadingContainer2 {
+    display: flex; 
+    justify-content: center;
+    align-Items: center;
+    height: 10vh;
+}
+
+@media screen and (max-width: 1268px) {
+    .loadingDocument {
+        height: 50vh;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .loadingDocument {
+        height: 25vh;
+    }
+}
+
+
+@media screen and (max-width: 991px) {
+    .loadingDocument {
+        height: none;
+    }
+}
+@media screen and (max-height: 991px) {
+    .loadingDocument {
+        height: 20%;
+    }
+    
+}

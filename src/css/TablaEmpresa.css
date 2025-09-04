@@ -1,0 +1,157 @@
+#root {
+    position: absolute;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100%;
+}
+
+.canvas {
+    position: relative;
+    top: 125px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+.canvasBuscador {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 25px; /* Añadido margen inferior para separación */
+    width: 50%;
+}
+.canvas h1 {
+    margin-left: -60%;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: "Gotham", Sans-serif;
+}
+.canvas h3 {
+    position: relative;
+    margin-left: -60%;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+th {
+    text-align: center;
+    justify-content: center;
+}
+
+.table-bordered>:not(caption)>*>* {
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+.table>:not(caption)>*>* {
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+th .search {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 80%;
+    border-color: rgb(59, 59, 59) !important;
+    border-radius: 2px;
+    color: rgb(59, 59, 59);
+    margin-left: auto; 
+    margin-right: auto; 
+    display: block; 
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0,100%,0)
+    }
+
+    to {
+        opacity: 1;
+        transform: none
+    }
+}
+
+.tableRecibo{
+    animation-name: fadeInUp;
+    animation-duration: 1.25s;
+}
+
+#headTable {
+    background-color: #013897;
+    color: white;
+}
+th .search::placeholder {
+    color: rgb(110, 110, 110);
+}
+
+td {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+
+.tableresponsive2 {
+    max-width: 1250px !important;
+}
+
+.btn-primary {
+    background-color: #f48134 !important;
+    border-color: rgb(244, 129, 52) !important;
+}
+.btn-primary:hover {
+    background-color: #bb652b !important;
+    border-color: #bb652b !important;
+}
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .canvas {
+        top: 100px;
+        padding: 15px;
+    }
+
+    .canvas h1 {
+        margin-left: 0;
+    }
+
+    .search {
+        width: 75%;
+    }
+}
+
+@media (max-width: 480px) {
+    .canvas {
+        top: 75px;
+        padding: 10px;
+    }
+
+    .canvas h1 {
+        margin-left: 0;
+    }
+
+    .search {
+        width: 100%;
+    }
+}
+.acciones {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+.form-container {
+    border-radius: 2px !important;
+}
+
+.modal-backdrop.show {
+    opacity: var(--bs-backdrop-opacity);
+    width: 100%;
+    height: 100%;
+}
