@@ -119,11 +119,10 @@ useEffect(() => {
   };
 
   function SuccessMessage() {
+    const localPlayerRef = useRef<Player>(null);
     useEffect(() => {
-      // Reproducir la animación desde el principio
-      playerRef.current?.playFromBeginning();
+      localPlayerRef.current?.playFromBeginning();
     }, []);
-  
     return (
       <div className="flex flex-col w-full" style={{ display: 'flex', alignItems: 'center', marginBottom: '-20px' }}>
         <div style={{ flex: 1 }}>
@@ -133,10 +132,10 @@ useEffect(() => {
           <p>Permiso solicitado exitosamente.</p>
         </div>
         <Player
-          ref={playerRef}
+          ref={localPlayerRef}
           icon={ICON}
           size={80}
-          onComplete={() => playerRef.current?.playFromBeginning()}
+          onComplete={() => localPlayerRef.current?.playFromBeginning()}
         />
       </div>
     );

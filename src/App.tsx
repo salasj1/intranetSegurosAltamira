@@ -67,7 +67,7 @@ function App() {
             <Route path="expediente" element={<Expendiente />}>
               <Route index element={<Navigate to="datos" replace />} />
               <Route path="datos" element={<Expendiente />} />
-              {/* <Route path="rutas" element={<Expendiente />} /> */}
+              <Route path="rutas" element={<Expendiente />} />
               <Route path="documentos" element={<Expendiente />} />
             </Route>
             <Route path="Admin" element={<AdminDashboard />} />

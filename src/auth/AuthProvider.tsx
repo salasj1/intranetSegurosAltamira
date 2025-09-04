@@ -7,7 +7,11 @@ interface AuthContextType {
     isAuthenticated: boolean;
     nombre_completo: string | null;
     cargo_empleado: string | null;
+<<<<<<< HEAD
     cod_emp: string | null; 
+=======
+    cod_emp: string ; 
+>>>>>>> master
     fecha_ing: string | null;
     des_depart: string | null;
     tipo: string | null;
@@ -23,7 +27,11 @@ const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
     nombre_completo: null,
     cargo_empleado: null,
+<<<<<<< HEAD
     cod_emp: null, 
+=======
+    cod_emp: '',
+>>>>>>> master
     fecha_ing: null,
     des_depart: null,
     tipo: null,
@@ -39,8 +47,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [nombre_completo, setNombreCompleto] = useState<string | null>(null);
     const [cargo_empleado, setCargoEmpleado] = useState<string | null>(null);
+<<<<<<< HEAD
     const [cod_emp, setCodEmp] = useState<string | null>(null);
     const [fecha_ing, setFechaIng] = useState<string | null>(null); 
+=======
+    const [cod_emp, setCodEmp] = useState<string | ''>('');
+    const [fecha_ing, setFechaIng] = useState<string | null>(null);
+>>>>>>> master
     const [des_depart, setDesDepart] = useState<string | null>(null);
     const [tipo, setTipo] = useState<string | null>(null);
     const [RRHH, setRRHH] = useState<number | null>(null);
@@ -147,7 +160,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsAuthenticated(false);
         setNombreCompleto(null);
         setCargoEmpleado(null);
+<<<<<<< HEAD
         setCodEmp(null);
+=======
+        setCodEmp('');
+>>>>>>> master
         setFechaIng(null);
         setDesDepart(null);
         setTipo(null);

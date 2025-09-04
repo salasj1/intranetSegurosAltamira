@@ -1,3 +1,201 @@
+.transportOther-fade-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.transportOther-fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms, transform 500ms;
+}
+.transportOther-fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.transportOther-fade-exit-active {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 500ms, transform 500ms;
+}
+/* Botón scroll-to-top con animación suave al mostrar/ocultar */
+.scrollToTopBtn {
+  position: fixed;
+  bottom: 3rem;
+  right: 2.5rem;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,.25);
+  z-index: 9999;
+  background: #ff7f32;
+  color: #fff;
+  font-size: 28px;
+  border: none;
+  opacity: 0;
+  transform: translateY(12px) scale(.85);
+  pointer-events: none;
+  transition: opacity .45s ease, transform .45s ease;
+}
+.scrollToTopBtn.visible {
+  opacity: .95;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.scrollToTopBtn:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Navegación de fases embebida dentro de cada card */
+.rutogramaPhaseNav {
+  display: flex;
+ 
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.25);
+}
+ .between {
+   justify-content: space-between;
+}
+.right{
+  justify-content: flex-end;
+}
+.BotonesRutas{
+  display: flex;
+  justify-content: space-around;
+  margin-top: 40px;
+  gap:20rem;
+}
+.routeBox {
+  background: #f6f8fa;
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.routeTitle {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.routeInputRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+.routeActionsRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+.departureBox {
+  background: #f6f8fa;
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.departureagg{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  gap: 8px;
+}
+.departureTitle {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.departureTimeRow {
+  display: flex;
+  align-items: center;
+  
+  gap: 16px;
+}
+.scheduleBox {
+  background: #f6f8fa;
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.scheduleTitle {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.scheduleDivider {
+  border: 1px solid #e0e0e0;
+  margin: 0 0 1rem 0;
+}
+.scheduleTimeRow {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+}
+.mb24 {
+  margin-bottom: 24px;
+}
+.transportBox {
+  background: #f6f8fa;
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.transportTitle {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.transportHint {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  display: block;
+}
+.transportOptionsRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  transition: min-height 0.35s ease-out;
+  min-height: 60px;
+}
+.travelBox {
+  background: #f6f8fa;
+  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.travelSubtitle {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.travelQuestionsRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-around;
+}
+.travelQuestionItem {
+  margin-bottom: 18px;
+}
+.travelLabel {
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+  color: #6c757d;
+}
+.travelCheckLabel {
+  color: #6c757d !important;
+}
 .fade-enter {
   opacity: 0;
   transform: translateX(100%) translateY(80%) !important;
@@ -23,9 +221,14 @@
 }
 
 .phase-wrapper {
-  height: 1%;
+  /* Se eliminó la altura fija (1%) que provocaba que, al cambiar a otra sección
+    con menos contenido, quedara un espacio en blanco acorde a la altura previa.
+    Ahora el alto depende del contenido dinámicamente. */
+  /* height: 1%; */
   display: flex;
   flex-direction: column;
+  /* Opcional: transición suave cuando cambia la altura al alternar "caras" */
+  transition: height .4s ease;
 }
 .textarea-anim-enter {
   opacity: 0;
@@ -74,4 +277,98 @@
     background-color: #0b5ed7 !important;
     border-color: #0a58ca !important;
     color: white !important;
+}
+
+@keyframes form-appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rutogramaFormContainer {
+  animation: form-appear 0.5s ease-out forwards;
+}
+.rutograma-flip-container {
+  perspective: 1200px;
+  position: relative;
+}
+.rutograma-flip {
+  transition: transform 0.7s cubic-bezier(.4,2,.6,1);
+  transform-style: preserve-3d;
+  position: relative;
+}
+.rutograma-flip.mostrar-regreso {
+  transform: rotateY(180deg);
+}
+.rutograma-flip-cara {
+  backface-visibility: hidden;
+  /* Se elimina position:absolute para que el contenedor padre tome la altura de la cara visible */
+  /* position: absolute; */
+  width: 100%;
+  top: 0; left: 0;
+}
+.rutograma-flip-cara.regreso {
+  transform: rotateY(180deg);
+  /* La cara de regreso necesita ser absoluta para superponerse correctamente */
+  position: absolute;
+}
+
+.transportOther.fade-enter {
+  animation: fade-enter 0.5s ease-out forwards;
+}
+.transportOther.fade-exit {
+  animation: fade-exit 0.5s ease-out forwards;
+}
+@keyframes fade-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fade-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+/* Botón fijo para cerrar formulario (X) situado encima del scrollToTop */
+.closeFormBtn {
+  position: fixed;
+  bottom: 7.5rem; /* encima del botón scroll (que está en 3rem) */
+  right: 2.7rem;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,.18);
+  z-index: 10000;
+  background: #ffffff; /* botón blanco */
+  color: #003f9e; /* X azul */
+  font-size: 18px;
+  border: none;
+  opacity: 0;
+  transform: translateY(12px) scale(.9);
+  pointer-events: none;
+  transition: opacity .35s ease, transform .35s ease;
+}
+.closeFormBtn.visible {
+  opacity: .98;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
 }

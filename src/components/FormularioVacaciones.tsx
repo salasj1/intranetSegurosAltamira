@@ -8,7 +8,10 @@ import '../css/FormularioVacaciones.css';
 import ConfirmarSolicitudModal from './ConfirmarSolicitudModal';
 import DatePicker from "react-widgets/DatePicker";
 import 'react-widgets/styles.css';
-import { parseISO, addDays, isBefore, isEqual } from 'date-fns';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
 import { IoCalendarSharp } from "react-icons/io5";
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
@@ -18,9 +21,16 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import ICON from '../assets/confetti.json';
 import { Player } from '@lordicon/react';
 import { PiProhibitFill } from "react-icons/pi";
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+
+
 
 const apiUrl = import.meta.env.VITE_API_URL;
-
+dayjs.extend(utc);
+dayjs.extend(timezone);
 interface FormularioVacacionesProps {
   fetchVacaciones: () => void;
   hasPreviousRequest: boolean;
@@ -61,7 +71,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
 
   useEffect(() => {
     if (fechaInicio) {
-      handleFechaInicioChange(new Date(fechaInicio), selectedPeriodos);
+      handleFechaInicioChange(dayjs(fechaInicio).toDate(), selectedPeriodos);
     }
   }, [fechaInicio]);
   useEffect(() => {
@@ -144,17 +154,19 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
   }
   
   const handleFechaInicioChange = async (date: Date | null | undefined, selectedOptions: any) => {
-    setFechaInicio(date ? date.toISOString() : null);
+    setFechaInicio(date ? dayjs(date).format('') : null);
     setFechaFin(null); // Colocar en blanco la fecha de retorno
 
     if (date && selectedOptions.length > 0) {
       setLoading(true);
-      const { fechaMaximaFin, totalDias } = await calcularFechaMaximaFin(date, selectedOptions);
-      setFechaMaximaFin(fechaMaximaFin ? new Date(fechaMaximaFin).toISOString() : null);
-  
+      const { fechaMaximaFin, totalDias } = await calcularFechaMaximaFin(dayjs(date).toDate(), selectedOptions);
+      const fechaMaxFinLocal = fechaMaximaFin ? dayjs(fechaMaximaFin).add(4, 'hour') : null;
+      console.log('Fecha máxima local:', fechaMaxFinLocal ? fechaMaxFinLocal.format('DD/MM/YYYY') : null);
+      setFechaMaximaFin(fechaMaxFinLocal ? fechaMaxFinLocal.format('YYYY-MM-DD') : null);
+
       if (fechaMaximaFin) {
-        const fechaProlongada = await calcularFechaProlongada(date.toISOString(), totalDias);
-        setfechaProlongada(fechaProlongada? new Date(fechaProlongada).toISOString() : null);
+        const fechaProlongada = await calcularFechaProlongada(dayjs(date).format(), totalDias);
+        setfechaProlongada(fechaProlongada ? dayjs(fechaProlongada).format('YYYY-MM-DD') : null);
       }
     }
   };
@@ -199,13 +211,13 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
 
 
     if (fechaInicio) {
-      handleFechaInicioChange(new Date(fechaInicio), selectedOptions);
+      handleFechaInicioChange(dayjs(fechaInicio).toDate(), selectedOptions);
     }
   };
 
   useEffect(() => {
     if (fechaInicio) {
-      handleFechaInicioChange(new Date(fechaInicio), []);
+      handleFechaInicioChange(dayjs(fechaInicio).toDate(), []);
     }
   }, [diasHabiles]);
 
@@ -252,30 +264,29 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
   }; */
   
   const handleSubmit = async (tipo: string, tipoConfirmacion: number) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const startDate = fechaInicio ? new Date(fechaInicio.split('T')[0] + 'T00:00:00') : null;
-    const endDate = fechaFin ? new Date(fechaFin.split('T')[0] + 'T00:00:00') : null;
-  
+    const today = dayjs().startOf('day');
+    const startDate = fechaInicio ? dayjs(fechaInicio).startOf('day') : null;
+    const endDate = fechaFin ? dayjs(fechaFin).startOf('day') : null;
+
     if (!fechaInicio || !fechaFin) {
       alert('Debe llenar todos los campos.');
       setSuccess(null);
       return;
     }
-  
-    if (startDate && isBefore(startDate, today) && !isEqual(startDate, today)) {
-      alert('La fecha de inicio no puede ser anterior a la fecha actual o el dia de hoy.');
+
+    if (startDate && startDate.isBefore(today, 'day') && !startDate.isSame(today, 'day')) {
+      alert('La fecha de inicio no puede ser anterior a la fecha actual o el día de hoy.');
       setSuccess(null);
       return;
     }
-  
-    if (endDate && isBefore(endDate, today) && !isEqual(endDate, today)) {
-      alert('La fecha de fin no puede ser anterior a la fecha actual o el dia de hoy.');
+
+    if (endDate && endDate.isBefore(today, 'day') && !endDate.isSame(today, 'day')) {
+      alert('La fecha de fin no puede ser anterior a la fecha actual o el día de hoy.');
       setSuccess(null);
       return;
     }
-  
-    if (startDate && endDate && isBefore(endDate, startDate)) {
+
+    if (startDate && endDate && endDate.isBefore(startDate, 'day')) {
       alert('La fecha de fin no puede ser anterior a la fecha de inicio.');
       setSuccess(null);
       return;
@@ -335,12 +346,12 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     setFechaFin('');
     setFechaMaximaFin(null);
     setError(null);
-    console.log('Solicitud de vacaciones enviada:', response.data.emailError);
+    /* console.log('Solicitud de vacaciones enviada:', response.data.emailError); */
     // Verificar si hubo un error al enviar el correo
     if (response.data.emailError) {
       toast.error('No se logró enviar el correo automáticamente. Por favor, notifique a su supervisor.');
       setError('No se logró enviar el correo automáticamente. Por favor, notifique a su supervisor.');
-    }
+    } 
   } catch (error) {
     let errorMessage = 'Error al solicitar permiso';
     if (axios.isAxiosError(error) && error.response) {
@@ -426,21 +437,17 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
                 <Form.Label>Fecha Inicio:</Form.Label>
                 <DatePicker
                   placeholder="dd/mm/yyyy"
-                  value={fechaInicio ? parseISO(fechaInicio) : null}
+                  value={fechaInicio ? dayjs(fechaInicio).toDate() : null}
                   valueFormat={{ day: "numeric", month: "numeric", year: "numeric" }}
                   onChange={(date) => handleFechaInicioChange(date, [])}
-                  min={new Date()}
+                  min={dayjs().toDate()}
                   parse={(str) => {
                     if (!str) return undefined;
                     const [day, month, year] = str.split('/').map(Number);
-                    const today = new Date();
-                    const parsedDate = new Date(
-                      year || today.getFullYear(),
-                      (month ? month - 1 : today.getMonth()),
-                      day
-                    );
-                    const startDate = fechaInicio ? parseISO(fechaInicio) : today;
-                    if (parsedDate < startDate) {
+                    const today = dayjs();
+                    const parsedDate = dayjs(`${year || today.year()}-${month || today.month() + 1}-${day || today.date()}`, 'YYYY-M-D').toDate();
+                    const startDate = fechaInicio ? dayjs(fechaInicio).toDate() : today.toDate();
+                    if (dayjs(parsedDate).isBefore(dayjs(startDate))) {
                       return startDate;
                     }
                     return parsedDate;
@@ -469,9 +476,9 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
               {!errorPeriodos && fechaMaximaFin && diasHabiles > 0 && fechaInicio ? (
                 <>
                 <div className={`alert ${errorPeriodos ? 'alert-exit' : 'alert-enter'}`}>
-                  <Alert variant="warning">
-                    Fecha Fin del periodo de Vacaciones: {addDays(parseISO((fechaMaximaFin)), 1).toLocaleDateString()}
-                  </Alert>
+                    <Alert variant="warning">
+                      Fecha Fin del periodo de Vacaciones: {fechaMaximaFin ? dayjs(fechaMaximaFin).format('DD/MM/YYYY') : ''}
+                    </Alert>
                 </div>
                 </>
               ) : (
@@ -486,31 +493,24 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
                   <Form.Label>Fecha de Retorno:</Form.Label>
                   <DatePicker
                     placeholder='dd/mm/yyyy'
-                    value={fechaFin ? new Date(fechaFin) : null}
+                    value={fechaFin ? dayjs(fechaFin).toDate() : null}
                     onChange={(date: Date | null | undefined) => {
-                      setFechaFin(date ? date.toISOString() : null);
+                      setFechaFin(date ? dayjs(date).toISOString() : null);
                     }}
                     valueFormat={{ day: "numeric", month: "numeric", year: "numeric" }}
-                    /* el dia minimo es un dia mas de la fecha de inicio porque la fecha de retorno no puede ser el mismo dia que la fecha de inicio */
-                    min={fechaInicio ? addDays(new Date(fechaInicio), 1) : undefined}
-                    /* el dia maximo es un dia mas de la fecha prolongada porque la fecha de retorno no puede ser el mismo dia que la fecha prolongada */
-                    max={fechaMaximaFin && fechaProlongada ? addDays(new Date(fechaProlongada), 1) : undefined}
+                    min={fechaInicio ? dayjs(fechaInicio).add(1, 'day').toDate() : undefined}
+                    max={fechaMaximaFin && fechaProlongada ? dayjs(fechaProlongada).add(1, 'day').toDate() : undefined}
                     parse={(str) => {
                       if (!str) return undefined;
                       const [day, month, year] = str.split('/').map(Number);
-                      const today = new Date();
-                      const parsedDate = new Date(
-                        year || today.getFullYear(),
-                        (month ? month - 1 : today.getMonth()),
-                        day
-                      );
-                      const startDate = fechaInicio ? addDays(new Date(fechaInicio), 1) : today;
-                      const maxDate = fechaMaximaFin && fechaProlongada ? addDays(new Date(fechaProlongada), 1) : undefined;
-
-                      if (parsedDate < startDate) {
+                      const today = dayjs();
+                      const parsedDate = dayjs(`${year || today.year()}-${month || today.month() + 1}-${day || today.date()}`, 'YYYY-M-D').toDate();
+                      const startDate = fechaInicio ? dayjs(fechaInicio).add(1, 'day').toDate() : today.toDate();
+                      const maxDate = fechaMaximaFin && fechaProlongada ? dayjs(fechaProlongada).add(1, 'day').toDate() : undefined;
+                      if (dayjs(parsedDate).isBefore(dayjs(startDate))) {
                         return startDate;
                       }
-                      if (maxDate && parsedDate > maxDate) {
+                      if (maxDate && dayjs(parsedDate).isAfter(dayjs(maxDate))) {
                         return maxDate;
                       }
                       return parsedDate;

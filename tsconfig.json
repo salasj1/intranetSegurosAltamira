@@ -1,5 +1,7 @@
+// tsconfig.json (Corregido)
 {
   "files": [],
+  "include": ["src", "vite.config.ts"],
   "references": [
     {
       "path": "./tsconfig.app.json"

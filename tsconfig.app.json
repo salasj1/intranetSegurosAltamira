@@ -1,6 +1,8 @@
+// tsconfig.app.json (Ejemplo probable)
 {
+  "extends": "./tsconfig.json", // Es buena práctica extender la configuración base si tienes una.
   "compilerOptions": {
-    "composite": true,
+    "composite": true, // ¡Muy importante! Todo proyecto referenciado debe tener esto.
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2020",
     "useDefineForClassFields": true,
@@ -13,9 +15,14 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "moduleDetection": "force",
     "noEmit": true,
-    "jsx": "react-jsx",
+    
+    /* Opciones que movimos desde el tsconfig.json raíz */
+    "jsx": "react-jsx", // "react-jsx" es más moderno para Vite, pero "react" también funciona.
+    "baseUrl": ".", // Con paths, es común usar "."
+    "paths": {
+      "@/*": ["./src/*"] // Un alias común para la carpeta src
+    },
 
     /* Linting */
     "strict": true,
@@ -23,5 +30,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
+  /* La propiedad que movimos desde el tsconfig.json raíz */
   "include": ["src"]
 }
