@@ -8,6 +8,8 @@ import axios from 'axios';
 import styles from '../css/ListaAprobacionPermisos.module.css'; 
 import ModalConfirmacion from './ModalConfirmacion';
 import ModalDescripcionPermiso from './ModalDescripcionPermiso';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -107,37 +109,59 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
     setShowDescripcion(true);
   };
 
-  const handleConfirm = async (setError: (message: string) => void) => {
+    const handleConfirm = async (setError: (message: string) => void) => {
     if (!selectedPermiso) return;
-  
+    const toastId = toast.loading('Procesando solicitud...');
     try {
       if (action === 'approve') {
         await axios.put(`${apiUrl}/permisos/${selectedPermiso.PermisosID}/process`, {
           cod_RRHH: cod_emp,
         });
+        toast.update(toastId, {
+          render: '¡Permiso procesado satisfactoriamente!',
+          type: 'success',
+          isLoading: false,
+          autoClose: 4000,
+        });
       } else {
         await axios.put(`${apiUrl}/permisos/${selectedPermiso.PermisosID}/reject2`, {
           cod_supervisor: cod_emp,
+        });
+        toast.update(toastId, {
+          render: '¡Permiso rechazado satisfactoriamente!',
+          type: 'success',
+          isLoading: false,
+          autoClose: 4000,
         });
       }
       fetchPermisos();
       setShowModal(false);
     } catch (error) {
-      console.error(`Error ${action === 'approve' ? 'procesando' : 'rechazando'} permiso:`, error);
-  
       let errorMessage = 'Error al procesar el permiso';
       if (axios.isAxiosError(error) && error.response?.data) {
-        // Extraer el mensaje del error
         errorMessage = typeof error.response.data === 'string'
           ? error.response.data
           : error.response.data.message || errorMessage;
       }
-      setError(errorMessage); // Asegurarse de que sea un string
+      setError(errorMessage);
+      toast.update(toastId, {
+        render: errorMessage,
+        type: 'error',
+        isLoading: false,
+        autoClose: 4000,
+      });
+      setShowModal(false);
     }
   };
 
   return (
     <>
+      <ToastContainer
+        closeOnClick
+        autoClose={4000}
+        pauseOnFocusLoss={false}
+        theme="colored"
+      />
       <div className='tablaAprobar'>
         <Table striped bordered hover responsive>
           <thead>
@@ -317,7 +341,7 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
         permiso={selectedPermiso}
         action={action}
         error={error}
-        setError={setError} // Pasar setError como prop
+        setError={setError} 
       />
     </>
   );

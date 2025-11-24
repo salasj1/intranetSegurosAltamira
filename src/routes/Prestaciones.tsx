@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Viewer, Worker } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import { zoomPlugin } from '@react-pdf-viewer/zoom';
-import styles from "../css/RecibodePagoDetallado.module.css";
+import styles from "../routes/ReciboDePago/styles/RecibodePagoDetallado.module.css";
 import Card from 'react-bootstrap/Card';
 import { CSSTransition } from 'react-transition-group';
 import { useAuth } from '../auth/AuthProvider'; 
@@ -25,6 +25,7 @@ function Prestaciones() {
   const [error, setError] = useState<string | null>(null);
   const cod_empSinEspacios = cod_emp?.replace(/\s+/g, '');
   const anio= new Date().getFullYear();
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   useEffect(() => {
     const fetchPrestacionesData = async () => {
       if (!cod_emp) return;
@@ -60,7 +61,21 @@ function Prestaciones() {
     }
     return null;
   }, [prestacionesData]);
+    useEffect(() => {
+      setIsPdfLoading(true);
+    }, [pdfBlob]);
 
+    useEffect(() => {
+    if (pdfBlob) {
+      const url = URL.createObjectURL(pdfBlob);
+      setPdfUrl(url);
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } else {
+      setPdfUrl(null);
+    }
+  }, [pdfBlob]);
   const handleDownload = () => {
     if (prestacionesData) {
       const pdf = generatePrestacionesPDF(prestacionesData);
@@ -193,12 +208,16 @@ function Prestaciones() {
                               )}
                             </zoomPluginInstance.ZoomOut>
                           </div>
-                          <Viewer
-                            fileUrl={URL.createObjectURL(pdfBlob)}
-                            defaultScale={0.8}
-                            onDocumentLoad={() => setIsPdfLoading(false)}
+                          {
+                            pdfUrl && (
+                              <Viewer
+                                fileUrl={pdfUrl}
+                                defaultScale={0.8}
+                                onDocumentLoad={() => setIsPdfLoading(false)}
                             plugins={[zoomPluginInstance]}
                           />
+                            )
+                          }
                         </>
                       )}
                     </div>

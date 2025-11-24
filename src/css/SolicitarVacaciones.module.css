@@ -5,6 +5,7 @@
     width: 100%;
 }
 
+
 .canvas {
     position: relative;
     top: 125px;
@@ -17,23 +18,25 @@
 }
 
 .canvas h1 {
-    margin-left: -60%;
     max-width: 100%; 
     box-sizing: border-box; 
     text-overflow: ellipsis; 
-    white-space: nowrap; 
     font-family: "Gotham", Sans-serif;
+    margin-left: 5rem;
 }
-
 .canvas h3 {
     position: relative;
-
     max-width: 100%; 
     box-sizing: border-box; 
     text-overflow: ellipsis; 
     white-space: nowrap; 
 }
 
+.canvas #tituloVacaciones  {
+    align-self: flex-start;
+    text-align: left;
+    width: 100%;
+}
 .tableVacaciones{
     animation:fadeInUp ;
 }
@@ -45,6 +48,10 @@
         padding: 15px;
     }
 
+    
+}
+
+@media (max-width: 972px) {
     .canvas h1 {
         margin-left: 0;
     }
@@ -55,7 +62,7 @@
         top: 75px;
         padding: 10px;
     }
-
+    
 }
 
 @keyframes fadeInUp {

@@ -9,6 +9,8 @@ import styles from '../css/ListaAprobacionPermisos.module.css';
 import '../css/Tables.css';
 import ModalConfirmacionPermiso from './ModalConfirmacionPermiso';
 import ModalDescripcionPermiso from './ModalDescripcionPermiso';
+import { Mosaic } from "react-loading-indicators";
+import stylesLoading from "../css/loading.module.css";
 
 interface Permiso {
   PermisosID: number;
@@ -37,6 +39,8 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: '', direction: 'asc' });
   const [searchPermisosID, setSearchPermisosID] = useState('');
   const [searchNombre, setSearchNombre] = useState('');
+  const [searchApellidos, setSearchApellidos] = useState('');
+  const [searchTitulo, setSearchTitulo] = useState(''); 
   const [searchCodEmp, setSearchCodEmp] = useState('');
   const [searchFechaInicio, setSearchFechaInicio] = useState('');
   const [searchFechaFin, setSearchFechaFin] = useState('');
@@ -46,10 +50,17 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
   const [action, setAction] = useState<'approve' | 'reject'>('approve');
   const [showDescripcion, setShowDescripcion] = useState(false);
   const [error, setError] = useState<string | null>('');
+  const [isLoading, setIsLoading] = useState(true);
+
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetchPermisos();
+    const cargar = async () => {
+      setIsLoading(true);
+      await fetchPermisos();
+      setIsLoading(false);
+    };
+    cargar();
   }, []);
 
   const sortedData = [...permisos].sort((a: Permiso, b: Permiso) => {
@@ -71,9 +82,11 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
     item.PermisosID.toString().includes(searchPermisosID) &&
     format(addDays(parseISO(item.Fecha_inicio.toString()), 1), 'dd/MM/yyyy').includes(searchFechaInicio) &&
     format(addDays(parseISO(item.Fecha_Fin.toString()), 1), 'dd/MM/yyyy').includes(searchFechaFin) &&
+    item.apellidos.toLowerCase().includes(searchApellidos.toLowerCase()) &&
+    item.nombres.toLowerCase().includes(searchNombre.toLowerCase()) &&
+    item.Titulo.toLowerCase().includes(searchTitulo.toLowerCase()) &&
     item.Estado.toLowerCase().includes(searchEstado.toLowerCase()) &&
     item.ci.toLowerCase().includes(searchCodEmp.toLowerCase()) &&
-    item.Titulo.toLowerCase().includes(searchNombre.toLowerCase()) &&
     item.Estado.toLowerCase() !== 'borrado' 
   );
 
@@ -129,173 +142,179 @@ const ListaAprobacionPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetch
 
   return (
     <>
-      <div className='tablaAprobar'>
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>
-                <Form.Control
-                  className={styles.search}
-                  type="text"
-                  placeholder="Buscar ID..."
-                  value={searchPermisosID}
-                  onChange={(e) => setSearchPermisosID(e.target.value)}
-                />
-              </th>
-              <th>
-                <Form.Control
-                  className={styles.search}
-                  type="text"
-                  placeholder="Buscar Cédula..."
-                  value={searchCodEmp}
-                  onChange={(e) => setSearchCodEmp(e.target.value)}
-                />
-              </th>
-              <th>
-                <Form.Control
-                  className={styles.search}
-                  type="text"
-                  placeholder="Buscar Nombres..."
-                  value={searchNombre}
-                  onChange={(e) => setSearchNombre(e.target.value)}
-                />
-              </th>
-              <th>
-                <Form.Control
-                  className={styles.search}
-                  type="text"
-                  placeholder="Buscar Apellidos..."
-                  value={searchNombre}
-                  onChange={(e) => setSearchNombre(e.target.value)}
-                />
-              </th>
-              <th>
-                <Form.Control
-                  className={styles.search}
-                  type="text"
-                  placeholder="Buscar Título..."
-                  value={searchNombre}
-                  onChange={(e) => setSearchNombre(e.target.value)}
-                />
-              </th>
-              <th>
-                <Form.Control
-                  className={styles.search}
-                  type="text"
-                  placeholder="Buscar Fecha Inicio..."
-                  value={searchFechaInicio}
-                  onChange={(e) => setSearchFechaInicio(e.target.value)}
-                />
-              </th>
-              <th>
-                <Form.Control
-                  className={styles.search}
-                  type="text"
-                  placeholder="Buscar Fecha Fin..."
-                  value={searchFechaFin}
-                  onChange={(e) => setSearchFechaFin(e.target.value)}
-                />
-              </th>
-              <th>
-                <Form.Control
-                  className={styles.search}
-                  type="text"
-                  placeholder="Buscar Estado..."
-                  value={searchEstado}
-                  onChange={(e) => setSearchEstado(e.target.value)}
-                />
-              </th>
-              <th></th>
-            </tr>
-          </thead>
-          <thead>
-            <tr>
-              <th id={styles.headTable} onClick={() => requestSort('PermisosID')} className='titulo'>
-                ID Permiso
-                {sortConfig.key === 'PermisosID' && (
-                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
-                )}
-              </th>
-              <th id={styles.headTable} onClick={() => requestSort('cod_emp')} className='titulo'>
-                Cédula
-                {sortConfig.key === 'cod_emp' && (
-                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
-                )}
-              </th>
-              <th id={styles.headTable} onClick={() => requestSort('nombres')} className='titulo'>
-                Nombres
-                {sortConfig.key === 'nombres' && (
-                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
-                )}
-              </th>
-              <th id={styles.headTable} onClick={() => requestSort('apellidos')} className='titulo'>
-                Apellidos
-                {sortConfig.key === 'apellidos' && (
-                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
-                )}
-              </th>
-              <th id={styles.headTable} onClick={() => requestSort('Titulo')} className='titulo'>
-                Título
-                {sortConfig.key === 'Titulo' && (
-                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
-                )}
-              </th>
-              <th id={styles.headTable} onClick={() => requestSort('Fecha_inicio')} className='titulo'>
-                Fecha Inicio
-                {sortConfig.key === 'Fecha_inicio' && (
-                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
-                )}
-              </th>
-              <th id={styles.headTable} onClick={() => requestSort('Fecha_Fin')} className='titulo'>
-                Fecha Fin
-                {sortConfig.key === 'Fecha_Fin' && (
-                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
-                )}
-              </th>
-              <th id={styles.headTable} onClick={() => requestSort('Estado')} className='titulo'>
-                Estado
-                {sortConfig.key === 'Estado' && (
-                  <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
-                )}
-              </th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filteredData.map(item => (
-              <tr key={item.PermisosID}>
-                <td>{item.PermisosID}</td>
-                <td>{item.ci}</td>
-                <td>{item.nombres}</td>
-                <td>{item.apellidos}</td>
-                <td>{item.Titulo}</td>
-                <td>{format(addDays(parseISO(item.Fecha_inicio.toString()), 1), 'dd/MM/yyyy')}</td>
-                <td>{format(addDays(parseISO(item.Fecha_Fin.toString()), 1), 'dd/MM/yyyy')}</td>
-                <td>{item.Estado}</td>
-                <td>
-                <div className={styles.acciones}>
-                    <Button variant="primary" onClick={() => handleLeerDescripcion(item)}>
-                      <FontAwesomeIcon icon={faEye} color='white' />
-                    </Button>
-                  {item.Estado === 'Pendiente' && (
-                    <>
-                    
-                      <Button variant="success" onClick={() => handleAction(item, 'approve')}>
-                        <FontAwesomeIcon icon={faCheck} />
-                      </Button>
-                      <Button variant="danger" onClick={() => handleAction(item, 'reject')}>
-                        <FontAwesomeIcon icon={faTimes} />
-                      </Button>
-                      </>
-                  )}
-                  </div>
-                </td>
+      {isLoading ? (
+        <div className={stylesLoading.loadingDocument}>
+          <Mosaic color={["#003391","#1A5FFA","#33CCCC","#1A3FFA"]} size="large" text="" textColor="#0d1bff" />
+        </div>
+      ) : (
+        <div className='tablaAprobar'>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar ID..."
+                    value={searchPermisosID}
+                    onChange={(e) => setSearchPermisosID(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar Cédula..."
+                    value={searchCodEmp}
+                    onChange={(e) => setSearchCodEmp(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar Nombres..."
+                    value={searchNombre}
+                    onChange={(e) => setSearchNombre(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar Apellidos..."
+                    value={searchApellidos}
+                    onChange={(e) => setSearchApellidos(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar Título..."
+                    value={searchTitulo}
+                    onChange={(e) => setSearchTitulo(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar Fecha Inicio..."
+                    value={searchFechaInicio}
+                    onChange={(e) => setSearchFechaInicio(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar Fecha Fin..."
+                    value={searchFechaFin}
+                    onChange={(e) => setSearchFechaFin(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar Estado..."
+                    value={searchEstado}
+                    onChange={(e) => setSearchEstado(e.target.value)}
+                  />
+                </th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
-      </div>
+            </thead>
+            <thead>
+              <tr>
+                <th id={styles.headTable} onClick={() => requestSort('PermisosID')} className='titulo'>
+                  ID Permiso
+                  {sortConfig.key === 'PermisosID' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('cod_emp')} className='titulo'>
+                  Cédula
+                  {sortConfig.key === 'cod_emp' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('nombres')} className='titulo'>
+                  Nombres
+                  {sortConfig.key === 'nombres' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('apellidos')} className='titulo'>
+                  Apellidos
+                  {sortConfig.key === 'apellidos' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('Titulo')} className='titulo'>
+                  Título
+                  {sortConfig.key === 'Titulo' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('Fecha_inicio')} className='titulo'>
+                  Fecha Inicio
+                  {sortConfig.key === 'Fecha_inicio' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('Fecha_Fin')} className='titulo'>
+                  Fecha Fin
+                  {sortConfig.key === 'Fecha_Fin' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('Estado')} className='titulo'>
+                  Estado
+                  {sortConfig.key === 'Estado' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} />
+                  )}
+                </th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredData.map(item => (
+                <tr key={item.PermisosID}>
+                  <td>{item.PermisosID}</td>
+                  <td>{item.ci}</td>
+                  <td>{item.nombres}</td>
+                  <td>{item.apellidos}</td>
+                  <td>{item.Titulo}</td>
+                  <td>{format(addDays(parseISO(item.Fecha_inicio.toString()), 1), 'dd/MM/yyyy')}</td>
+                  <td>{format(addDays(parseISO(item.Fecha_Fin.toString()), 1), 'dd/MM/yyyy')}</td>
+                  <td>{item.Estado}</td>
+                  <td>
+                  <div className={styles.acciones}>
+                      <Button variant="primary" onClick={() => handleLeerDescripcion(item)}>
+                        <FontAwesomeIcon icon={faEye} color='white' />
+                      </Button>
+                    {item.Estado === 'Pendiente' && (
+                      <>
+                      
+                        <Button variant="success" onClick={() => handleAction(item, 'approve')}>
+                          <FontAwesomeIcon icon={faCheck} />
+                        </Button>
+                        <Button variant="danger" onClick={() => handleAction(item, 'reject')}>
+                          <FontAwesomeIcon icon={faTimes} />
+                        </Button>
+                        </>
+                    )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      )}
       
       <ModalDescripcionPermiso
         show={showDescripcion}

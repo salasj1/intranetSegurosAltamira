@@ -30,6 +30,7 @@ function ConstaciaDeTrabajo() {
   const [cardDestinatario, setCardDestinatario] = useState<boolean>(false);
   const [navegador, setNavegador] = useState<number>(1);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [Respuesta, setRespuesta] = useState<number>(0);
   const [persona, setPersona] = useState<string>(''); 
   const anio= new Date().getFullYear();
@@ -69,6 +70,17 @@ function ConstaciaDeTrabajo() {
       setPdfBlob(pdfBlob);
     }
   };
+  useEffect(() => {
+  if (pdfBlob) {
+    const url = URL.createObjectURL(pdfBlob);
+    setPdfUrl(url);
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  } else {
+    setPdfUrl(null);
+  }
+}, [pdfBlob]);
 
   const handleDownload = () => {
     if (pdfBlob) {
@@ -253,18 +265,21 @@ function ConstaciaDeTrabajo() {
                               )}
                             </zoomPluginInstance.ZoomOut>
                           </div>
-                          <Viewer
-                            fileUrl={URL.createObjectURL(pdfBlob)}
-                            defaultScale={1}
-                            onDocumentLoad={() => setIsPdfLoading(false)}
-                            plugins={[zoomPluginInstance]}
-                          />
+                          {pdfUrl && (
+                            <Viewer
+                              fileUrl={pdfUrl}
+                              defaultScale={1}
+                              onDocumentLoad={() => setIsPdfLoading(false)}
+                              plugins={[zoomPluginInstance]}
+                            />
+                          )}                 
                         </>
                       )}
                     </div>
                   </>
                 )}
               </Worker>
+              <div className={styles.divCards}>
               <Card bg="primary" border="primary" className={styles.Tarjeta}>
                 <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Ver PDF</Card.Header>
                 <Card.Body className={styles['card-body-buttons']}>
@@ -321,6 +336,7 @@ function ConstaciaDeTrabajo() {
                 </Card.Header>
                 <Card.Body >
                   {navegador === 1 && (
+                  <>
                   <Form.Group>
                     <Select
                     name="mostrarsueldo"
@@ -336,7 +352,18 @@ function ConstaciaDeTrabajo() {
                       { value: 'NO', label: 'No' }
                     ]}
                    />
+                   
                   </Form.Group>
+                  <div style={{display: "flex", justifyContent:'end', alignItems:'end', marginTop: "10px"}}> 
+                      <Button
+                        style={{ borderColor: "#013897",backgroundColor: "#013897", boxShadow: "0 3px 6px 0 rgba(0, 0, 0, .14)" }}
+                        variant="primary"
+                        onClick={handleEnviar}
+                      >
+                        Cambiar
+                      </Button>
+                    </div>
+                  </>
                   )}
                   {navegador === 2 && (<>
                     <p style={{marginBottom:"-4px", color: "rgba(255, 255, 255, 0.7)"}}>Escriba el nombre de la persona a la que va dirigida la constancia de trabajo.</p>
@@ -388,8 +415,10 @@ function ConstaciaDeTrabajo() {
                   }
                 </Card.Body>
               </Card>
+              </div>
             </>
           ) : (
+            <div>
             <Card bg="danger" border="danger" className={styles.Tarjeta}>
               <Card.Header style={{ color: 'white', textAlign: "center", fontWeight: 500 }}>Error</Card.Header>
               <Card.Body>
@@ -398,7 +427,9 @@ function ConstaciaDeTrabajo() {
                 </Alert>
               </Card.Body>
             </Card>
+            </div>
           )}
+
         </div>
         }
       </div>

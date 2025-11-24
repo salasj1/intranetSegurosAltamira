@@ -6,15 +6,16 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas, faBell } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../auth/AuthProvider';
-import logoEmpresa from '../assets/logo-head.png';
+import logoEmpresa from '../assets/logo-login.png';
 library.add(fas, faBell);
-import Notificaciones from './Notificaciones.tsx'; // Importar el nuevo componente
+import Notificaciones from './Notificaciones'; // Importar el nuevo componente
 import { Row, Col, Button } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { useState } from 'react';
 import '../css/Hamburguesa.css';
 import { Link } from 'react-router-dom';
+
 function NavbarEmpresa() {
     const auth = useAuth();
 
@@ -29,13 +30,19 @@ function NavbarEmpresa() {
     };
 
     const isActive = (path: string) => location.pathname.startsWith(path);
-    const isSolicitudesActive = () => {
+    const isVacacionesActive = () => {
         const path = location.pathname;
         const activePaths = [
             '/SolicitarVacaciones',
             '/AprobarVacaciones',
             '/ProcesarVacaciones',
-            '/RetornoVacaciones',
+            '/RetornoVacaciones'
+        ];
+        return activePaths.some(activePath => path.startsWith(activePath));
+    };
+    const isPermisosActive =() => {
+        const path = location.pathname;
+        const activePaths = [
             '/SolicitarPermisos',
             '/AprobarPermisos',
             '/ProcesarPermisos'
@@ -52,6 +59,27 @@ function NavbarEmpresa() {
             '/ConstanciaDeTrabajo'
         ];
         return activePaths.some(activePath => path.startsWith(activePath));
+    };
+   
+    const isExpedienteActive = () => {
+        const path = location.pathname;
+        const expedienteBase = '/expediente';
+        const activePaths = [
+            expedienteBase,
+            `${expedienteBase}/datos`,
+            `${expedienteBase}/rutograma`,
+            `${expedienteBase}/documentos`,
+            '/GestionExpediente'
+        ];
+        return activePaths.some(activePath => path.startsWith(activePath));
+    };
+
+    // Nueva función para manejar el toggle de los dropdowns de procesos
+    const handleProcessDropdownToggle = (isOpen: boolean) => {
+        // Solo re-validamos cuando el menú se está abriendo
+        if (isOpen) {
+            auth.revalidateUserStatus();
+        }
     };
 
     return (
@@ -75,7 +103,7 @@ function NavbarEmpresa() {
                     </div>
 
                     <Offcanvas show={show} onHide={handleClose} responsive='lg'>
-                        <Offcanvas.Header closeButton className='offcanvas-header'>
+                        <Offcanvas.Header closeButton className='offcanvas-header' style={{marginLeft:0}}>
                             <Nav className='right-div'>
                                 <div className='user-info'>{auth.nombre_completo?.replace(/,/g, '') || 'Nombre completo'}</div>
                                 <div className='user-info'>{auth.cargo_empleado || 'Cargo del Empleado'}</div>
@@ -92,73 +120,102 @@ function NavbarEmpresa() {
                                         <Nav className='me-auto'>
                                             <Col>
                                                 <NavDropdown title='Consultas' className={isConsultasActive() ? 'nav-dropdown-active' : ''}>
-                                                    <NavDropdown.Item as={Link} to='/RecibodePago' className='cuadroItem'>
+                                                    <NavDropdown.Item as={Link} to='/RecibodePago'  id='submenu' className={isActive('/RecibodePago') ? 'cuadroItem especial' : 'cuadroItem'}>
                                                         Recibo de pago
                                                     </NavDropdown.Item>
-                                                    <NavDropdown.Item as={Link} to='/Prestaciones' className='cuadroItem'>
+                                                    <NavDropdown.Item as={Link} to='/Prestaciones' id='submenu'  className={isActive('/Prestaciones') ? 'cuadroItem especial' : 'cuadroItem'}>
                                                         Prestaciones Sociales
                                                     </NavDropdown.Item>
-                                                    <NavDropdown.Item as={Link} to="/ConstanciaDeTrabajo" className='cuadroItem'>
+                                                    <NavDropdown.Item as={Link} to="/ConstanciaDeTrabajo" id='submenu' className={isActive('/ConstanciaDeTrabajo') ? 'cuadroItem especial' : 'cuadroItem'}>
                                                         Constancia de Trabajo
                                                     </NavDropdown.Item>
-                                                    <NavDropdown.Item as={Link} to='/ARC' className='cuadroItem'>
+                                                    <NavDropdown.Item as={Link} to='/ARC' id='submenu' className={isActive('/ARC') ? 'cuadroItem especial' : 'cuadroItem'}>
                                                         Comprobante de Agente de Retención (ARC)
                                                     </NavDropdown.Item>
                                                 </NavDropdown>
                                             </Col>
 
                                             <Col>
-                                                <NavDropdown title='Procesos' className={isSolicitudesActive() ? 'nav-dropdown-active' : ''}>
-                                                    <NavDropdown title='Pago de Vacaciones' id='submenu' className={isSolicitudesActive() ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end'>
-                                                        <NavDropdown.Item as={Link} to='/SolicitarVacaciones' className='cuadroItem'>
-                                                            Solicitar
+                                                <NavDropdown title='Procesos' className={(isVacacionesActive() || isPermisosActive() || isExpedienteActive()) ? 'nav-dropdown-active' : ''}>
+                                                    {/* Modifica este NavDropdown */}
+                                                    <NavDropdown 
+                                                        title='Vacaciones (Pago y Disfrute)' 
+                                                        id='submenu' 
+                                                        className={isVacacionesActive() ? 'cuadroItem cuadroSubmenu especial show' : 'cuadroItem cuadroSubmenu'} 
+                                                        drop='end'
+                                                        onToggle={handleProcessDropdownToggle}
+                                                    >
+                                                        <NavDropdown.Item id="subopcion" as={Link} to='/SolicitarVacaciones' className={isActive('/SolicitarVacaciones') ? 'cuadroItem cuadroOpcion show' : 'cuadroItem'}>
+                                                            Solicitar 
                                                         </NavDropdown.Item>
-                                                        {auth.tipo === 'Supervisor' || auth.RRHH === 1 ? (
-                                                            <NavDropdown.Item as={Link} to='/AprobarVacaciones' className='cuadroItem'>
+                                                        {auth.canApproveVacations  ? (
+                                                            <NavDropdown.Item id="subopcion" as={Link} to='/AprobarVacaciones' className={isActive('/AprobarVacaciones') ? 'cuadroItem cuadroOpcion show ' : 'cuadroItem'}>
                                                                 Aprobar
                                                             </NavDropdown.Item>
                                                         ) : null}
                                                         {auth.RRHH === 1 ? (<>
-                                                            <NavDropdown.Item as={Link} to='/ProcesarVacaciones' className='cuadroItem'>
+                                                            <NavDropdown.Item id="subopcion" as={Link} to='/ProcesarVacaciones' className={isActive('/ProcesarVacaciones') ? 'cuadroItem cuadroOpcion show' : 'cuadroItem'}>
                                                                 Procesar
                                                             </NavDropdown.Item>
                                                             
                                                         </>
                                                         ) : null}
                                                     </NavDropdown>
-                                                    <NavDropdown title='Permisos o Disfrute' id='submenu' className={isSolicitudesActive() ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end' style={{ width: "100%" }}>
-                                                        <NavDropdown.Item as={Link} to='/SolicitarPermisos' className='cuadroItem'>
-                                                            Solicitar Permisos/ Vacaciones no Disfrutados
+                                                    {/* Modifica este NavDropdown */}
+                                                    <NavDropdown 
+                                                        title='Permisos' 
+                                                        id='submenu' 
+                                                        className={isPermisosActive() ? 'cuadroItem cuadroSubmenu show especial' : 'cuadroItem cuadroSubmenu'} 
+                                                        drop='end' 
+                                                        style={{ width: "100%" }}
+                                                        onToggle={handleProcessDropdownToggle}
+                                                    >
+                                                        <NavDropdown.Item id="subopcion" as={Link} to='/SolicitarPermisos' className={isActive('/SolicitarPermisos') ? 'cuadroItem cuadroOpcion show' : 'cuadroItem'}>
+                                                            Solicitar Permiso o Resto de Días de Vacaciones<br/> Pendientes (Ya pagados y no disfrutados)
                                                         </NavDropdown.Item>
-                                                        {auth.tipo === 'Supervisor' || auth.RRHH === 1 ? (
-                                                            <NavDropdown.Item as={Link} to='/AprobarPermisos' className='cuadroItem'>
+                                                        {auth.canApprovePermits ? (
+                                                            <NavDropdown.Item id="subopcion" as={Link} to='/AprobarPermisos' className={isActive('/AprobarPermisos') ? 'cuadroItem cuadroOpcion show' : 'cuadroItem'}>
                                                                 Aprobar Permisos
                                                             </NavDropdown.Item>
                                                         ) : null}
                                                         {auth.RRHH === 1 ? (
-                                                            <NavDropdown.Item as={Link} to='/ProcesarPermisos' className='cuadroItem'>
+                                                            <NavDropdown.Item  id="subopcion" as={Link} to='/ProcesarPermisos' className={isActive('/ProcesarPermisos') ? 'cuadroItem cuadroOpcion show' : 'cuadroItem'}>
                                                                 Procesar Permisos
                                                             </NavDropdown.Item>
                                                         ) : null}
                                                     </NavDropdown>
-                                                    <NavDropdown title='Expediente' id='submenu' className={isActive('/Expediente') ? 'cuadroItem cuadroSubmenu show' : 'cuadroItem cuadroSubmenu'} drop='end'>
-                                                        <NavDropdown.Item as={Link} to='/Expediente' className='cuadroItem'>
-                                                            Ver Expediente
-                                                        </NavDropdown.Item>
-                                                        {auth.RRHH === 1 ? (
-                                                            <NavDropdown.Item as={Link} to='/GestionExpediente' className='cuadroItem'>
-                                                                Administrar Expediente
+                                                    <NavDropdown title='Expediente' id='submenu' className={isExpedienteActive() ? 'cuadroItem cuadroSubmenu show especial' : 'cuadroItem cuadroSubmenu'} drop='end' style={{ width: "100%" }}>
+                                                            <NavDropdown.Item id="subopcion" as={Link} to='/expediente/datos' className={isActive('/expediente/datos') ? 'cuadroItem especial' : 'cuadroItem'}>
+                                                                Solicitar Cambio de datos de tu expediente
                                                             </NavDropdown.Item>
-                                                        ) : null}
+                                                            <NavDropdown.Item id="subopcion" as={Link} to='/expediente/rutograma' className={isActive('/expediente/rutograma') ? 'cuadroItem especial' : 'cuadroItem'}>
+                                                                Revisar tu Rutograma
+                                                            </NavDropdown.Item>
+                                                            <NavDropdown.Item id="subopcion" as={Link} to='/expediente/documentos' className={isActive('/expediente/documentos') ? 'cuadroItem especial' : 'cuadroItem'}>
+                                                                Revisar Documentos de tu Expediente
+                                                            </NavDropdown.Item>
+                                                            {auth.RRHH === 1 ? (
+                                                            <NavDropdown.Item id="subopcion" as={Link} to='/GestionExpediente' className={isActive('/GestionExpediente') ? 'cuadroItem especial' : 'cuadroItem'}>
+                                                                Directorio de Expediente de los empleados
+                                                            </NavDropdown.Item>
+                                                            ) : null}                        
                                                     </NavDropdown>
                                                 </NavDropdown>
                                             </Col>
+                                            
 
-                                            <Col>
+                                            <Col  offset={6}>
                                                 <Nav.Link as={Link} to='/DirectorioEmpleados' className={isActive('/DirectorioEmpleados') ? 'active textoNavlink' : 'textoNavlink'}>
                                                     Directorio de Empleados
                                                 </Nav.Link>
                                             </Col>
+                                            {/* <Col  >
+
+                                                <Nav.Link href="https://www.segurosaltamira.com/" target="_blank">
+                                                    Manuales
+                                                </Nav.Link>
+                                            </Col>
+ */}
                                             {auth.RRHH === 1 ? (
                                                 <Col>
                                                     <Nav.Link as={Link} to='/ControlSupervision' className={isActive('/ControlSupervision') ? 'active textoNavlink' : 'textoNavlink'}>
@@ -166,17 +223,22 @@ function NavbarEmpresa() {
                                                     </Nav.Link>
                                                 </Col>
                                             ) : null}
-
+                                            <Col>
+                                            </Col>
                                             <Col md={auth.RRHH === 1 ? { offset: 4 } : { offset: 6 }}>
                                                 <Nav className='right-div'>
                                                     <div className="contenedor-user-info">
-                                                        <div className='user-info'>{auth.nombre_completo?.replace(/,/g, '') || 'Nombre completo'}</div>
-                                                        <div className='user-info'>{auth.cargo_empleado || 'Cargo del Empleado'}</div>
+                                                        <div className='user-info' >{`${auth.nombres?.split(' ')[0]?.charAt(0).toUpperCase() + auth.nombres?.split(' ')[0]?.slice(1).toLowerCase() || ''} ${auth.apellidos?.split(' ')[0]?.charAt(0).toUpperCase() + auth.apellidos?.split(' ')[0]?.slice(1).toLowerCase() || ''}`}</div>
+                                                        <div
+                                                            className={`user-info${(auth.cargo_empleado && auth.cargo_empleado.length > 2) ? ' small-text' : ''}`}
+                                                        >
+                                                            {auth.cargo_empleado || 'Cargo del Empleado'}
+                                                        </div>
                                                         <Navbar.Brand>
                                                             <Notificaciones />
                                                         </Navbar.Brand>
                                                     </div>
-                                                    <Nav.Link onClick={handleLogout}>Cerrar Sesión</Nav.Link>
+                                                    <Nav.Link  className='textoNavlink' style={{textWrap:'nowrap'}} onClick={handleLogout}>Cerrar Sesión</Nav.Link>
                                                 </Nav>
                                             </Col>
                                         </Nav>
@@ -186,7 +248,6 @@ function NavbarEmpresa() {
                         </Offcanvas.Body>
                     </Offcanvas>
                 </Navbar>
-        
         </>
     );
 }

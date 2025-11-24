@@ -1,40 +1,20 @@
-import { useState, useEffect } from 'react';
-import dayjs from 'dayjs';
-import { RutaFormState, IRutogramaPayload } from '../types/rutograma.types';
-
-// --- Funciones de ayuda para serialización y parseo ---
-const serializeTime = (t: any) => {
-  if (t && typeof t.format === 'function') return t.format('HH:mm');
-  if (typeof t === 'string' && /^\d{2}:\d{2}$/.test(t)) return t;
-  return null;
-};
-
-const parseTime = (s: any) => {
-  if (s === null || s === undefined) return null;
-  const d = dayjs(s, 'HH:mm');
-  return d.isValid() ? d : null;
-};
-
-const serializeState = (state: RutaFormState): any => ({
-  ...state,
-  horarioTrabajoDesde: serializeTime(state.horarioTrabajoDesde),
-  horarioTrabajoHasta: serializeTime(state.horarioTrabajoHasta),
-  horaSalida: serializeTime(state.horaSalida),
-});
-
-const parseState = (state: any): RutaFormState => ({
-  ...state,
-  horarioTrabajoDesde: parseTime(state.horarioTrabajoDesde),
-  horarioTrabajoHasta: parseTime(state.horarioTrabajoHasta),
-  horaSalida: parseTime(state.horaSalida),
-});
+import { useState, useEffect, useCallback } from 'react';
+import { RutaFormState, IRutogramaPayload, GlobalDataState } from '../types/rutograma.types';
 
 // --- Definiciones de estado inicial ---
+export const initialGlobalState: GlobalDataState = {
+  id: 0,
+  estado: 'Borrador',
+  error: undefined,
+  horarioTrabajoDesde: '08:00',
+  horarioTrabajoHasta: '16:30',
+  horaSalida: null,
+  nombreReferencia: '',
+  telefonoReferencia: '',
+};
+
 const initialIdaState: RutaFormState = {
   rutas: [''],
-  horarioTrabajoDesde: dayjs().set('hour', 8).set('minute', 0),
-  horarioTrabajoHasta: dayjs().set('hour', 16).set('minute', 30),
-  horaSalida: null,
   tipoTransporteSeleccionado: [],
   medioTransporteOtro: '',
   tiempoViaje: null,
@@ -43,15 +23,13 @@ const initialIdaState: RutaFormState = {
   haceActividadAntes: null,
   actividadesSeleccionadas: [],
   detallesActividades: {},
-  telefonoReferencia: '',
-  nombreReferencia: '',
 };
 
 const initialRegresoState: RutaFormState = {
+  id: 0,
+  estado: 'Borrador',
+
   rutas: [''],
-  horarioTrabajoDesde: null,
-  horarioTrabajoHasta: null,
-  horaSalida: null,
   tipoTransporteSeleccionado: [],
   medioTransporteOtro: '',
   tiempoViaje: null,
@@ -60,20 +38,31 @@ const initialRegresoState: RutaFormState = {
   haceActividadAntes: null,
   actividadesSeleccionadas: [],
   detallesActividades: {},
-  telefonoReferencia: '',
-  nombreReferencia: '',
 };
 
 // --- El Custom Hook ---
 export const useRutogramaState = (cod_emp: string | undefined) => {
   const storageKey = `rutograma_${cod_emp || 'anon'}`;
 
+  const [globalState, setGlobalState] = useState<GlobalDataState>(() => {
+    const raw = localStorage.getItem(storageKey);
+    if (raw) {
+      try {
+        const data: IRutogramaPayload = JSON.parse(raw);
+        if (data.global) return { ...initialGlobalState, ...data.global };
+      } catch (e) {
+        console.warn('Fallo al parsear estado global desde localStorage', e);
+      }
+    }
+    return initialGlobalState;
+  });
+
   const [ida, setIda] = useState<RutaFormState>(() => {
     const raw = localStorage.getItem(storageKey);
     if (raw) {
       try {
         const data: IRutogramaPayload = JSON.parse(raw);
-        if (data.ida) return parseState(data.ida);
+        if (data.ida) return { ...initialIdaState, ...data.ida };
       } catch (e) {
         console.warn('Fallo al parsear estado de ida desde localStorage', e);
       }
@@ -86,7 +75,7 @@ export const useRutogramaState = (cod_emp: string | undefined) => {
     if (raw) {
       try {
         const data: IRutogramaPayload = JSON.parse(raw);
-        if (data.regreso) return parseState(data.regreso);
+        if (data.regreso) return { ...initialRegresoState, ...data.regreso };
       } catch (e) {
         console.warn('Fallo al parsear estado de regreso desde localStorage', e);
       }
@@ -94,18 +83,45 @@ export const useRutogramaState = (cod_emp: string | undefined) => {
     return initialRegresoState;
   });
 
+  // Función para resetear el estado a los valores iniciales
+  // ...existing code...
+  const resetState = useCallback((errorOccurred = false) => {
+    // Al resetear, el estado vuelve a ser 'Borrador', por lo que el guardado local se reactivará.
+    setGlobalState({ ...initialGlobalState, error: errorOccurred });
+    setIda(initialIdaState);
+    setRegreso(initialRegresoState);
+    // localStorage.removeItem(storageKey); // <-- ¡ELIMINAR ESTA LÍNEA!
+    console.log(`Estado del rutograma reseteado. Error: ${errorOccurred}`);
+  }, [storageKey]);
+
+// ...existing code...
   useEffect(() => {
+    // No hacer nada si el estado de error no está resuelto (es decir, es undefined)
+    if (globalState.error === undefined) {
+      return;
+    }
+   
+    const puedeGuardarLocalmente = globalState.estado === 'Borrador' || globalState.estado === 'Devuelto';
+  if (puedeGuardarLocalmente) {
+    // Si el estado permite guardar, programamos el guardado como antes.
     const scheduleSave = () => {
       const payload: IRutogramaPayload = {
-        ida: serializeState(ida),
-        regreso: serializeState(regreso),
-        otros: { draftSavedAt: new Date().toISOString() },
+        global: globalState,
+        ida,
+        regreso,
       };
       localStorage.setItem(storageKey, JSON.stringify(payload));
+      console.log('ACTUALIZADO en localStorage:', payload);
     };
+    
     const saveTimeout = window.setTimeout(scheduleSave, 500);
     return () => window.clearTimeout(saveTimeout);
-  }, [ida, regreso, storageKey]);
+  } else {
+    // Si el estado es 'Pendiente' o 'Aprobado', eliminamos el borrador local.
+    localStorage.removeItem(storageKey);
+    console.log('Borrador local eliminado porque el estado es:', globalState.estado);
+  }
+}, [globalState, ida, regreso, storageKey]);
 
-  return { ida, setIda, regreso, setRegreso };
-};
+  return { globalState, setGlobalState, ida, setIda, regreso, setRegreso, resetState };
+}

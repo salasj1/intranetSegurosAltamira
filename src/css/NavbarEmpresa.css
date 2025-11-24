@@ -33,11 +33,12 @@
     position: relative;
     width: 150px;
     height: 100px;
-    background-color: #FAC7683D;
+    background-color: #094793e8;
     flex-shrink: 0; /* Prevent the image from shrinking */
     padding-left: 50px;
     margin-left: -28px;
     padding-right: 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .nav-link {
@@ -234,9 +235,8 @@ img {
     color: #003896;
 }
 
-#submenu:hover {
-    color: white;
-}
+
+
 
 .cuadroSubmenu {
     border-style: solid;
@@ -255,12 +255,6 @@ img {
     margin-right: -12px; /* Ajusta el margen derecho según sea necesario */
 }
 
-@media screen and (max-width: 1268px) {
-    .contenedor-user-info{
-        margin-left: calc(100% - 350px);
-        gap:15px;
-    }
-}
 
 @media screen and (max-width: 1024px) {
     
@@ -272,7 +266,7 @@ img {
     }
 
     .dropdown-item {
-        text-wrap: wrap;
+        text-wrap: nowrap;
 
     }
     
@@ -281,7 +275,7 @@ img {
         gap: 10px;
     }
     .contenedor-user-info{
-        margin-left: calc(100% - 370px);
+        margin-left: 0px;
         font-size: smaller;
     
     }
@@ -309,7 +303,10 @@ img {
         height: 50px;
         gap: 100px;
     }
-    
+    .dropdown-item {
+        text-wrap: wrap;
+
+    }
     .contenedor-user-info{
         display:none;
     } 
@@ -320,5 +317,42 @@ img {
     .imagenEmpresa {
         width: 100px;
         height: 50px;
+    }
+}
+
+.cuadroOpcion .show {
+    color: #ff7b00 !important;
+}
+ 
+.especial{
+    color: #ff7b00 !important;
+}
+
+.especial > a {
+    color: #ff7b00 !important;
+}
+.nav-item a:hover{
+    color: #003896 !important;
+}
+.textoNavlink:hover{
+    color: #003896 ;
+}
+#submenu:hover {
+    color: white !important;
+}
+#subopcion:hover {
+    color: white !important;
+}
+
+@media screen and (max-width: 1268px) {
+    .contenedor-user-info{
+        margin-left: calc(100% - 350px);
+        gap:15px;
+    }
+}
+
+@media (min-width: 768px) {
+    .offset-md-4 {
+        margin-left: 25%;
     }
 }

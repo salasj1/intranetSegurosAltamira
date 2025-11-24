@@ -22,7 +22,7 @@ function SolicitarVacaciones() {
   const { cod_emp } = useAuth();
   const [vacaciones, setVacaciones] = useState<Vacacion[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [hasPreviousRequest, setHasPreviousRequest] = useState<boolean>(true);
+  const [previousRequestStatus, setPreviousRequestStatus] = useState<string | null>(null);
 
   useEffect(() => {
     if (cod_emp) {
@@ -55,9 +55,14 @@ function SolicitarVacaciones() {
 
   const checkPreviousRequest = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
-      const hasRequest = response.data.some((vacacion: any) => vacacion.Estado === 'solicitada' || vacacion.Estado === 'Aprobada');
-      setHasPreviousRequest(hasRequest);
+       const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
+      // Buscamos si existe alguna solicitud activa
+      const activeRequest = response.data.find((vacacion: any) => 
+        vacacion.Estado === 'Solicitada' || vacacion.Estado === 'Aprobada'
+      );
+      
+      // Guardamos el estado si existe, si no, null
+      setPreviousRequestStatus(activeRequest ? activeRequest.Estado : null);
     } catch (error) {
       console.error('Error al verificar solicitudes previas:', error);
     }
@@ -68,15 +73,53 @@ function SolicitarVacaciones() {
     <>
       <NavbarEmpresa />
       <div className={styles.canvas}>
-        <h1>Solicitar Vacaciones</h1>
+        <h1 id='tituloVacaciones' style={{alignSelf: 'flex-start', textAlign: 'left', width: '100%'}}>Solicitar Pago y Salida de Vacaciones</h1>
         <br/>
+        <div style={{ width: '50%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '20px', flexWrap: 'wrap', marginBottom: '20px', marginTop: '10px' }}>
+          
+          {/* INFORMACIÓN DEL MÓDULO */}
+          <div style={{ 
+            flex: '1', 
+            minWidth: '300px', 
+            backgroundColor: '#fff7e6', 
+            borderLeft: '5px solid #fa8c16', 
+            padding: '20px', 
+            borderRadius: '4px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+            textAlign: 'left',
+            marginBottom:'20px'
+          }}>
+            <h5 style={{ margin: '0 0 10px 0', color: '#d46b08', fontSize: '18px', fontWeight: 'bold' }}>
+              🏖️ Información de Solicitud de Vacaciones Regulares
+            </h5>
+            <p style={{ margin: 0, fontSize: '14px', color: '#444', lineHeight: '1.6' }}>
+              Utilice este formulario para solicitar el disfrute y pago de sus <strong>periodos vacacionales cumplidos</strong>.
+              <br/>
+              Debe seleccionar la fecha de inicio de las vacaciones, el periodo mas antiguo disponible y su fecha de retorno al trabajo.
+            </p>
+          </div>
+        </div>
         {error && <Alert variant="danger" onClose={()=> setError(null)}  dismissible><AlertHeading>Error <hr/></AlertHeading>{error}</Alert>}
-        <FormularioVacaciones fetchVacaciones={fetchVacaciones} hasPreviousRequest={hasPreviousRequest} checkPreviousRequest={checkPreviousRequest} />
+        <FormularioVacaciones 
+          fetchVacaciones={fetchVacaciones} 
+          previousRequestStatus={previousRequestStatus} 
+          checkPreviousRequest={checkPreviousRequest} 
+        />
         <br/>
-        <h2>Lista de Vacaciones</h2>
-        <ListaVacaciones vacaciones={vacaciones} fetchVacaciones={fetchVacaciones} hasPreviousRequest={hasPreviousRequest} checkPreviousRequest={checkPreviousRequest} />
+        <h2>Lista de Vacaciones</h2>   
+         {/* NUEVO DISEÑO DE ESTADOS */}
+        
+        <ListaVacaciones 
+            vacaciones={vacaciones} 
+            fetchVacaciones={fetchVacaciones} 
+            hasPreviousRequest={!!previousRequestStatus} 
+            checkPreviousRequest={checkPreviousRequest} 
+        />
       </div>
+      
+      
     </>
+
   );
 }
 

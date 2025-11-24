@@ -12,8 +12,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import { Player } from '@lordicon/react';
 import 'react-toastify/dist/ReactToastify.css';
 import ICON from '../assets/confetti.json';
+import dayjs from 'dayjs';
 const apiUrl = import.meta.env.VITE_API_URL;
-
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 interface CustomToggleProps {
   children: ReactNode;
   eventKey: string;
@@ -70,7 +72,7 @@ function AcordionSolicitarPermiso({ onRefresh }: AcordionSolicitarPermisoProps) 
   const [diasNoDisfrutados, setDiasNoDisfrutados] = useState<number | null>(null);
   const [motivosPermiso, setMotivosPermiso] = useState<MotivoPermiso[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [showNote, setShowNote] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const playerRef = useRef<Player>(null);
 
@@ -80,6 +82,9 @@ useEffect(() => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
+
+    if (name === 'Fecha_Fin' ) {
+    }
 
     if (name === 'otroMotivo') {
       const wordCount = value.trim().split(/\s+/).length;
@@ -214,10 +219,54 @@ useEffect(() => {
     try {
       const response = await axios.get(`${apiUrl}/permisos/DiasVacacionesNoDisfrutados/${cod_emp}`);
       setDiasNoDisfrutados(response.data[0]?.DiasVacasPendientes || 0);
+      // Eliminamos la lógica de setShowNote de aquí para que sea controlada exclusivamente por el useEffect
     } catch (error) {
       console.error('Error al obtener los días no disfrutados:', error);
     }
   };
+
+// ...existing code...
+
+useEffect(() => {
+  setShowNote(false);
+  const motivoObj = motivosPermiso.find(m => m.tipo === formData.Motivo);
+  
+  // Verificamos si es el motivo ID 6
+  if (motivoObj?.id === 6) {
+    
+    // CASO 1: Si tiene 0 días, mostramos la nota inmediatamente (sin requerir fecha de inicio)
+    if (diasNoDisfrutados === 0) {
+      setShowNote(true);
+    } 
+    // CASO 2: Si tiene días disponibles Y ha seleccionado fecha, calculamos
+    else if (formData.Fecha_inicio) {
+      const calcularFechaFin = async () => {
+        try {
+          const response = await axios.get(`${apiUrl}/permisos/calcularFechaMaximaFin`, {
+            params: {
+              fechaInicio: formData.Fecha_inicio,
+              dias: diasNoDisfrutados
+            }
+          });
+          // Usar dayjs.utc para evitar desfase de día
+          const fechaFinFormateada = response.data.fechaFin && diasNoDisfrutados !== 0
+            ? dayjs.utc(response.data.fechaFin).format('YYYY-MM-DD')
+            : '';
+          setFormData(prev => ({
+            ...prev,
+            Fecha_Fin: fechaFinFormateada
+          }));
+          setShowNote(true);
+        } catch (error) {
+          console.error('Error calculando la fecha máxima fin:', error);
+        }
+      };
+      calcularFechaFin();
+    }
+  }
+}, [formData.Fecha_inicio, formData.Motivo, motivosPermiso, diasNoDisfrutados]);
+
+// ...existing code...
 
   const handleMotivosPermiso = async () => {
     try {
@@ -287,14 +336,14 @@ useEffect(() => {
         theme="colored"
         />
       <Accordion defaultActiveKey={null} flush className={style.accordion}>
-        <Card bg='primary' className={style.accordionItem} style={{ borderRadius: '0px' }}>
+        <Card key={`solicitar-permiso-${cod_emp}`} bg='primary' className={style.accordionItem} style={{ borderRadius: '0px' }}>
           <Card.Header className={style.cardHeader}>
             <CustomToggle eventKey="0">Solicitar Permiso</CustomToggle>
           </Card.Header>
           <Accordion.Collapse eventKey="0">
             <Card.Body>
               {alertMessage && (
-                <Alert variant={alertVariant?.toString() ?? 'info'} onClose={() => setAlertMessage(null)} dismissible>
+                <Alert variant={alertVariant?.toString() ?? 'info'} onClose={() => setAlertMessage(null)} dismissible >
                   {alertMessage}
                 </Alert>
               )}
@@ -326,10 +375,22 @@ useEffect(() => {
                       name="Fecha_Fin"
                       value={formData.Fecha_Fin}
                       onChange={handleChange}
+                      className={style.formControl}
+                      disabled={motivosPermiso.find(motivo => motivo.tipo === formData.Motivo)?.id === 6}
                     />
                   </Form.Group>
+                  {showNote && (
+                    <Alert className="noteDaysVacationnotTaken" variant={diasNoDisfrutados && diasNoDisfrutados > 0 ? "primary" : "warning"}>
+                      <strong>Nota:</strong>{" "}
+                      {diasNoDisfrutados !== null && diasNoDisfrutados > 0
+                        ? `Al seleccionar el motivo ${motivosPermiso.find(motivo => motivo.id === 6)?.tipo}, la fecha de fin se ajustará automáticamente según los días de vacaciones no disfrutados (${diasNoDisfrutados} días hábiles).`
+                        : diasNoDisfrutados === 0
+                        ? "No tienes días de vacaciones no disfrutados disponibles. Si crees que esto es un error, por favor contacta a Capital Humano."
+                        : null}
+                    </Alert>
+                  )}
                 </div>
-                <br />
+
                 <Form.Group className="mb-3" controlId="formSelect">
                   <Form.Label>Razón del Motivo</Form.Label>
                   <div className={style.formControl}>
@@ -381,7 +442,7 @@ useEffect(() => {
                     onChange={handleChange}
                   />
                 </Form.Group>
-                <Button variant="primary" type="submit" className={style.botonSolicitar}>
+                <Button variant="primary" type="submit" className={style.botonSolicitar} disabled={diasNoDisfrutados !== null && diasNoDisfrutados <= 0 && motivosPermiso.find(motivo => motivo.tipo === formData.Motivo)?.id === 6}>
                   Confirmar
                 </Button>
               </Form>

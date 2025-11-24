@@ -23,6 +23,7 @@ function ARC() {
   const [fechaARC, setFechaARC] = useState<string>('');
   const [tempFechaARC, setTempFechaARC] = useState<string>(''); 
   const cod_empSinEspacios = cod_emp?.replace(/\s+/g, '');
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const isValidYear = /^\d{4}$/.test(fechaARC);
@@ -77,7 +78,18 @@ function ARC() {
     }
     return null;
   }, [arcData, fechaARC]);
-  
+    useEffect(() => {
+    if (pdfBlob) {
+      const url = URL.createObjectURL(pdfBlob);
+      setPdfUrl(url);
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } else {
+      setPdfUrl(null);
+    }
+  }, [pdfBlob]);
+    
   const handleDownload = () => {
     if (arcData) {
       const pdf = generateARCPDF(arcData, fechaARC);
@@ -198,7 +210,22 @@ const handleSendSecondaryEmail = async () => {
                     min="1992"
                     max={new Date().getFullYear()}
                   />    
-                  <Button variant='light' className={styles['pdf-botton-download']} onClick={() => { setFechaARC(tempFechaARC); setIsPdfLoading(true); setShowPdf(true); }}>Buscar</Button>
+                  <Button
+                    variant='light'
+                    className={styles['pdf-botton-download']}
+                    onClick={() => {
+                      if (tempFechaARC !== fechaARC) {
+                        setFechaARC(tempFechaARC);
+                        setIsPdfLoading(true);
+                        setShowPdf(true);
+                      } else if (!showPdf) {
+                        setShowPdf(true); // Si nunca se ha mostrado el PDF
+                      }
+                      // Si el año es igual y el PDF ya está mostrado, no hagas nada
+                    }}
+                  >
+                    Buscar
+                  </Button>
                 </div>
               </Card.Body>
             </Card>
@@ -236,12 +263,14 @@ const handleSendSecondaryEmail = async () => {
                         )}
                       </zoomPluginInstance.ZoomOut>
                     </div>
-                      <Viewer
-                        fileUrl={URL.createObjectURL(pdfBlob)}
-                        defaultScale={1}
-                        onDocumentLoad={() => setIsPdfLoading(false)}
+                      {pdfUrl && (
+                        <Viewer
+                          fileUrl={pdfUrl}
+                          defaultScale={1}
+                          onDocumentLoad={() => setIsPdfLoading(false)}
                         plugins={[ zoomPluginInstance]}
                       />
+                      )}
                     </>
                   )}
                 </div>

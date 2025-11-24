@@ -5,7 +5,10 @@ import { Modal, Button, Alert } from 'react-bootstrap';
 import { RiInformationLine } from "react-icons/ri";
 import stylesLoading from "../css/loading.module.css";
 import { Mosaic } from "react-loading-indicators";
-
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(utc);
+dayjs.extend(timezone);
 interface ConfirmarSolicitudModalProps {
   show: boolean;
   handleClose: () => void;
@@ -46,13 +49,13 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
   }, [show, vacacionID]);
 
   const handleMensajeConfirmacion = async () => {
-
+    console.log("fechas", { fechaInicio: dayjs(fechaInicio || '').utc().startOf('day').toISOString(), fechaFin: dayjs(fechaFin || '').utc().startOf('day').toISOString(), fechaRetorno: dayjs(fechaRetorno || '').utc().startOf('day').toISOString() });
     try {
       const response = await axios.get(`${apiUrl}/vacaciones/InfoConfirmacionSolicitudVacaciones`, {
         params: {
-          fechaInicio: dayjs(fechaInicio || '').startOf('day').toISOString(),
-          fechaFin: dayjs(fechaFin || '').startOf('day').toISOString(),
-          fechaRetorno: dayjs(fechaRetorno || '').startOf('day').toISOString(),
+          fechaInicio: dayjs(fechaInicio || '').utc().startOf('day').toISOString(),
+          fechaFin: dayjs(fechaFin || '').utc().startOf('day').toISOString(),
+          fechaRetorno: dayjs(fechaRetorno || '').utc().startOf('day').toISOString(),
         }
       });
       setMensaje(response.data.Mensaje);

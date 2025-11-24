@@ -17,11 +17,11 @@
 }
 
 .canvas h1 {
-    margin-left: -20%;
+
     max-width: 100%;
     box-sizing: border-box;
     text-overflow: ellipsis;
-    white-space: nowrap;
+
     font-family: "Gotham", Sans-serif;
     font-size: 3.5vw; /* Tamaño de fuente relativo al ancho de la ventana */
     text-align: center; /* Centrar el texto */

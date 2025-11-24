@@ -6,7 +6,7 @@
     height: 100%;
     min-height: 100vh;
 }
-    
+
 
 
 .canvas {
@@ -21,21 +21,22 @@
     
 }
 .canvas .Tarjeta{
-    position: absolute;
-    left: 900px;
-    top: 120px;
+    position: relative;
+    left: 0px  ;
+    top: 0px;
     font-size: 30px;
-    width: 34.5%;
+    width: 523px;
     border-radius: 3px;
     box-shadow: 0 3px 6px 0 rgba(0, 0, 0, .14);
     animation: fadeInUp 1.5s;
+    margin-bottom: 25px;
 }
 .canvas .TarjetaMostrarSueldo{
     position: relative;
-    left: 780px;
-    top:-80px;
+    /* left: 780px;
+    top:-80px; */
     font-size: 16px;
-    width: 35.45%;
+    width: 523px;
     border-radius: 3.5px;
     box-shadow: 0 3px 6px 0 rgba(0, 0, 0, .14);
     animation: fadeInUp 1.5s;
@@ -44,7 +45,6 @@
 
 .canvas .cardDestinatario{
     position: relative;
-    left: -350px;
     top:0px;
     font-size: 16px;
     width: 35.45%;
@@ -53,35 +53,58 @@
     animation: fadeInUp 1.5s;
 }
 
-@media (max-width:1400px) {
+/* @media (max-width:1400px) {
     
     .canvas .Tarjeta{
         left: 800px;
 
     }
     
-}
-@media (max-width:1300px) {
-    .canvas .Tarjeta{
-        left: 700px;
-    }
-    
-}
+} */
 
+.divEspacio{
+    display: flex;
+    position: relative;
+    gap: 50px;
+}
 @media (max-width: 1200px) {
+
+    .divEspacio{
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+    }
+    .canvas .cardDestinatario{
+        width: 80%;
+        max-width: 400px;
+    }
     .canvas .Tarjeta {
        position: relative;
-       left:0%;
-       
-       width: 523px;
+       width: 50vw;
+       min-width: 250px;
        top:35px;
        margin-bottom: 50px;
+       left:0px;
+    }
+    .canvas .TarjetaMostrarSueldo {
+       position: relative;
+       width: 50vw;
+       min-width: 250px;
+       top:35px;
+       left:0px;
+    }
+    
+    .pdf-viewer-container {
+        max-width: 75vw;
+        min-width: 750px;
     }
 }
 @media (max-width:740px) {
     .canvas .Tarjeta{
         margin-bottom:50px ;
     }
+
 }
 
 /* @media (max-width: 915px) {
@@ -145,7 +168,7 @@
     }
 }
 .pdf-viewer-container {
-    width: 50%;
+    width: 100%;
     left: 1.5%;
     height: 500px; 
     /* border: 1px solid #ccc; */

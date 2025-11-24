@@ -1,7 +1,6 @@
 
 
 .accordion {
-    width: 50%;
     border: 1px solid #21252920;
     animation: fadeInUp 1s;
     border-radius: 0px;
@@ -10,7 +9,9 @@
     box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.1);
     --bs-accordion-border-radius: 0px;
 }
-
+.accordionSolicitados{
+    width: 50%;
+}
 .accordionItem {
     background-color: #FAC7683D;
 }
@@ -102,4 +103,27 @@
         opacity: 1;
         transform: none;
     }
+}
+
+.noteDaysVacationnotTaken {
+   margin-bottom: 0 !important;
+    transition: opacity 0.8s transform 0.8s ease-in-out;
+    animation: fadeInUp 1s;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.formControl:disabled {
+    background-color: #858585 !important;
+    opacity: 1;
 }

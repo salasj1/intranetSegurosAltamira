@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {  useState } from 'react';
 import { Form, Button, Modal, Alert} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowDown, faArrowUp, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -34,9 +34,6 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
   const [action, setAction] = useState<'approve' | 'reject'>('approve');
   const [showAlreadyModal, setShowAlreadyModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    fetchVacaciones();
-  }, []);
 
   const sortedData = [...vacaciones].sort((a: Vacacion, b: Vacacion) => {
     if (sortConfig.key) {
@@ -94,7 +91,9 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
           cod_supervisor: cod_emp
         });
       } else {
-        await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/reject1`);
+        await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/reject1`,{
+          cod_supervisor: cod_emp
+        });
       }
       fetchVacaciones();
       setError('');
@@ -128,168 +127,169 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
 
   return (
     <>
-    <div className='tablaAprobar'>
-      
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar ID..."
-                value={searchVacacionID}
-                onChange={(e) => setSearchVacacionID(e.target.value)}
-              />
-            </th>
-            <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar Número de días..."
-                value={searchDiasVacaciones}
-                onChange={(e) => setSearchDiasVacaciones(e.target.value)}
-              />
-            </th>
-            <th>
-              <Form.Control
-                className={styles.search}
-                type="select"
-                placeholder='Buscar codigo...'
-                value={searchCodEmp}
-                onChange={(e) => setSearchCodEmp(e.target.value)}
-              />
-            </th>
-            <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar Nombre..."
-                value={searchNombre}
-                onChange={(e) => setSearchNombre(e.target.value)}
-              />
-            </th>
-            <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar Apellido..."
-                value={searchApellido}
-                onChange={(e) => setSearchApellido(e.target.value)}
-              />
-            </th>
-            <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar Fecha ..."
-                value={searchFechaInicio}
-                onChange={(e) => setSearchFechaInicio(e.target.value)}
-              />
-            </th>
-            <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar Fecha..."
-                value={searchFechaFin}
-                onChange={(e) => setSearchFechaFin(e.target.value)}
-              />
-            </th>
-            <th>
-              <Form.Control
-                className={styles.search}
-                type="text"
-                placeholder="Buscar..."
-                value={searchEstado}
-                onChange={(e) => setSearchEstado(e.target.value)}
-              />
-            </th>
-            <th></th>
-          </tr>
-        </thead>
-        <thead>
-          <tr>
-            <th id={styles.headTable} onClick={() => requestSort('VacacionID')} className='titulo'>
-              ID de Vacaciones
-              {sortConfig.key === 'VacacionID' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
-              )}
-            </th>
-            <th id={styles.headTable} onClick={() => requestSort('DiasVacaciones')} className='titulo'>
-              Número de Días de Vacaciones
-              {sortConfig.key === 'DiasVacaciones' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
-              )}
-            </th>
-            <th id={styles.headTable} onClick={() => requestSort('ci')} className='titulo'>
-              Cédula
-              {sortConfig.key === 'ci' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
-              )}
-            </th>
-            <th id={styles.headTable} onClick={() => requestSort('nombres')} className='titulo'>
-              Nombres
-              {sortConfig.key === 'nombres' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
-              )}
-            </th>
-            <th id={styles.headTable} onClick={() => requestSort('apellidos')} className='titulo'>
-              Apellidos
-              {sortConfig.key === 'apellidos' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
-              )}
-            </th>
-            <th id={styles.headTable} onClick={() => requestSort('FechaInicio')} className='titulo'>
-              Fecha Inicio
-              {sortConfig.key === 'FechaInicio' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
-              )}
-            </th>
-            <th id={styles.headTable} onClick={() => requestSort('FechaFin')} className='titulo'>
-              Fecha Retorno
-              {sortConfig.key === 'FechaFin' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
-              )}
-            </th>
-            <th id={styles.headTable} onClick={() => requestSort('Estado')} className='titulo'>
-              Estado
-              {sortConfig.key === 'Estado' && (
-                <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
-              )}
-            </th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
 
-        <tbody>
-          {filteredData.map(item => (
-            <tr key={item.VacacionID}>
-              <td>{item.VacacionID}</td>
-              <td>{item.DiasVacaciones}</td>
-              <td>{item.ci}</td>
-              <td>{item.nombres}</td>
-              <td>{item.apellidos}</td>
-              <td>{format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy')}</td>
-              <td>{format(addDays(parseISO(item.FechaFin.toString()), 1), 'dd/MM/yyyy')}</td>
-              <td>{item.Estado}</td>
-              <td>
-                {item.Estado === 'solicitada' && (
-                  <div className={styles.acciones}>
-                    <Button variant="success" onClick={() => handleAction(item, 'approve')}>
-                      <FontAwesomeIcon icon={faCheck} />
-                    </Button>
-                    <Button variant="danger" onClick={() => handleAction(item, 'reject')}>
-                      <FontAwesomeIcon icon={faTimes} />
-                    </Button>
-                  </div>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-      </div>
+        <div className='tablaAprobar'>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar ID..."
+                    value={searchVacacionID}
+                    onChange={(e) => setSearchVacacionID(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar Número de días..."
+                    value={searchDiasVacaciones}
+                    onChange={(e) => setSearchDiasVacaciones(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="select"
+                    placeholder='Buscar codigo...'
+                    value={searchCodEmp}
+                    onChange={(e) => setSearchCodEmp(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar Nombre..."
+                    value={searchNombre}
+                    onChange={(e) => setSearchNombre(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar Apellido..."
+                    value={searchApellido}
+                    onChange={(e) => setSearchApellido(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar Fecha ..."
+                    value={searchFechaInicio}
+                    onChange={(e) => setSearchFechaInicio(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar Fecha..."
+                    value={searchFechaFin}
+                    onChange={(e) => setSearchFechaFin(e.target.value)}
+                  />
+                </th>
+                <th>
+                  <Form.Control
+                    className={styles.search}
+                    type="text"
+                    placeholder="Buscar..."
+                    value={searchEstado}
+                    onChange={(e) => setSearchEstado(e.target.value)}
+                  />
+                </th>
+                <th></th>
+              </tr>
+            </thead>
+            <thead>
+              <tr>
+                <th id={styles.headTable} onClick={() => requestSort('VacacionID')} className='titulo'>
+                  ID de Vacaciones
+                  {sortConfig.key === 'VacacionID' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('DiasVacaciones')} className='titulo'>
+                  Número de Días de Vacaciones
+                  {sortConfig.key === 'DiasVacaciones' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('ci')} className='titulo'>
+                  Cédula
+                  {sortConfig.key === 'ci' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('nombres')} className='titulo'>
+                  Nombres
+                  {sortConfig.key === 'nombres' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('apellidos')} className='titulo'>
+                  Apellidos
+                  {sortConfig.key === 'apellidos' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('FechaInicio')} className='titulo'>
+                  Fecha Inicio
+                  {sortConfig.key === 'FechaInicio' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('FechaFin')} className='titulo'>
+                  Fecha Retorno
+                  {sortConfig.key === 'FechaFin' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                  )}
+                </th>
+                <th id={styles.headTable} onClick={() => requestSort('Estado')} className='titulo'>
+                  Estado
+                  {sortConfig.key === 'Estado' && (
+                    <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
+                  )}
+                </th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredData.map(item => (
+                <tr key={item.VacacionID}>
+                  <td>{item.VacacionID}</td>
+                  <td>{item.DiasVacaciones}</td>
+                  <td>{item.ci}</td>
+                  <td>{item.nombres}</td>
+                  <td>{item.apellidos}</td>
+                  <td>{format(addDays(parseISO(item.FechaInicio.toString()), 1), 'dd/MM/yyyy')}</td>
+                  <td>{format(addDays(parseISO(item.FechaFin.toString()), 1), 'dd/MM/yyyy')}</td>
+                  <td>{item.Estado}</td>
+                  <td>
+                    {item.Estado === 'solicitada' && (
+                      <div className={styles.acciones}>
+                        <Button variant="success" onClick={() => handleAction(item, 'approve')}>
+                          <FontAwesomeIcon icon={faCheck} />
+                        </Button>
+                        <Button variant="danger" onClick={() => handleAction(item, 'reject')}>
+                          <FontAwesomeIcon icon={faTimes} />
+                        </Button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+
 
       {selectedVacacion && (
         <AprobarVacacionesModal
