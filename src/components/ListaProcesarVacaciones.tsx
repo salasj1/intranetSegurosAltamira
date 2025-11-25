@@ -10,6 +10,10 @@ import { Vacacion } from '../routes/ProcesarVacaciones';
 import { format, parseISO, addDays } from 'date-fns';
 import AprobarVacacionesModal from './AprobarVacacionesModal';
 import { useAuth } from '../auth/AuthProvider';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 interface ListaVacacionesProps {
   vacaciones: Vacacion[];
@@ -39,8 +43,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
   const [error, setError] = useState<string | null>('');
   useEffect(() => {
     vacaciones.map(item => (console.log(item)));
-    fetchVacaciones();
-  }, []);
+  }, [vacaciones]);
 
   const sortedData = [...vacaciones].sort((a: Vacacion, b: Vacacion) => {
     if (sortConfig.key) {
@@ -107,6 +110,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
   };
 
   const handleProcess = async (vacacion: Vacacion) => {
+    const toastId = toast.loading('Procesando solicitud...');
     try {
       await axios.put(`${apiUrl}/vacaciones/${vacacion.VacacionID}/process`, {
         cod_RRHH: cod_emp,
@@ -115,42 +119,69 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
         sdHasta: vacacion.FechaFin
       });
       fetchVacaciones();
+      toast.update(toastId, {
+        render: '¡Vacaciones procesadas satisfactoriamente!',
+        type: 'success',
+        isLoading: false,
+        autoClose: 4000,
+      });
     } catch (error) {
       console.error('Error procesando vacaciones:', error);
       setError('Error procesando vacaciones');
+      toast.update(toastId, {
+        render: 'Error al procesar las vacaciones.',
+        type: 'error',
+        isLoading: false,
+        autoClose: 4000,
+      });
       if (axios.isAxiosError(error)) {
-        console.error('Error:', error);
         if (error.request?.response === 'La vacación ya ha sido procesada') {
           setError('Error procesando vacaciones: La vacación ya ha sido procesada');
-
         }
         if (error.response?.data.message === 'La vacación ya ha sido emitida') {
           setError('Error procesando vacaciones: La vacación ya ha sido emitida');
         }
-
       }
     }
   };
 
-  const handleConfirm = async () => {
+    const handleConfirm = async () => {
     if (!selectedVacacion) return;
-
+    const toastId = toast.loading('Procesando solicitud...');
     try {
       if (action === 'approve') {
         await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/approve`, {
           cod_supervisor: cod_emp
         });
+        toast.update(toastId, {
+          render: '¡Vacaciones aprobadas satisfactoriamente!',
+          type: 'success',
+          isLoading: false,
+          autoClose: 4000,
+        });
       } else {
-        await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/reject2`);
+        await axios.put(`${apiUrl}/vacaciones/${selectedVacacion.VacacionID}/reject2`, {
+          cod_RRHH: cod_emp
+        });
+        toast.update(toastId, {
+          render: '¡Vacaciones rechazadas satisfactoriamente!',
+          type: 'success',
+          isLoading: false,
+          autoClose: 4000,
+        });
       }
       fetchVacaciones();
       setError('');
       setShowModal(false);
-
     } catch (error) {
       setShowModal(false);
+      toast.update(toastId, {
+        render: 'Error al procesar la solicitud.',
+        type: 'error',
+        isLoading: false,
+        autoClose: 4000,
+      });
       if (axios.isAxiosError(error)) {
-        
         if (error.request?.response === 'La vacación ya ha sido procesada') {
           setError(`Error ${action === 'approve' ? 'procesando' : 'devolviendo'} vacaciones: La vacación ya ha sido procesada`);
         } else if (error.request?.response === 'La vacación ya ha sido rechazada') {
@@ -164,6 +195,12 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
 
   return (
     <>
+        <ToastContainer
+        closeOnClick
+        autoClose={4000}
+        pauseOnFocusLoss={false}
+        theme="colored"
+      />
       <div className='tablaAprobar'>
         {error && (
           <Alert variant="danger" dismissible onClose={() => setError(null)}>

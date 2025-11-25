@@ -59,6 +59,8 @@ function AdminDashboard() {
             if (response.data.success) {
                 // Guardar los datos del usuario impersonado en localStorage
                 localStorage.setItem('token', response.data.token);
+                localStorage.setItem('nombres', response.data.nombres);
+                localStorage.setItem('apellidos', response.data.apellidos);
                 localStorage.setItem('nombre_completo', response.data.nombre_completo);
                 localStorage.setItem('cargo_empleado', response.data.des_cargo);
                 localStorage.setItem('cod_emp', response.data.cod_emp);
@@ -67,8 +69,9 @@ function AdminDashboard() {
                 localStorage.setItem('tipo', response.data.tipo);
                 localStorage.setItem('RRHH', response.data.RRHH.toString());
                 localStorage.setItem('email', response.data.email);
+                
+                localStorage.setItem('sexo', response.data.sexo);
                 localStorage.setItem('isAdmin', 'false'); // El usuario impersonado no es administrador
-
                 setSuccess(`Ahora estás autenticado como ${selectedUser}`);
                 setError('');
 

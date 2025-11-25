@@ -1,11 +1,14 @@
 import axios from 'axios';
-import { addDays } from 'date-fns';
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { Modal, Button, Alert } from 'react-bootstrap';
 import { RiInformationLine } from "react-icons/ri";
 import stylesLoading from "../css/loading.module.css";
 import { Mosaic } from "react-loading-indicators";
-
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+dayjs.extend(utc);
+dayjs.extend(timezone);
 interface ConfirmarSolicitudModalProps {
   show: boolean;
   handleClose: () => void;
@@ -46,20 +49,13 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
   }, [show, vacacionID]);
 
   const handleMensajeConfirmacion = async () => {
-    
-    // Asegurarse de que fechaRetorno tenga la hora en 00:00
-    const fechaInicioDate = new Date(fechaInicio || '');
-    const fechaInicioT00 = fechaInicioDate.toISOString().split('T')[0] + 'T00:00:00.000Z';
-    console.log("fechaInicio", fechaInicioT00);
-    console.log("fechaFin", fechaFin);
-    console.log("fechaRetorno", fechaRetorno);
-
+    console.log("fechas", { fechaInicio: dayjs(fechaInicio || '').utc().startOf('day').toISOString(), fechaFin: dayjs(fechaFin || '').utc().startOf('day').toISOString(), fechaRetorno: dayjs(fechaRetorno || '').utc().startOf('day').toISOString() });
     try {
       const response = await axios.get(`${apiUrl}/vacaciones/InfoConfirmacionSolicitudVacaciones`, {
         params: {
-          fechaInicio: fechaInicioT00,
-          fechaFin: fechaFin,
-          fechaRetorno: fechaRetorno ,
+          fechaInicio: dayjs(fechaInicio || '').utc().startOf('day').toISOString(),
+          fechaFin: dayjs(fechaFin || '').utc().startOf('day').toISOString(),
+          fechaRetorno: dayjs(fechaRetorno || '').utc().startOf('day').toISOString(),
         }
       });
       setMensaje(response.data.Mensaje);
@@ -117,15 +113,15 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
             {error && <Alert variant="danger" onClose={() => { setError('') }} dismissible>{error}</Alert>}
             <Alert variant="primary">
               <h3>Disfrute de Vacaciones</h3>
-              <p><strong>Desde:</strong> {fechaInicio ? new Date(fechaInicio).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
-              <p><strong>Hasta:</strong> {fechaRetorno ? addDays(new Date(fechaRetorno), -1).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
-              {fechaRetorno && <p><strong>Fecha de Retorno:</strong> {new Date(fechaRetorno).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>}
+              <p><strong>Desde:</strong> {fechaInicio ? dayjs(fechaInicio).format('DD/MM/YYYY') : 'N/A'}</p>
+              <p><strong>Hasta:</strong> {fechaFin ? dayjs(fechaFin).format('DD/MM/YYYY') : 'N/A'}</p>
+              {fechaRetorno && <p><strong>Fecha de Retorno:</strong> {dayjs(fechaRetorno).format('DD/MM/YYYY')}</p>}
               {diasDisfrutar && diasDisfrutar !== 0 && <p><strong>Días hábiles a disfrutar:</strong> {diasDisfrutar} {diasDisfrutar === 1 ? 'día' : 'días'}</p>}
             </Alert>
             <Alert variant="primary">
               <h3>Vacaciones Pagadas</h3>
-              <p><strong>Desde:</strong> {fechaInicio ? new Date(fechaInicio).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
-              <p><strong>Hasta:</strong> {fechaFin ? addDays(new Date(fechaFin), 1).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</p>
+              <p><strong>Desde:</strong> {fechaInicio ? dayjs(fechaInicio).format('DD/MM/YYYY') : 'N/A'}</p>
+              <p><strong>Hasta:</strong> {fechaFin ? dayjs(fechaFin).format('DD/MM/YYYY') : 'N/A'}</p>
             </Alert>
 
             {vacacionID === undefined && (

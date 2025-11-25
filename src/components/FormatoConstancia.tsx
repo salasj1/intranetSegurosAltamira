@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import logo from "../assets/logo-head.png";
 import firma from "../assets/firma.png";
 
-import CalibriBase64 from '../fonts/Calibri.base64.ts';
+import CalibriBase64 from '../fonts/Calibri.base64';
 import { addDays } from 'date-fns';
 const generateConstanciaPDF = (data: any, persona:string, destinatario: string) => {
   try {

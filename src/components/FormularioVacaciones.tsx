@@ -8,7 +8,10 @@ import '../css/FormularioVacaciones.css';
 import ConfirmarSolicitudModal from './ConfirmarSolicitudModal';
 import DatePicker from "react-widgets/DatePicker";
 import 'react-widgets/styles.css';
-import { parseISO, addDays, isBefore, isEqual } from 'date-fns';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
 import { IoCalendarSharp } from "react-icons/io5";
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
@@ -18,12 +21,16 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import ICON from '../assets/confetti.json';
 import { Player } from '@lordicon/react';
 import { PiProhibitFill } from "react-icons/pi";
+import { useNavigate } from 'react-router-dom';
+
+
 
 const apiUrl = import.meta.env.VITE_API_URL;
-
+dayjs.extend(utc);
+dayjs.extend(timezone);
 interface FormularioVacacionesProps {
   fetchVacaciones: () => void;
-  hasPreviousRequest: boolean;
+  previousRequestStatus: string | null; // CAMBIO: Recibimos el estado específico
   checkPreviousRequest: () => void;
 }
 
@@ -35,7 +42,7 @@ interface Periodos {
   ETIQUETA: string;
 }
 
-const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaciones, hasPreviousRequest, checkPreviousRequest }) => {
+const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaciones, previousRequestStatus, checkPreviousRequest }) => {
   const { cod_emp } = useAuth();
   const [fechaInicio, setFechaInicio] = useState<string | null>(null);
   const [fechaFin, setFechaFin] = useState<string | null>(null);
@@ -53,6 +60,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
   const playerRef = useRef<Player>(null);
   const [selectedPeriodos, setSelectedPeriodos] = useState<any>([]);
   const [errorPeriodos, setErrorPeriodos] = useState<string | null>(null);
+  const navigate = useNavigate();
   useEffect(() => {
     playerRef.current?.playFromBeginning();
   }, [success]);
@@ -61,7 +69,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
 
   useEffect(() => {
     if (fechaInicio) {
-      handleFechaInicioChange(new Date(fechaInicio), selectedPeriodos);
+      handleFechaInicioChange(dayjs(fechaInicio).toDate(), selectedPeriodos);
     }
   }, [fechaInicio]);
   useEffect(() => {
@@ -144,17 +152,19 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
   }
   
   const handleFechaInicioChange = async (date: Date | null | undefined, selectedOptions: any) => {
-    setFechaInicio(date ? date.toISOString() : null);
+    setFechaInicio(date ? dayjs(date).format('') : null);
     setFechaFin(null); // Colocar en blanco la fecha de retorno
 
     if (date && selectedOptions.length > 0) {
       setLoading(true);
-      const { fechaMaximaFin, totalDias } = await calcularFechaMaximaFin(date, selectedOptions);
-      setFechaMaximaFin(fechaMaximaFin ? new Date(fechaMaximaFin).toISOString() : null);
-  
+      const { fechaMaximaFin, totalDias } = await calcularFechaMaximaFin(dayjs(date).toDate(), selectedOptions);
+      const fechaMaxFinLocal = fechaMaximaFin ? dayjs(fechaMaximaFin).add(4, 'hour') : null;
+      console.log('Fecha máxima local:', fechaMaxFinLocal ? fechaMaxFinLocal.format('DD/MM/YYYY') : null);
+      setFechaMaximaFin(fechaMaxFinLocal ? fechaMaxFinLocal.format('YYYY-MM-DD') : null);
+
       if (fechaMaximaFin) {
-        const fechaProlongada = await calcularFechaProlongada(date.toISOString(), totalDias);
-        setfechaProlongada(fechaProlongada? new Date(fechaProlongada).toISOString() : null);
+        const fechaProlongada = await calcularFechaProlongada(dayjs(date).format(), totalDias);
+        setfechaProlongada(fechaProlongada ? dayjs(fechaProlongada).format('YYYY-MM-DD') : null);
       }
     }
   };
@@ -199,13 +209,13 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
 
 
     if (fechaInicio) {
-      handleFechaInicioChange(new Date(fechaInicio), selectedOptions);
+      handleFechaInicioChange(dayjs(fechaInicio).toDate(), selectedOptions);
     }
   };
 
   useEffect(() => {
     if (fechaInicio) {
-      handleFechaInicioChange(new Date(fechaInicio), []);
+      handleFechaInicioChange(dayjs(fechaInicio).toDate(), []);
     }
   }, [diasHabiles]);
 
@@ -252,30 +262,29 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
   }; */
   
   const handleSubmit = async (tipo: string, tipoConfirmacion: number) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const startDate = fechaInicio ? new Date(fechaInicio.split('T')[0] + 'T00:00:00') : null;
-    const endDate = fechaFin ? new Date(fechaFin.split('T')[0] + 'T00:00:00') : null;
-  
+    const today = dayjs().startOf('day');
+    const startDate = fechaInicio ? dayjs(fechaInicio).startOf('day') : null;
+    const endDate = fechaFin ? dayjs(fechaFin).startOf('day') : null;
+
     if (!fechaInicio || !fechaFin) {
       alert('Debe llenar todos los campos.');
       setSuccess(null);
       return;
     }
-  
-    if (startDate && isBefore(startDate, today) && !isEqual(startDate, today)) {
-      alert('La fecha de inicio no puede ser anterior a la fecha actual o el dia de hoy.');
+
+    if (startDate && startDate.isBefore(today, 'day') && !startDate.isSame(today, 'day')) {
+      alert('La fecha de inicio no puede ser anterior a la fecha actual o el día de hoy.');
       setSuccess(null);
       return;
     }
-  
-    if (endDate && isBefore(endDate, today) && !isEqual(endDate, today)) {
-      alert('La fecha de fin no puede ser anterior a la fecha actual o el dia de hoy.');
+
+    if (endDate && endDate.isBefore(today, 'day') && !endDate.isSame(today, 'day')) {
+      alert('La fecha de fin no puede ser anterior a la fecha actual o el día de hoy.');
       setSuccess(null);
       return;
     }
-  
-    if (startDate && endDate && isBefore(endDate, startDate)) {
+
+    if (startDate && endDate && endDate.isBefore(startDate, 'day')) {
       alert('La fecha de fin no puede ser anterior a la fecha de inicio.');
       setSuccess(null);
       return;
@@ -335,12 +344,12 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     setFechaFin('');
     setFechaMaximaFin(null);
     setError(null);
-    console.log('Solicitud de vacaciones enviada:', response.data.emailError);
+    /* console.log('Solicitud de vacaciones enviada:', response.data.emailError); */
     // Verificar si hubo un error al enviar el correo
     if (response.data.emailError) {
       toast.error('No se logró enviar el correo automáticamente. Por favor, notifique a su supervisor.');
       setError('No se logró enviar el correo automáticamente. Por favor, notifique a su supervisor.');
-    }
+    } 
   } catch (error) {
     let errorMessage = 'Error al solicitar permiso';
     if (axios.isAxiosError(error) && error.response) {
@@ -368,197 +377,246 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
   const animatedComponents = makeAnimated();
 
   return (
-    <>
-      <ToastContainer
-        closeOnClick
-        autoClose={8000}
-        pauseOnFocusLoss={false}
-        theme="colored"
-      />
-      {!loadingDocument ? (
-      <Card bg="light" className='form-container' border='dark'>
-        {!hasPreviousRequest && diasHabiles ?
-          (<>
-          <Card.Header><h2> Solicita tus vacaciones aquí</h2></Card.Header>
-            <br />
-            </>
-          ):
-          hasPreviousRequest ?( 
-            (<Alert variant='primary'  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%', textAlign: 'center' }}>
-            <DotLottieReact
-            src="/assets/relojArena.json"
-            loop
-            autoplay
-            width={'auto'}
-            height={150}
-            speed={0.5}
-            style={{marginTop:'-50px'}}
-            />
-            <div style={{ marginTop: '-50px', textAlign: 'center' }}>
-              <h4>Actualmente tienes una solicitud de vacaciones en proceso </h4>
-              <hr style={{ width: '100%', marginTop: '-5px' }} />
-              <p style={{ marginTop: '-5px', marginBottom: '0' }}>Por favor espera la aprobación de tu supervisor</p>
-              <p style={{ marginTop: '-5px', marginBottom: '0' }}>o Capital Humano</p>
-            </div>
-            </Alert>)):(<Alert variant='danger'  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%', textAlign: 'center' }}>
-              <PiProhibitFill size={80}/>
-            <h4>Lamentablemente no tienes vacaciones disponibles en este momento.</h4>
+    <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+      {/* Formulario centrado */}
+      <div style={{ flex: '0 1 600px', zIndex: 1 }}>
+        <ToastContainer
+          closeOnClick
+          autoClose={8000}
+          pauseOnFocusLoss={false}
+          theme="colored"
+        />
+        {!loadingDocument ? (
+        <Card bg="light" className='form-container' border='dark'>
+          {!previousRequestStatus && diasHabiles ?
+            (<>
+            <Card.Header><h2> Solicita tus vacaciones aquí</h2></Card.Header>
+              <br />
+              </>
+            ):
+            previousRequestStatus ? ( 
+              (<Alert variant='primary'  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%', textAlign: 'center' }}>
+              <DotLottieReact
+              src="/assets/relojArena.json"
+              loop
+              autoplay
+              width={'auto'}
+              height={150}
+              speed={0.5}
+              style={{marginTop:'-50px'}}
+              />
+              
+              {/* LÓGICA DE MENSAJES DIFERENCIADA */}
+              <div style={{ marginTop: '-50px', textAlign: 'center' }}>
+                
+                {previousRequestStatus === 'Solicitada' && (
+                    <>
+                        <h4>Actualmente tienes una solicitud de vacaciones en Aprobación</h4>
+                        <hr style={{ width: '100%', marginTop: '-5px' }} />
+                        <p style={{ marginTop: '-5px', marginBottom: '0' }}>
+                            Por favor espera la aprobación de tu <strong>Supervisor</strong>.
+                        </p>
+                    </>
+                )}
+
+                {previousRequestStatus === 'Aprobada' && (
+                    <>
+                        <h4>Actualmente tienes una solicitud de vacaciones en Proceso</h4>
+                        <hr style={{ width: '100%', marginTop: '-5px' }} />
+                        <p style={{ marginTop: '-5px', marginBottom: '0' }}>
+                            Tu supervisor ya aprobó. Por favor espera que lo procese <strong>Capital Humano</strong>.
+                        </p>
+                    </>
+                )}
+
+              </div>
+              </Alert>)):(<Alert variant='danger'  style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%', textAlign: 'center' }}>
+                <PiProhibitFill size={80}/>
+              <h4>Lamentablemente no tienes vacaciones disponibles en este momento.</h4>
+            
+              </Alert>)
+
+          }
           
-            </Alert>)
+          
 
-        }
-        
-        
-
-        {!hasPreviousRequest && diasHabiles ? (
-        <Card.Body>
-          <div className="vacation-days">
-            <Alert variant='primary' style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%', textAlign: 'center' }}>
-              <IoCalendarSharp size={80} />
-              <br />
-              <h4>Selecciona el rango de fechas para tus vacaciones</h4>
-            </Alert>
-          </div>
-          <hr />
-          { (diasHabiles !== null && periodos) && (
-            <Form>
-              <Form.Group controlId="fechaInicio">
-                <Form.Label>Fecha Inicio:</Form.Label>
-                <DatePicker
-                  placeholder="dd/mm/yyyy"
-                  value={fechaInicio ? parseISO(fechaInicio) : null}
-                  valueFormat={{ day: "numeric", month: "numeric", year: "numeric" }}
-                  onChange={(date) => handleFechaInicioChange(date, [])}
-                  min={new Date()}
-                  parse={(str) => {
-                    if (!str) return undefined;
-                    const [day, month, year] = str.split('/').map(Number);
-                    const today = new Date();
-                    const parsedDate = new Date(
-                      year || today.getFullYear(),
-                      (month ? month - 1 : today.getMonth()),
-                      day
-                    );
-                    const startDate = fechaInicio ? parseISO(fechaInicio) : today;
-                    if (parsedDate < startDate) {
-                      return startDate;
-                    }
-                    return parsedDate;
-                  }}
-                />
-              </Form.Group>
-
-              <br />
-              
-              
-              <Form.Group>
-                <Form.Label>Periodo a tomar:</Form.Label>
-                <Select
-                  key={JSON.stringify(periodos)}
-                  isMulti
-                  closeMenuOnSelect={false}
-                  components={animatedComponents}
-                  placeholder='Seleccione el periodo'
-                  value={selectedPeriodos}
-                  options={periodos ? periodos.map((periodo: Periodos) => ({ id:periodo.ID_Periodo,value: periodo.DIAS, label: periodo.ETIQUETA + ' (' + periodo.DIAS +  ' días)' })) : []}
-                  onChange={handlePeriodChange}
-                  menuPlacement="top"
-
-                />
-              </Form.Group>
-              {!errorPeriodos && fechaMaximaFin && diasHabiles > 0 && fechaInicio ? (
-                <>
-                <div className={`alert ${errorPeriodos ? 'alert-exit' : 'alert-enter'}`}>
-                  <Alert variant="warning">
-                    Fecha Fin del periodo de Vacaciones: {addDays(parseISO((fechaMaximaFin)), 1).toLocaleDateString()}
-                  </Alert>
-                </div>
-                </>
-              ) : (
-                errorPeriodos ? (
-                  <div className={`alert ${errorPeriodos ? 'alert-enter' : 'alert-exit'}`}>
-                    <Alert variant="danger">{errorPeriodos}</Alert>
-                  </div>
-                ):(<br/>)
-              )}
-              {!loading ? (
-                <Form.Group controlId="fechaFin">
-                  <Form.Label>Fecha de Retorno:</Form.Label>
+          {!previousRequestStatus && diasHabiles ? (
+          <Card.Body>
+            <div className="vacation-days">
+              <Alert variant='primary' style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', width: '100%', textAlign: 'center' }}>
+                <IoCalendarSharp size={80} />
+                <br />
+                <h4>Selecciona el rango de fechas para tus vacaciones</h4>
+              </Alert>
+            </div>
+            <hr />
+            { (diasHabiles !== null && periodos) && (
+              <Form>
+                <Form.Group controlId="fechaInicio">
+                  <Form.Label>Fecha Inicio:</Form.Label>
                   <DatePicker
-                    placeholder='dd/mm/yyyy'
-                    value={fechaFin ? new Date(fechaFin) : null}
-                    onChange={(date: Date | null | undefined) => {
-                      setFechaFin(date ? date.toISOString() : null);
-                    }}
+                    placeholder="dd/mm/yyyy"
+                    value={fechaInicio ? dayjs(fechaInicio).toDate() : null}
                     valueFormat={{ day: "numeric", month: "numeric", year: "numeric" }}
-                    /* el dia minimo es un dia mas de la fecha de inicio porque la fecha de retorno no puede ser el mismo dia que la fecha de inicio */
-                    min={fechaInicio ? addDays(new Date(fechaInicio), 1) : undefined}
-                    /* el dia maximo es un dia mas de la fecha prolongada porque la fecha de retorno no puede ser el mismo dia que la fecha prolongada */
-                    max={fechaMaximaFin && fechaProlongada ? addDays(new Date(fechaProlongada), 1) : undefined}
+                    onChange={(date) => handleFechaInicioChange(date, [])}
+                    min={dayjs().toDate()}
                     parse={(str) => {
                       if (!str) return undefined;
                       const [day, month, year] = str.split('/').map(Number);
-                      const today = new Date();
-                      const parsedDate = new Date(
-                        year || today.getFullYear(),
-                        (month ? month - 1 : today.getMonth()),
-                        day
-                      );
-                      const startDate = fechaInicio ? addDays(new Date(fechaInicio), 1) : today;
-                      const maxDate = fechaMaximaFin && fechaProlongada ? addDays(new Date(fechaProlongada), 1) : undefined;
-
-                      if (parsedDate < startDate) {
+                      const today = dayjs();
+                      const parsedDate = dayjs(`${year || today.year()}-${month || today.month() + 1}-${day || today.date()}`, 'YYYY-M-D').toDate();
+                      const startDate = fechaInicio ? dayjs(fechaInicio).toDate() : today.toDate();
+                      if (dayjs(parsedDate).isBefore(dayjs(startDate))) {
                         return startDate;
                       }
-                      if (maxDate && parsedDate > maxDate) {
-                        return maxDate;
-                      }
                       return parsedDate;
-                  }}
-                    disabled={fechaMaximaFin === null || !diasHabiles || !fechaInicio || errorPeriodos!==null}
+                    }}
                   />
                 </Form.Group>
-              ) : (
-                <div className={stylesLoading.loadingDocument}>
-                  <Mosaic color={["#003391", "#1A5FFA", "#33CCCC", "#1A3FFA"]} size="small" text="" textColor="#0d1bff" />
-                </div>
-              )}
-              <div className="button-group">
-                {!hasPreviousRequest && diasHabiles !== null && (
+
+                <br />
+                
+                
+                <Form.Group>
+                  <Form.Label>Periodo a tomar:</Form.Label>
+                  <Select
+                    key={JSON.stringify(periodos)}
+                    isMulti
+                    closeMenuOnSelect={false}
+                    components={animatedComponents}
+                    placeholder='Seleccione el periodo'
+                    value={selectedPeriodos}
+                    options={periodos ? periodos.map((periodo: Periodos) => ({ id:periodo.ID_Periodo,value: periodo.DIAS, label: periodo.ETIQUETA + ' (' + periodo.DIAS +  ' días)' })) : []}
+                    onChange={handlePeriodChange}
+                    menuPlacement="top"
+
+                  />
+                </Form.Group>
+                {!errorPeriodos && fechaMaximaFin && diasHabiles > 0 && fechaInicio ? (
                   <>
-                    {(!fechaInicio || !fechaFin) ? (
-                      <>
-                        <Button variant="primary" onClick={() => alert('Debe llenar todos los campos.')} style={{ width: "100%" }}>Solicitar</Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button variant="primary" onClick={() => setShowConfirmModal(true)} style={{ width: "100%" }}>Solicitar</Button>
-                      </>
-                    )}
+                  <div className={`alert ${errorPeriodos ? 'alert-exit' : 'alert-enter'}`}>
+                      <Alert variant="warning">
+                        Fecha Fin del periodo de Vacaciones: {fechaMaximaFin ? dayjs(fechaMaximaFin).format('DD/MM/YYYY') : ''}
+                      </Alert>
+                  </div>
                   </>
+                ) : (
+                  errorPeriodos ? (
+                    <div className={`alert ${errorPeriodos ? 'alert-enter' : 'alert-exit'}`}>
+                      <Alert variant="danger">{errorPeriodos}</Alert>
+                    </div>
+                  ):(<br/>)
                 )}
-              </div>
-            </Form>
-          )}
-        </Card.Body>
-      ) : null}
-      </Card>):(
-        <div className={stylesLoading.loadingContainer2}><Mosaic color={["#003391", "#1A5FFA", "#33CCCC", "#1A3FFA"]} size="large" text="" textColor="#0d1bff" /></div>
+                {!loading ? (
+                  <Form.Group controlId="fechaFin">
+                    <Form.Label>Fecha de Retorno:</Form.Label>
+                    <DatePicker
+                      placeholder='dd/mm/yyyy'
+                      value={fechaFin ? dayjs(fechaFin).toDate() : null}
+                      onChange={(date: Date | null | undefined) => {
+                        setFechaFin(date ? dayjs(date).toISOString() : null);
+                      }}
+                      valueFormat={{ day: "numeric", month: "numeric", year: "numeric" }}
+                      min={fechaInicio ? dayjs(fechaInicio).add(1, 'day').toDate() : undefined}
+                      max={fechaMaximaFin && fechaProlongada ? dayjs(fechaProlongada).add(1, 'day').toDate() : undefined}
+                      parse={(str) => {
+                        if (!str) return undefined;
+                        const [day, month, year] = str.split('/').map(Number);
+                        const today = dayjs();
+                        const parsedDate = dayjs(`${year || today.year()}-${month || today.month() + 1}-${day || today.date()}`, 'YYYY-M-D').toDate();
+                        const startDate = fechaInicio ? dayjs(fechaInicio).add(1, 'day').toDate() : today.toDate();
+                        const maxDate = fechaMaximaFin && fechaProlongada ? dayjs(fechaProlongada).add(1, 'day').toDate() : undefined;
+                        if (dayjs(parsedDate).isBefore(dayjs(startDate))) {
+                          return startDate;
+                        }
+                        if (maxDate && dayjs(parsedDate).isAfter(dayjs(maxDate))) {
+                          return maxDate;
+                        }
+                        return parsedDate;
+                    }}
+                      disabled={fechaMaximaFin === null || !diasHabiles || !fechaInicio || errorPeriodos!==null}
+                    />
+                  </Form.Group>
+                ) : (
+                  <div className={stylesLoading.loadingDocument}>
+                    <Mosaic color={["#003391", "#1A5FFA", "#33CCCC", "#1A3FFA"]} size="small" text="" textColor="#0d1bff" />
+                  </div>
+                )}
+                <div className="button-group">
+                  {!previousRequestStatus && diasHabiles !== null && (
+                    <>
+                      {(!fechaInicio || !fechaFin) ? (
+                        <>
+                          <Button variant="primary" onClick={() => alert('Debe llenar todos los campos.')} style={{ width: "100%" }}>Solicitar</Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button variant="primary" onClick={() => setShowConfirmModal(true)} style={{ width: "100%" }}>Solicitar</Button>
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+              </Form>
+            )}
+          </Card.Body>
+        ) : null}
+        </Card>):(
+          <div className={stylesLoading.loadingContainer2}><Mosaic color={["#003391", "#1A5FFA", "#33CCCC", "#1A3FFA"]} size="large" text="" textColor="#0d1bff" /></div>
+        )}
+
+        <ConfirmarSolicitudModal
+        show={showConfirmModal}
+        handleClose={() => setShowConfirmModal(false)}
+        handleConfirm={handleConfirmSolicitar}
+        cod_emp={cod_emp}
+        error={error}
+        setError={setError}
+        fechaInicio={fechaInicio}
+        fechaFin={fechaMaximaFin}
+        fechaRetorno={fechaFin }
+      />
+
+      
+      </div>
+      {!loadingDocument && (
+        // Alerta a la derecha
+        <div
+          style={{
+            position: 'absolute',
+            right: '-340px',
+            top: '40px',
+            width: '320px',
+            background: '#ff8902ff',
+            border: '1px solid #fc7a00ff',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px #00339122',
+            padding: '18px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}
+        >
+          <h5 style={{ color: '#ffffffff', marginBottom: '10px', fontWeight: 700, fontSize: '1.25rem' }}>¡Atención!</h5>
+            <p style={{ color: '#333', textAlign: 'center', marginBottom: '16px' }}>
+            <strong style={{ color: '#032461ff' }}>¿Tienes días pendientes por disfrutar de un periodo vacacional ya pagado?</strong><br/> Para disfrutar únicamente los días restantes, realiza la solicitud como Permiso especial.
+            </p>
+          <button
+            style={{
+              background: '#003391',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '8px 18px',
+              cursor: 'pointer'
+            }}
+            onClick={() => navigate('/SolicitarPermisos')}
+          >
+            Solicitar Permiso
+          </button>
+        </div>
       )}
-
-      <ConfirmarSolicitudModal
-      show={showConfirmModal}
-      handleClose={() => setShowConfirmModal(false)}
-      handleConfirm={handleConfirmSolicitar}
-      cod_emp={cod_emp}
-      error={error}
-      setError={setError}
-      fechaInicio={fechaInicio}
-      fechaFin={fechaMaximaFin}
-      fechaRetorno={fechaFin }
-    />
-
-    </>
+    </div>
   );
 };
 

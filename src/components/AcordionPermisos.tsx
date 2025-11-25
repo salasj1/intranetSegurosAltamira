@@ -44,9 +44,47 @@ function AcordionPermisos({ refresh }: AcordionPermisosProps) {
     fetchPermisos();
   }, [cod_emp, refresh]);
 
+  // --- FUNCIÓN PARA RENDERIZAR EL BADGE (Copiada de ListaVacaciones) ---
+  const renderStatusBadge = (estado: string) => {
+    const statusLower = estado.toLowerCase();
+    let stylesBadge = {
+      backgroundColor: '#f0f0f0',
+      color: '#595959',
+      border: '1px solid #d9d9d9'
+    };
+
+    if (statusLower === 'solicitada' || statusLower === 'pendiente') {
+      stylesBadge = { backgroundColor: '#fff7e6', color: '#d46b08', border: '1px solid #ffd591' }; // Naranja
+    } else if (statusLower === 'aprobada' || statusLower === 'aprobado') {
+      stylesBadge = { backgroundColor: '#e6f7ff', color: '#096dd9', border: '1px solid #91d5ff' }; // Azul
+    } else if (statusLower === 'procesada') {
+      stylesBadge = { backgroundColor: '#f6ffed', color: '#389e0d', border: '1px solid #b7eb8f' }; // Verde
+    } else if (statusLower === 'rechazada' || statusLower === 'rechazado') {
+      stylesBadge = { backgroundColor: '#fff1f0', color: '#cf1322', border: '1px solid #ffa39e' }; // Rojo
+    }
+
+    return (
+      <span style={{
+        ...stylesBadge,
+        padding: '2px 10px', // Un poco más pequeño para el acordeón
+        borderRadius: '50px',
+        fontWeight: '600',
+        fontSize: '0.85rem',
+        display: 'inline-block',
+        textTransform: 'capitalize',
+        minWidth: '90px',
+        textAlign: 'center',
+        whiteSpace: 'nowrap'
+      }}>
+        {estado}
+      </span>
+    );
+  };
+  // -------------------------------------------------------------------
+
   if (loading) {
     return (
-      <Accordion defaultActiveKey={null} flush className={style.accordion}>
+      <Accordion defaultActiveKey={null} flush className={`${style.accordion} ${style.accordionSolicitados}`}>
         <Card bg='light' className={style.accordionItem} style={{ borderRadius: '0px' }} key={0}>
           <Accordion.Item eventKey={"0"}>
             <Accordion.Header>
@@ -64,16 +102,20 @@ function AcordionPermisos({ refresh }: AcordionPermisosProps) {
   }
 
   if (permisos.length === 0) {
-    return <Alert variant="warning" className={style.accordion}>No hay permisos solicitados</Alert>;
+    return <Alert variant="warning" className={`${style.accordion} ${style.accordionSolicitados}`}>No hay permisos solicitados</Alert>;
   }
 
   return (
-    <Accordion defaultActiveKey={null} flush className={style.accordion}>
+    <Accordion defaultActiveKey={null} flush className={`${style.accordion} ${style.accordionSolicitados}`}>
       {permisos.map((permiso) => (
         <Card bg='light' className={style.accordionItem} style={{ borderRadius: '0px' }} key={permiso.PermisosID}>
           <Accordion.Item eventKey={permiso.PermisosID.toString()}>
             <Accordion.Header>
-              <strong>{permiso.Titulo}</strong>
+              {/* Contenedor Flex para alinear Badge y Título */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px', width: '100%' }}>
+                {renderStatusBadge(permiso.Estado)}
+                <span style={{ fontSize: '1.05rem', color: '#333' }}>{permiso.Titulo}</span>
+              </div>
             </Accordion.Header>
             <Accordion.Collapse eventKey={permiso.PermisosID.toString()}>
               <Card.Body>

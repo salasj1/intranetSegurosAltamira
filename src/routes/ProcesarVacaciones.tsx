@@ -6,7 +6,8 @@ import axios from "axios";
 import { Alert, AlertHeading } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
-
+import { Mosaic } from "react-loading-indicators";
+import stylesLoading from "../css/loading.module.css";
 const apiUrl = import.meta.env.VITE_API_URL;
 export interface Vacacion {
     VacacionID: number;
@@ -33,6 +34,7 @@ function ProcesarVacaciones() {
     
     const [vacaciones, setVacaciones] = useState<Vacacion[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const {  RRHH } = useAuth();
     const navigate = useNavigate();
     useEffect(() => {
@@ -41,10 +43,10 @@ function ProcesarVacaciones() {
         }
     }, [RRHH,  navigate]);
     const fetchVacaciones = async () => {
+        setIsLoading(true);
         try {
             const response = await axios.get(`${apiUrl}/vacacionesaprobadas`);
-            setVacaciones(response.data);
-            
+            setVacaciones(response.data);   
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error('Error fetching vacaciones:', error.message);
@@ -62,6 +64,7 @@ function ProcesarVacaciones() {
             }
             setError('Error al cargar los datos de las vacaciones');
         }
+        setIsLoading(false);
     };
 
     useEffect(() => {
@@ -76,7 +79,13 @@ function ProcesarVacaciones() {
                 {error && <Alert variant="danger" onClose={() => setError(null)} dismissible>
                     <AlertHeading>Error <hr /></AlertHeading>{error}
                 </Alert>}
-                <ListaProcesarVacacaciones vacaciones={vacaciones} fetchVacaciones={fetchVacaciones} />
+                {isLoading ? (
+                    <div className={stylesLoading.loadingDocument}>
+                        <Mosaic color={["#003391","#1A5FFA","#33CCCC","#1A3FFA"]} size="large" text="" textColor="#0d1bff" />
+                    </div>
+                ) : (
+                    <ListaProcesarVacacaciones vacaciones={vacaciones} fetchVacaciones={fetchVacaciones} />
+                )}
             </div>
         </>
     );

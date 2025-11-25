@@ -1,28 +1,28 @@
-import {  Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import {  Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import Login from './routes/Login.tsx';
-import Home from './routes/Home.tsx';
-import ProtectedRoute from './routes/ProtectedRoute.tsx';
-import { AuthProvider } from './auth/AuthProvider.tsx';
-import Signup from './routes/Signup.tsx';
-import RecibodePago from './routes/RecibodePago.tsx';
-import RecibodePagoDetallado from './routes/RecibodePagoDetallado.tsx';
-import ARC from './routes/ARC.tsx';
-import Prestaciones from './routes/Prestaciones.tsx';
-import DirectorioEmpleados from './routes/DirectorioEmpleados.tsx';
-import SolicitarVacaciones from './routes/SolicitarVacaciones.tsx';
-import AprobarVacaciones from './routes/AprobarVacaciones.tsx';
-import ProcesarPermisos from './routes/ProcesarPermisos.tsx';
-import ProcesarVacaciones from './routes/ProcesarVacaciones.tsx';
-import SolicitarPermisos from './routes/SolicitarPermisos.tsx';
-import AprobarPermisos from './routes/AprobarPermisos.tsx';
-import ControlAutorizacion from './routes/ControlAutorizacion.tsx';
-import ChangePasswordVerify from './routes/ChangePasswordVerify.tsx';
-import ConstaciaDeTrabajo from './routes/ConstaciaDeTrabajo.tsx';
-import RetornoVacaciones from './routes/RetornoVacaciones.tsx';
-import AdminDashboard from './routes/AdminDashboard.tsx';
-import Expendiente from './routes/Expendiente.tsx';
-import RRHHExpedientes from './routes/RRHHExpedientes';
+import Login from './routes/Login';
+import Home from './routes/Home/Home';
+import ProtectedRoute from './routes/ProtectedRoute';
+import { AuthProvider } from './auth/AuthProvider';
+import Signup from './routes/Signup';
+import RecibodePago from './routes/ReciboDePago/RecibodePago';
+import RecibodePagoDetallado from './routes/ReciboDePago/components/RecibodePagoDetallado';
+import ARC from './routes/ARC';
+import Prestaciones from './routes/Prestaciones';
+import DirectorioEmpleados from './routes/DirectorioEmpleados';
+import SolicitarVacaciones from './routes/SolicitarVacaciones';
+import AprobarVacaciones from './routes/AprobarVacaciones';
+import ProcesarPermisos from './routes/ProcesarPermisos';
+import ProcesarVacaciones from './routes/ProcesarVacaciones';
+import SolicitarPermisos from './routes/SolicitarPermisos';
+import AprobarPermisos from './routes/AprobarPermisos';
+import ControlAutorizacion from './routes/ControlAutorizacion';
+import ChangePasswordVerify from './routes/ChangePasswordVerify';
+import ConstaciaDeTrabajo from './routes/ConstaciaDeTrabajo';
+import RetornoVacaciones from './routes/RetornoVacaciones';
+import AdminDashboard from './routes/AdminDashboard';
+import Expendiente from '@/routes/Expediente/Expendiente';
+import RRHHExpedientes from './routes/Expediente/RRHHExpedientes';
 
 function App() {
   const location = useLocation();
@@ -64,12 +64,7 @@ function App() {
             <Route path="ProcesarPermisos" element={<ProcesarPermisos />} />
             <Route path="DirectorioEmpleados" element={<DirectorioEmpleados />} />
             <Route path="ControlSupervision" element={<ControlAutorizacion />} />
-            <Route path="expediente" element={<Expendiente />}>
-              <Route index element={<Navigate to="datos" replace />} />
-              <Route path="datos" element={<Expendiente />} />
-              {/* <Route path="rutas" element={<Expendiente />} /> */}
-              <Route path="documentos" element={<Expendiente />} />
-            </Route>
+            <Route path="expediente/:seccion" element={<Expendiente />} />
             <Route path="Admin" element={<AdminDashboard />} />
             <Route path="GestionExpediente" element={<RRHHExpedientes />} />
           </Route>
