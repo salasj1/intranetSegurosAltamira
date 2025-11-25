@@ -28,7 +28,7 @@ const Notificaciones: React.FC = () => {
     const [notificationCount, setNotificationCount] = useState<number>(0);
     const auth = useAuth();
 
-    const fetchNewPermisos = async () => {
+    /* const fetchNewPermisos = async () => {
         try {
             let response;
             if (auth.tipo === 'Supervisor') {
@@ -48,9 +48,9 @@ const Notificaciones: React.FC = () => {
             console.error('Error al obtener permisos nuevos:', error);
             setNewPermisos([]);
         }
-    };
+    }; */
 
-   /*  useEffect(() => {
+    /* useEffect(() => {
         if (showPermisos) {
             fetchNewPermisos();
         }
