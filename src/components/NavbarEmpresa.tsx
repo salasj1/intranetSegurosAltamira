@@ -8,7 +8,6 @@ import { fas, faBell } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../auth/AuthProvider';
 import logoEmpresa from '../assets/logo-login.png';
 library.add(fas, faBell);
-import Notificaciones from './Notificaciones'; // Importar el nuevo componente
 import { Row, Col, Button } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
 import Offcanvas from 'react-bootstrap/Offcanvas';
@@ -107,9 +106,6 @@ function NavbarEmpresa() {
                             <Nav className='right-div'>
                                 <div className='user-info'>{auth.nombre_completo?.replace(/,/g, '') || 'Nombre completo'}</div>
                                 <div className='user-info'>{auth.cargo_empleado || 'Cargo del Empleado'}</div>
-                                <Navbar.Brand>
-                                    <Notificaciones />
-                                </Navbar.Brand>
                             </Nav>
                         </Offcanvas.Header>
                         <Offcanvas.Body>
@@ -235,7 +231,7 @@ function NavbarEmpresa() {
                                                             {auth.cargo_empleado || 'Cargo del Empleado'}
                                                         </div>
                                                         <Navbar.Brand>
-                                                            <Notificaciones />
+                                                            
                                                         </Navbar.Brand>
                                                     </div>
                                                     <Nav.Link  className='textoNavlink' style={{textWrap:'nowrap'}} onClick={handleLogout}>Cerrar Sesión</Nav.Link>

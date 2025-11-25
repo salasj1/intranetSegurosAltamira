@@ -5,7 +5,7 @@ import { useAuth } from '../auth/AuthProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = (import.meta as any).env.VITE_API_URL;
 
 interface Permiso {
     PermisosID: number;
@@ -50,11 +50,11 @@ const Notificaciones: React.FC = () => {
         }
     };
 
-    useEffect(() => {
+   /*  useEffect(() => {
         if (showPermisos) {
             fetchNewPermisos();
         }
-    }, [showPermisos]);
+    }, [showPermisos]); */
 
     useEffect(() => {
         const storedDiscardedPermisos = localStorage.getItem('discardedPermisos');
