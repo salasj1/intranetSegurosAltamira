@@ -169,7 +169,7 @@ function Prestaciones() {
 
   return (
     <>
-    <ToastContainer />
+    <ToastContainer style={{ zIndex: 9999 }}/>
       <NavbarEmpresa />
       <div className={styles.canvas}>
         <h1 style={{ textAlign: "center" }} className={styles.h1Prestaciones}>Movimientos de Prestaciones Sociales</h1>

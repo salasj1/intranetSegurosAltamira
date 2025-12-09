@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { FaFileContract, FaReceipt, FaHandHoldingUsd,  FaBuilding, FaBullseye, FaLinkedin, FaInstagram, FaFacebook } from "react-icons/fa";
 import { FaRoute} from 'react-icons/fa';
 import { SiGoogledocs } from "react-icons/si";
+import { TbWorld } from "react-icons/tb";
 /* import useAuth from  '../auth/AuthProvider' */
 import Carrusel from "@/routes/Home/components/Carrusel";
 import panfleto from '@/assets/Panfleto.png';
@@ -130,15 +131,15 @@ function Home() {
         {/* Primer Bento Grid */}
         <div className={styles.parent1}>
           <div className={`${styles.div1} ${styles.card}`}>
-            <h3>Estadísticas Clave</h3>
+            <h3>Indicadores del personal</h3>
             <div className={styles.statsContainer}>
               <div className={styles.statItem}>
                 <CountUp to={vacacionesProcesadas} duration={2} separator="." />
-                <span>Vacaciones Procesadas</span>
+                <span>Total de Vacaciones procesadas</span>
               </div>
               <div className={styles.statItem}>
                 <CountUp to={permisosProcesados} duration={2} separator="." />
-                <span>Permisos Procesados</span>
+                <span>Total de Permisos procesados</span>
               </div>
             </div>
           </div>
@@ -363,6 +364,7 @@ function Home() {
                 <a href="https://www.linkedin.com/company/seguros-altamira/" target="_blank" rel="noopener noreferrer"><FaLinkedin /></a>
                 <a href="https://www.instagram.com/segurosaltamira/" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
                 <a href="https://www.facebook.com/segurosaltamira" target="_blank" rel="noopener noreferrer"><FaFacebook /></a>   
+                <a href="https://www.segurosaltamira.com" target="_blank" rel="noopener noreferrer"><TbWorld /></a>
             </div>
             <p>&copy; {new Date().getFullYear()} Seguros Altamira, C.A. Todos los derechos reservados.</p>
         </footer>

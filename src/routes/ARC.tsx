@@ -192,7 +192,7 @@ const handleSendSecondaryEmail = async () => {
 
   return (
     <>
-    <ToastContainer />
+    <ToastContainer style={{ zIndex: 9999 }}/>
       <NavbarEmpresa />
       <div className={styles.canvas}>
         <h1 style={{ textAlign: "center" }} className={styles.h1ARC}>Comprobante de Agente de Retención (ARC)</h1>

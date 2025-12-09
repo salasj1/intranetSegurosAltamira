@@ -58,7 +58,7 @@ function SolicitarVacaciones() {
        const response = await axios.get(`${apiUrl}/vacaciones/id/${cod_emp}`);
       // Buscamos si existe alguna solicitud activa
       const activeRequest = response.data.find((vacacion: any) => 
-        vacacion.Estado === 'Solicitada' || vacacion.Estado === 'Aprobada'
+        vacacion.Estado === 'solicitada' || vacacion.Estado === 'Aprobada'
       );
       
       // Guardamos el estado si existe, si no, null

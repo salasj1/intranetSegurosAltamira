@@ -186,7 +186,7 @@ function RecibodePagoDetallado() {
 
   return (
     <>
-    <ToastContainer />
+    <ToastContainer style={{ zIndex: 9999 }}/>
       <NavbarEmpresa />
       <div className={styles.canvas}>
         {error && <Alert variant='danger'>{error}</Alert>}

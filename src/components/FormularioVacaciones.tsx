@@ -223,7 +223,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
     playerRef.current?.play();
     setSuccess('¡Genial! Has solicitado tus días de vacaciones con éxito.');
     return (
-      <div className="flex flex-col w-full" style={{ display: 'flex', alignItems: 'center', marginBottom: '-20px' }}>
+      <div className="flex flex-col w-full" style={{ display: 'flex', alignItems: 'center', marginBottom: '-20px',zIndex: 2000}}>
       <div style={{ flex: 1 }}>
         <strong><h2 className='' >¡Genial!</h2></strong>
         <p>Has solicitado tus días de vacaciones con éxito.</p>
@@ -379,12 +379,13 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
   return (
     <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
       {/* Formulario centrado */}
-      <div style={{ flex: '0 1 600px', zIndex: 1 }}>
+      <div style={{ flex: '0 1 600px'}}>
         <ToastContainer
           closeOnClick
           autoClose={8000}
           pauseOnFocusLoss={false}
           theme="colored"
+          style={{ zIndex: 9999 }}
         />
         {!loadingDocument ? (
         <Card bg="light" className='form-container' border='dark'>
@@ -409,7 +410,7 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
               {/* LÓGICA DE MENSAJES DIFERENCIADA */}
               <div style={{ marginTop: '-50px', textAlign: 'center' }}>
                 
-                {previousRequestStatus === 'Solicitada' && (
+                {previousRequestStatus === 'solicitada' && (
                     <>
                         <h4>Actualmente tienes una solicitud de vacaciones en Aprobación</h4>
                         <hr style={{ width: '100%', marginTop: '-5px' }} />
@@ -565,17 +566,17 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
           <div className={stylesLoading.loadingContainer2}><Mosaic color={["#003391", "#1A5FFA", "#33CCCC", "#1A3FFA"]} size="large" text="" textColor="#0d1bff" /></div>
         )}
 
-        <ConfirmarSolicitudModal
-        show={showConfirmModal}
-        handleClose={() => setShowConfirmModal(false)}
-        handleConfirm={handleConfirmSolicitar}
-        cod_emp={cod_emp}
-        error={error}
-        setError={setError}
-        fechaInicio={fechaInicio}
-        fechaFin={fechaMaximaFin}
-        fechaRetorno={fechaFin }
-      />
+          <ConfirmarSolicitudModal
+          show={showConfirmModal}
+          handleClose={() => setShowConfirmModal(false)}
+          handleConfirm={handleConfirmSolicitar}
+          cod_emp={cod_emp}
+          error={error}
+          setError={setError}
+          fechaInicio={fechaInicio}
+          fechaFin={fechaMaximaFin}
+          fechaRetorno={fechaFin }
+        />
 
       
       </div>

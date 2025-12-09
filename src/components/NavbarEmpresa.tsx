@@ -101,7 +101,7 @@ function NavbarEmpresa() {
                         </Button>
                     </div>
 
-                    <Offcanvas show={show} onHide={handleClose} responsive='lg'>
+                    <Offcanvas show={show} onHide={handleClose} responsive='lg'  id='row-navbar'>
                         <Offcanvas.Header closeButton className='offcanvas-header' style={{marginLeft:0}}>
                             <Nav className='right-div'>
                                 <div className='user-info'>{auth.nombre_completo?.replace(/,/g, '') || 'Nombre completo'}</div>
@@ -109,11 +109,14 @@ function NavbarEmpresa() {
                             </Nav>
                         </Offcanvas.Header>
                         <Offcanvas.Body>
-                            <Container>
-                                <Row>
+
+                                <Row id='row-navbar'>
                                     <Navbar.Toggle aria-controls='responsive-navbar-nav' />
                                     <Navbar.Collapse id='responsive-navbar-nav'>
                                         <Nav className='me-auto'>
+                                            <div className='lista-Opciones-Nav'>
+
+                                            
                                             <Col>
                                                 <NavDropdown title='Consultas' className={isConsultasActive() ? 'nav-dropdown-active' : ''}>
                                                     <NavDropdown.Item as={Link} to='/RecibodePago'  id='submenu' className={isActive('/RecibodePago') ? 'cuadroItem especial' : 'cuadroItem'}>
@@ -200,11 +203,12 @@ function NavbarEmpresa() {
                                             </Col>
                                             
 
-                                            <Col  offset={6}>
+                                            <Col  >
                                                 <Nav.Link as={Link} to='/DirectorioEmpleados' className={isActive('/DirectorioEmpleados') ? 'active textoNavlink' : 'textoNavlink'}>
                                                     Directorio de Empleados
                                                 </Nav.Link>
                                             </Col>
+                                            </div>
                                             {/* <Col  >
 
                                                 <Nav.Link href="https://www.segurosaltamira.com/" target="_blank">
@@ -221,7 +225,7 @@ function NavbarEmpresa() {
                                             ) : null}
                                             <Col>
                                             </Col>
-                                            <Col md={auth.RRHH === 1 ? { offset: 4 } : { offset: 6 }}>
+                                            <Col >
                                                 <Nav className='right-div'>
                                                     <div className="contenedor-user-info">
                                                         <div className='user-info' >{`${auth.nombres?.split(' ')[0]?.charAt(0).toUpperCase() + auth.nombres?.split(' ')[0]?.slice(1).toLowerCase() || ''} ${auth.apellidos?.split(' ')[0]?.charAt(0).toUpperCase() + auth.apellidos?.split(' ')[0]?.slice(1).toLowerCase() || ''}`}</div>
@@ -234,13 +238,13 @@ function NavbarEmpresa() {
                                                             
                                                         </Navbar.Brand>
                                                     </div>
-                                                    <Nav.Link  className='textoNavlink' style={{textWrap:'nowrap'}} onClick={handleLogout}>Cerrar Sesión</Nav.Link>
+                                                    <Nav.Link  className='textoNavlink' style={{textWrap:'nowrap', marginRight:'10px'}} onClick={handleLogout}>Cerrar Sesión</Nav.Link>
                                                 </Nav>
                                             </Col>
                                         </Nav>
                                     </Navbar.Collapse>
                                 </Row>
-                            </Container>
+
                         </Offcanvas.Body>
                     </Offcanvas>
                 </Navbar>

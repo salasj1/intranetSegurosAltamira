@@ -200,6 +200,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
         autoClose={4000}
         pauseOnFocusLoss={false}
         theme="colored"
+        style={{ zIndex: 9999 }}
       />
       <div className='tablaAprobar'>
         {error && (

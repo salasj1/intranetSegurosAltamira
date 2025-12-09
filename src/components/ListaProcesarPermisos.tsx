@@ -161,6 +161,7 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
         autoClose={4000}
         pauseOnFocusLoss={false}
         theme="colored"
+        style={{ zIndex: 9999 }}
       />
       <div className='tablaAprobar'>
         <Table striped bordered hover responsive>

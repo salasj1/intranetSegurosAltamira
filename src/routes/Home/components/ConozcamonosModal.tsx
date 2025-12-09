@@ -9,6 +9,7 @@ import Diapositiva2 from '../../../assets/Conozcamonos/Diapositiva2.png';
 import Diapositiva3 from '../../../assets/Conozcamonos/Diapositiva3.png';
 import Diapositiva4 from '../../../assets/Conozcamonos/Diapositiva4.png';
 import Diapositiva5 from '../../../assets/Conozcamonos/Diapositiva5.png';
+import Diapositiva18 from '../../../assets/Conozcamonos/Diapositiva18.png';
 import Diapositiva6 from '../../../assets/Conozcamonos/Diapositiva6.png';
 import Diapositiva7 from '../../../assets/Conozcamonos/Diapositiva7.png';
 import Diapositiva8 from '../../../assets/Conozcamonos/Diapositiva8.png';
@@ -25,7 +26,7 @@ import Diapositiva17 from '../../../assets/Conozcamonos/Diapositiva17.png';
 // Creamos un array con las imágenes importadas
 const images = [
   Diapositiva1, Diapositiva2, Diapositiva3, Diapositiva4, Diapositiva5,
-  Diapositiva6, Diapositiva7, Diapositiva8, Diapositiva9, Diapositiva10,
+  Diapositiva18, Diapositiva6, Diapositiva7, Diapositiva8, Diapositiva9, Diapositiva10,
   Diapositiva11, Diapositiva12, Diapositiva13, Diapositiva14, Diapositiva15,
   Diapositiva16, Diapositiva17
 ];

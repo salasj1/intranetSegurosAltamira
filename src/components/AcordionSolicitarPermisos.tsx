@@ -334,6 +334,7 @@ useEffect(() => {
         autoClose={8000}
         pauseOnFocusLoss={false}
         theme="colored"
+        style={{ zIndex: 9999 }}
         />
       <Accordion defaultActiveKey={null} flush className={style.accordion}>
         <Card key={`solicitar-permiso-${cod_emp}`} bg='primary' className={style.accordionItem} style={{ borderRadius: '0px' }}>

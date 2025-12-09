@@ -158,7 +158,7 @@ const ModalCederSupervision: React.FC<Props> = ({ show, handleClose, fetchEmplea
 
   return (
     <>
-    <ToastContainer position="top-right" autoClose={4000} />
+    <ToastContainer position="top-right" autoClose={4000} style={{ zIndex: 9999 }}/>
     <Modal show={show} onHide={handleClose} size="lg" centered>
       <Modal.Header closeButton>
         <Modal.Title>Transferencia de Supervisión de Empleados</Modal.Title>

@@ -481,7 +481,7 @@ const Expendiente = () => {
           </div>
         )}
         <div className={style.phaseWrapper}>
-          <ToastContainer />
+          <ToastContainer style={{ zIndex: 9999 }}/>
           
           <TransitionGroup>
             <CSSTransition

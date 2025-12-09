@@ -178,7 +178,7 @@ function ConstaciaDeTrabajo() {
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer style={{ zIndex: 9999 }}/>
       <NavbarEmpresa />
       <div className={styles.canvas}>
         <h1 className={styles.h1Prestaciones}>Constancia de Trabajo</h1>
