@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [cod_emp, setCodEmp] = useState<string | ''>(localStorage.getItem('cod_emp') || '');
     const [fecha_ing, setFechaIng] = useState<string | null>(null);
     const [des_depart, setDesDepart] = useState<string | null>(null);
-    const [tipo, setTipo] = useState<string | null>(localStorage.getItem('tipo'));
+    const [tipo, setTipo] = useState<string | null>(sessionStorage.getItem('tipo'));
     const [RRHH, setRRHH] = useState<number | null>(Number(localStorage.getItem('RRHH')));
     const [canApproveVacations, setCanApproveVacations] = useState<boolean>(localStorage.getItem('canApproveVacations') === 'true');
     const [canApprovePermits, setCanApprovePermits] = useState<boolean>(localStorage.getItem('canApprovePermits') === 'true');
@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const storedCodEmp = localStorage.getItem('cod_emp');
         const storedFechaIng = localStorage.getItem('fecha_ing');
         const storedDesDepart = localStorage.getItem('des_depart');
-        const storedTipo = localStorage.getItem('tipo');
+        const storedTipo = sessionStorage.getItem('tipo');
         const storedRRHH = localStorage.getItem('RRHH');
         const storedCanApproveVacations = localStorage.getItem('canApproveVacations') === 'true';
         const storedCanApprovePermits = localStorage.getItem('canApprovePermits') === 'true';
@@ -131,7 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem('cod_emp', response.data.cod_emp);
                 localStorage.setItem('fecha_ing', response.data.fecha_ing);
                 localStorage.setItem('des_depart', response.data.des_depart);
-                localStorage.setItem('tipo', response.data.tipo);
+                sessionStorage.setItem('tipo', response.data.tipo);
                 localStorage.setItem('RRHH', response.data.RRHH);
                 localStorage.setItem('email', response.data.email); // Asegúrate de que este valor se está almacenando
                 localStorage.setItem('sexo', response.data.sexo);
@@ -170,7 +170,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem('cod_emp', response.data.cod_emp);
                 localStorage.setItem('fecha_ing', response.data.fecha_ing);
                 localStorage.setItem('des_depart', response.data.des_depart);
-                localStorage.setItem('tipo', response.data.tipo);
+                sessionStorage.setItem('tipo', response.data.tipo);
                 localStorage.setItem('RRHH', response.data.RRHH.toString());
                 localStorage.setItem('email', response.data.email);
                 localStorage.setItem('sexo', response.data.sexo);
@@ -209,7 +209,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('cod_emp');
         localStorage.removeItem('fecha_ing');
         localStorage.removeItem('des_depart');
-        localStorage.removeItem('tipo');
+        sessionStorage.removeItem('tipo');
         localStorage.removeItem('RRHH');
         localStorage.removeItem('email');
         localStorage.removeItem('isAdmin');
@@ -232,7 +232,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     setRRHH(newStatus.RRHH);
                     setCanApproveVacations(newStatus.canApproveVacations);
                     setCanApprovePermits(newStatus.canApprovePermits);
-                    localStorage.setItem('tipo', newStatus.tipo);
+                    sessionStorage.setItem('tipo', newStatus.tipo);
                     localStorage.setItem('RRHH', String(newStatus.RRHH));
                     localStorage.setItem('canApproveVacations', String(newStatus.canApproveVacations));
                     localStorage.setItem('canApprovePermits', String(newStatus.canApprovePermits));

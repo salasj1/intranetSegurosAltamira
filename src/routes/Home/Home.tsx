@@ -11,14 +11,14 @@ import { TbWorld } from "react-icons/tb";
 /* import useAuth from  '../auth/AuthProvider' */
 import Carrusel from "@/routes/Home/components/Carrusel";
 import panfleto from '@/assets/Panfleto.png';
-
+import rutas from '@/assets/rutas.png';
 import logoCostura from '@/assets/logo-costura.jpg';
 import logoCristal from '@/assets/logo-cristal.jpeg';
 import logoChip from '@/assets/logo-chip.png';
 import ConozcamonosModal from "../Home/components/ConozcamonosModal";
 import { useAuth } from "@/auth/AuthProvider";
 import { PiCursorClickLight } from "react-icons/pi";
-
+import NavidadCard from "../Home/components/NavidadCard";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function Home() {
@@ -37,28 +37,55 @@ function Home() {
     setAnimatedItems(prev => ({ ...prev, [itemId]: true }));
   };
 
+  // Lógica de Caché y Observer unificada
   useEffect(() => {
     let observer: IntersectionObserver | null = null;
     if (statsRef.current && !statsLoaded) {
       observer = new window.IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting) {
-            // Solo ejecuta la consulta la primera vez que es visible
+            
             const fetchCounts = async () => {
+              // 1. Definir claves para el caché
+              const CACHE_KEY = 'stats_rrhh_data';
+              const CACHE_TIME_KEY = 'stats_rrhh_timestamp';
+              const CACHE_DURATION = 15 * 60 * 1000; // 15 minutos en milisegundos
+
+              const cachedData = sessionStorage.getItem(CACHE_KEY);
+              const cachedTime = sessionStorage.getItem(CACHE_TIME_KEY);
+              const now = new Date().getTime();
+
+              // 2. Verificar si existe caché y si es válido (menos de 15 min)
+              if (cachedData && cachedTime && (now - parseInt(cachedTime) < CACHE_DURATION)) {
+                const parsed = JSON.parse(cachedData);
+                setVacacionesProcesadas(parsed.totalVacaciones);
+                setPermisosProcesados(parsed.totalPermisos);
+                setStatsLoaded(true);
+                return; // Salimos sin llamar a la API
+              }
+
+              // 3. Si no hay caché válido, llamamos a la API
               try {
                 const res = await axios.get(`${apiUrl}/estadisticas/TotalVacacionesYPermisos`);
+                
+                // Actualizamos estado
                 setVacacionesProcesadas(res.data.totalVacaciones);
                 setPermisosProcesados(res.data.totalPermisos);
                 setStatsLoaded(true);
+
+                // 4. Guardamos en caché
+                sessionStorage.setItem(CACHE_KEY, JSON.stringify(res.data));
+                sessionStorage.setItem(CACHE_TIME_KEY, now.toString());
+
               } catch (error) {
                 console.error("Error fetching counts:", error);
               }
             };
             fetchCounts();
-            observer?.disconnect(); // Detiene el observer después de cargar
+            observer?.disconnect(); 
           }
         },
-        { threshold: 0.2 } // 20% visible
+        { threshold: 0.2 } 
       );
       observer.observe(statsRef.current);
     }
@@ -86,21 +113,6 @@ function Home() {
     };
   }, [expedienteVisible]);
 
-  useEffect(() => {
-    const fetchCounts = async () => {
-      try {
-        const res = await axios.get(`${apiUrl}/estadisticas/TotalVacacionesYPermisos`);
-        setVacacionesProcesadas(res.data.totalVacaciones);
-        setPermisosProcesados(res.data.totalPermisos);
-      } catch (error) {
-        console.error("Error fetching counts:", error);
-      }
-    };
-
-    fetchCounts();
-  }, []);
-
-  // ...existing imports...
   const [bentoVisible, setBentoVisible] = useState(false);
   const bentoRef = useRef<HTMLDivElement>(null);
 
@@ -130,7 +142,8 @@ function Home() {
       <div className={styles.homeCanvas}>
         {/* Primer Bento Grid */}
         <div className={styles.parent1}>
-          <div className={`${styles.div1} ${styles.card}`}>
+          {/* AQUI FALTABA AGREGAR EL ref={statsRef} */}
+          <div className={`${styles.div1} ${styles.card}`} ref={statsRef}>
             <h3>Indicadores del personal</h3>
             <div className={styles.statsContainer}>
               <div className={styles.statItem}>
@@ -145,7 +158,7 @@ function Home() {
           </div>
           <div className={`${styles.div2} ${styles.card}`}  style={{padding: '0px'}}>
             {/* Coloca tu imagen aquí */}
-            <img src={panfleto} alt="Imagen de la empresa" />
+            <img src={"https://scontent.fccs3-1.fna.fbcdn.net/v/t39.30808-6/615272423_1182930100705864_4340632115878579546_n.png?_nc_cat=105&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=INyT-HZNuAwQ7kNvwGSxizZ&_nc_oc=AdnbF5DCCIgC1g2zvBmuV3Hl40jugCd-6M57XSQr0JzPMlhHiYfdmCszluAVaalLwPg&_nc_zt=23&_nc_ht=scontent.fccs3-1.fna&_nc_gid=cub9LTWxWtnoRERk1mI4xw&oh=00_AfoAFukHebNi-eE0qfm-iW1LrjW7Dh4pMsZd2l8Vlf3gAg&oe=69700B46"} alt="Imagen de la empresa" style={{objectFit:'cover'}}/>
             {/* <h4>Intranet Seguros Altamira</h4> */}
           </div>
           <div className={`${styles.div3} ${styles.card} ${styles.shortcutCard}`}>
@@ -176,80 +189,35 @@ function Home() {
             </Link>
           </div>
         </div>
-        <section style={{ backgroundColor: '#003896', width: '110vw'}}>
-          {/* 1. CONTENEDOR PRINCIPAL
-            Este div ahora sirve como el "lienzo". Se le añade position: 'relative' 
-            para que las capas internas (fondo y texto) puedan posicionarse respecto a él.
-          */}
+        {/* <NavidadCard/> */}
+        
+        <section className={styles.heroFullBleed}>
           <div
             ref={expedienteRef}
             title="Actualiza el expediente"
-            style={{
-              position: 'relative',
-              width: '100%',
-              height: '80vh',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              overflow: 'hidden'
-            }}
+            className={styles.heroContainer}
+            style={{ ['--hero-bg' as any]: rutas ? `url(${rutas})` : 'none' }}
           >
-            {/* 2. CAPA DE FONDO Y OPACIDAD
-              Este div se dedica únicamente a mostrar la imagen de fondo con opacidad.
-              Es absoluto para que ocupe todo el espacio del padre y se pone detrás con zIndex.
-            */}
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                backgroundImage: `url("https://kinesisco.com/wp-content/uploads/2023/11/automatizacion-procesos-administrar-archivos-manera-eficiente-base-datos-documentos-documentacion-linea.jpg")`, 
-                backgroundPosition: 'center center', 
-                backgroundRepeat: 'no-repeat',
-                backgroundSize: 'cover',
-                opacity: '.35', // La opacidad solo afecta a esta capa.
-                zIndex: 1, // Se asegura que esté por debajo del contenido.
-                transition: 'background 0.3s, border-radius 0.3s, opacity 0.3s'
-              }}
-            ></div>
-
-            {/* 3. CAPA DE CONTENIDO (TEXTO)
-              Este div es hermano del anterior. Contiene todo el texto.
-              Se le da un zIndex mayor para que se muestre por encima de la capa del fondo.
-              Ya no necesita el 'opacity: 1'.
-            */}
-             <div
-                style={{
-                  position: 'relative',
-                  zIndex: 2,
-                  fontFamily: ' "Gotham", Sans-serif',
-                  lineHeight: "1.2",
-                  color: "#FFF",
-                  textShadow: "0 2px 8px rgba(0,0,0,0.25)",
-                  maxWidth: "1000px",
-                  width: '100%',
-                  textAlign: 'center',
-                  padding: '1rem'
-                }}
+            <div className={styles.heroBgOverlay}></div>
+            <div className={styles.heroContent}>
+              <p
+                className={`${expedienteVisible ? `${styles.fadeInUp} ${styles.fadeInUpDelay1}` : ''} ${styles.heroTitle}`}
               >
-                <p className={expedienteVisible ? `${styles.fadeInUp} ${styles.fadeInUpDelay1}` : ''}  style={{ fontWeight: 100, fontSize: "4.5rem"}}>
-                  Actualiza tu expediente
-                </p>
-                <p className={expedienteVisible ? `${styles.fadeInUp} ${styles.fadeInUpDelay2}` : ''} style={{ fontSize: "2.2rem", fontWeight: 400 , fontFamily: '"Grape Nuts", Sans-serif'}}>
-                  Consulta y actualiza tus datos personales, revisa tu rutograma y accede a tus documentos importantes de forma segura y rápida.
-                </p>
-                <Link to="/expediente/datos">
-                  <button
-                    className={`${styles.botton} ${styles.bottonPrimary} `}
-                  >
-                    Dirigete Ya
-                  </button>
-                </Link>
-              </div>
+                Actualiza tu Rutograma  y <br /> tu Expediente Personal
+              </p>
+              <p
+                className={`${expedienteVisible ? `${styles.fadeInUp} ${styles.fadeInUpDelay2}` : ''} ${styles.heroSubtitle}`}
+              >
+                Consulta tus datos personales,  actualiza el nuevo rutograma y accede a tus documentos importantes de forma segura y rápida.
+              </p>
+              <Link to="/expediente/rutograma">
+                <button className={`${styles.botton} ${styles.bottonPrimary}`}>
+                  Dirigete Ya
+                </button>
+              </Link>
             </div>
-      </section>  
+          </div>
+        </section>
       {/* Segundo Bento Grid */}
       <div ref={bentoRef} className={styles.grid}>
         <div

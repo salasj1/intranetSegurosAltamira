@@ -159,9 +159,36 @@ const ModalCederSupervision: React.FC<Props> = ({ show, handleClose, fetchEmplea
   return (
     <>
     <ToastContainer position="top-right" autoClose={4000} style={{ zIndex: 9999 }}/>
-    <Modal show={show} onHide={handleClose} size="lg" centered>
-      <Modal.Header closeButton>
+    <Modal show={show} onHide={handleClose} size="lg" centered className="modal-ceder-supervision">
+      {/* 1. Quitamos la prop 'closeButton' */}
+      {/* 2. Usamos flexbox para separar el título del botón */}
+      <Modal.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Modal.Title>Transferencia de Supervisión de Empleados</Modal.Title>
+        
+        {/* 3. Nuestro botón personalizado CORREGIDO */}
+        <button
+          type="button" /* IMPORTANTE: Evita comportamientos de submit */
+          onClick={(e) => {
+            e.stopPropagation(); // Evita que el evento burbujee
+            handleClose();
+          }}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            fontSize: '32px', // Un poco más grande para facilitar el click
+            lineHeight: '1',
+            color: '#666',
+            cursor: 'pointer',
+            padding: '0 8px',
+            marginLeft: 'auto', // Empuja el botón a la derecha si flex falla
+            marginTop: '-5px',
+            position: 'relative', // Asegura contexto de apilamiento
+            zIndex: 1056 // Asegura que esté por encima de todo en el header
+          }}
+          aria-label="Cerrar"
+        >
+          &times;
+        </button>
       </Modal.Header>
       <Modal.Body>
 
@@ -338,9 +365,6 @@ const ModalCederSupervision: React.FC<Props> = ({ show, handleClose, fetchEmplea
           </>
         )}
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>Cerrar</Button>
-      </Modal.Footer>
     </Modal>
   </> 
   );

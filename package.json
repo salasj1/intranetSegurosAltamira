@@ -62,6 +62,7 @@
     "react-transition-group": "^4.4.5",
     "react-widgets": "^5.8.4",
     "react-widgets-moment": "^5.0.20",
+    "react-zoom-pan-pinch": "^3.7.0",
     "serve": "^14.2.4",
     "styled-components": "^6.1.19",
     "three": "^0.176.0",

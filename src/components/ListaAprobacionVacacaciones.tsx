@@ -216,7 +216,7 @@ const ListaAprobacionVacacaciones: React.FC<ListaVacacionesProps> = ({ vacacione
                   )}
                 </th>
                 <th id={styles.headTable} onClick={() => requestSort('DiasVacaciones')} className='titulo'>
-                  Número de Días de Vacaciones
+                  Número de Días de Vacaciones Disfrutados
                   {sortConfig.key === 'DiasVacaciones' && (
                     <FontAwesomeIcon icon={sortConfig.direction === 'asc' ? faArrowDown : faArrowUp} style={{ marginLeft:"5px" }}/>
                   )}

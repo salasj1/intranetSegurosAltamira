@@ -11,12 +11,14 @@ library.add(fas, faBell);
 import { Row, Col, Button } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
 import Offcanvas from 'react-bootstrap/Offcanvas';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import '../css/Hamburguesa.css';
 import { Link } from 'react-router-dom';
 
 function NavbarEmpresa() {
     const auth = useAuth();
+
+    const lastUpdateRef = useRef<number>(0);
 
     const [show, setShow] = useState(false);
 
@@ -77,7 +79,12 @@ function NavbarEmpresa() {
     const handleProcessDropdownToggle = (isOpen: boolean) => {
         // Solo re-validamos cuando el menú se está abriendo
         if (isOpen) {
-            auth.revalidateUserStatus();
+            const now = Date.now();
+            // Verifica si ha pasado al menos 1 minuto (60000 ms) desde la última actualización
+            if (now - lastUpdateRef.current >= 60000) {
+                auth.revalidateUserStatus();
+                lastUpdateRef.current = now;
+            }
         }
     };
 
