@@ -22,7 +22,7 @@
       "@/*": ["src/*"]
     },
     
-    "ignoreDeprecations": "6.0"
+    /* "ignoreDeprecations": "6.0" */
   },
   /* IMPORTANTE: Incluir la carpeta src para que TS la analice */
   "include": ["src", "vite.config.ts"]
