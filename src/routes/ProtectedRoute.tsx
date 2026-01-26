@@ -21,7 +21,9 @@ const rutasValidas = [
     "/AprobarPermisos",
     "/ProcesarPermisos",
     "/DirectorioEmpleados",
-    "/ControlSupervision"
+    "/ControlSupervision",
+    "Expediente",
+    "/GestionExpedientes",
 ];
 
 const ProtectedRoute = () => {

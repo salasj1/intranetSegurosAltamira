@@ -6,7 +6,7 @@ import IntroRutograma from './IntroRutograma';
 import ModalConfirmarGuardarRutas from '../components/ModalConfirmarGuardarRutas';
 import TravelSegment from './TravelSegment';
 import { RutogramaPhaseProps, IRutogramaPayload, TravelSegmentConfig, validarRutograma } from '@/types/rutograma.types'; // Importar tipos
-import ErrorPhase from '../components/errorPhase'; 
+import ErrorPhase from '../components/ErrorPhase'; 
 const RutogramaPhase: React.FC<RutogramaPhaseProps> = ({
   ida,
   setIda,

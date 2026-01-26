@@ -103,12 +103,20 @@ function Login() {
     };
 
     if (auth.isAuthenticated) {
+        // Verificar si hay una ruta guardada a la que el usuario intentaba ir
+        const lastValidPath = localStorage.getItem("lastValidPath");
+        
+        // Si existe una ruta previa, no es la raíz, y no es login, redirigir allí
+        if (lastValidPath && lastValidPath !== '/' && lastValidPath !== '/login') {
+             return <Navigate to={lastValidPath} replace />;
+        }
+
         if (auth.isAdmin) {
             return <Navigate to="/Admin" />;
         }
         return <Navigate to="/home" />;
     }
-
+    
     return (
         <div ref={vantaRef} className="responsive-container">
             {isLoading ? (

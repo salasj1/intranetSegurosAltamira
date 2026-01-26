@@ -14,7 +14,7 @@ import DatosPersonalesPhase from '../Expediente/phases/DatosPersonalesPhase';
 import RutogramaPhase from "../Expediente/phases/RutogramaPhase";
 import DocumentosPhase from './phases/DocumentosPhase';
 import PhaseNavigator from './components/PhaseNavigator'; 
-import ErrorPhase from './components/errorPhase'; 
+import ErrorPhase from './components/ErrorPhase';
 import { FaBook, FaFilm, FaQuestionCircle, FaRunning, FaShoppingCart, FaTags } from 'react-icons/fa';
 import { useRutogramaState } from '@/hooks/useRutogramaState';
 
