@@ -135,7 +135,6 @@ function RecibodePagoDetallado() {
       formData.append('reci_num', reciNum);
       formData.append('cod_emp', cod_emp || '');
       formData.append('correo_secundario', correoSecundario);
-      console.log(reciboData[0].fec_emis);
       formData.append('fecha', reciboData[0].fec_emis);
   
       // Mostrar el toast de "esperando"

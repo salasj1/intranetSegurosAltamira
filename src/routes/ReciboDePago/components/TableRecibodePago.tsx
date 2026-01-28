@@ -38,7 +38,6 @@ function TableRecibodePago() {
     const fetchData = async () => {
       if (cod_emp) { 
         try {
-          console.log(cod_emp);
           const response = await axios.get(`${apiUrl}/recibos/${cod_emp}`);     
           setData(response.data);
         } catch (error) {

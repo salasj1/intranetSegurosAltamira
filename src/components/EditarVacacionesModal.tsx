@@ -25,7 +25,6 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
   const [fechaMaximaFin, setFechaMaximaFin] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log(addDays(parseISO(vacacion?.FechaFin.toString() || 'nop'), 1));
     setError(null);
     setSuccess(null);
     if (vacacion) {
@@ -133,7 +132,6 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
   const handleFechaInicioChange = async (date: Date | null | undefined) => {
     if (date) {
       const newFechaInicio =date.toISOString();
-      console.log(addDays(newFechaInicio,-1).toISOString());
       setFechaInicio(newFechaInicio);
       if (diasHabiles !== null) {
         try {
@@ -144,7 +142,6 @@ const EditarVacacionesModal: React.FC<EditarVacacionesModalProps> = ({ show, han
             }
           });
           setFechaMaximaFin(response.data.fechaMaximaFin);
-          console.log(response.data.fechaMaximaFin);
           setError(null);
         } catch (error) {
           console.error('Error al calcular la fecha máxima de fin de vacaciones:', error);

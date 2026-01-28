@@ -32,7 +32,7 @@ const ModalDeleteSupervisor: React.FC<EliminarSupervisionModalProps> = ({ cod_em
 
     useEffect(() => {
         const fetchSupervision = async () => {
-            console.log(cod_emp, cod_supervisor);
+            
             try {
                 const response = await fetch(`${apiUrl}/empleados/supervision?cod_emp=${cod_emp}&cod_supervisor=${cod_supervisor}`, {
                     method: 'GET',
@@ -51,7 +51,7 @@ const ModalDeleteSupervisor: React.FC<EliminarSupervisionModalProps> = ({ cod_em
                 }
 
                 const data = JSON.parse(text);
-                console.log(data);
+
                 setSupervision(data);
             } catch (error) {
                 console.error('Error fetching supervision:', error);

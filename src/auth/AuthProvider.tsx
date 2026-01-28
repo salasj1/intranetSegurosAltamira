@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [cod_emp, setCodEmp] = useState<string | ''>(localStorage.getItem('cod_emp') || '');
     const [fecha_ing, setFechaIng] = useState<string | null>(null);
     const [des_depart, setDesDepart] = useState<string | null>(null);
-    const [tipo, setTipo] = useState<string | null>(sessionStorage.getItem('tipo'));
+    const [tipo, setTipo] = useState<string | null>(localStorage.getItem('tipo'));
     const [RRHH, setRRHH] = useState<number | null>(Number(localStorage.getItem('RRHH')));
     const [canApproveVacations, setCanApproveVacations] = useState<boolean>(localStorage.getItem('canApproveVacations') === 'true');
     const [canApprovePermits, setCanApprovePermits] = useState<boolean>(localStorage.getItem('canApprovePermits') === 'true');
@@ -73,14 +73,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const storedCodEmp = localStorage.getItem('cod_emp');
         const storedFechaIng = localStorage.getItem('fecha_ing');
         const storedDesDepart = localStorage.getItem('des_depart');
-        const storedTipo = sessionStorage.getItem('tipo');
+        const storedTipo = localStorage.getItem('tipo');
         const storedRRHH = localStorage.getItem('RRHH');
         const storedCanApproveVacations = localStorage.getItem('canApproveVacations') === 'true';
         const storedCanApprovePermits = localStorage.getItem('canApprovePermits') === 'true';
         const storedEmail = localStorage.getItem('email');
         const storedIsAdmin = localStorage.getItem('isAdmin') === 'true';
         const storedSexo = localStorage.getItem('sexo');
-        console.log(storedSexo);
+        
         if (storedToken && storedNombres && storedApellidos && storedNombreCompleto && storedCargoEmpleado && storedCodEmp && storedFechaIng && storedDesDepart && storedTipo && storedRRHH && storedEmail && storedSexo) {
             setIsAuthenticated(true);
             setNombres(storedNombres);
@@ -104,9 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const login = async (usuario: string, password: string) => {
         try {
             const response = await axios.post(`${apiUrl}/login`, { username: usuario, password });
-            if (response.data.success) {
-                console.log('Login successful:', response.data); // Añade este log para depuración
-                setIsAuthenticated(true);
+            if (response.data.success) {                
                 setNombres(response.data.nombres);
                 setApellidos(response.data.apellidos);
                 setNombreCompleto(response.data.nombre_completo);
@@ -120,7 +118,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setCanApprovePermits(response.data.canApprovePermits);
                 setEmail(response.data.email);
                 setSexo(response.data.sexo);
-                console.log('sexo ', response.data.sexo);   
                 setIsAdmin(response.data.isAdmin || false);    
   // Asegúrate de que este valor se está estableciendo
                 localStorage.setItem('token', response.data.token);
@@ -131,11 +128,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem('cod_emp', response.data.cod_emp);
                 localStorage.setItem('fecha_ing', response.data.fecha_ing);
                 localStorage.setItem('des_depart', response.data.des_depart);
-                sessionStorage.setItem('tipo', response.data.tipo);
+                localStorage.setItem('tipo', response.data.tipo);
                 localStorage.setItem('RRHH', response.data.RRHH);
                 localStorage.setItem('email', response.data.email); // Asegúrate de que este valor se está almacenando
                 localStorage.setItem('sexo', response.data.sexo);
                 localStorage.setItem('isAdmin', response.data.isAdmin ? 'true' : 'false');
+                setIsAuthenticated(true);
                 return true;
             } else {
                 return false;
@@ -170,7 +168,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem('cod_emp', response.data.cod_emp);
                 localStorage.setItem('fecha_ing', response.data.fecha_ing);
                 localStorage.setItem('des_depart', response.data.des_depart);
-                sessionStorage.setItem('tipo', response.data.tipo);
+                localStorage.setItem('tipo', response.data.tipo);
                 localStorage.setItem('RRHH', response.data.RRHH.toString());
                 localStorage.setItem('email', response.data.email);
                 localStorage.setItem('sexo', response.data.sexo);
@@ -180,7 +178,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
         } catch (error) {
             
-            console.error('Error during signup:', error);
             const axiosError = error as AxiosError;
             const errorMessage = (axiosError.response?.data as { message?: string })?.message;
             return errorMessage || 'Error desconocido';
@@ -209,7 +206,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('cod_emp');
         localStorage.removeItem('fecha_ing');
         localStorage.removeItem('des_depart');
-        sessionStorage.removeItem('tipo');
+        localStorage.removeItem('tipo');
         localStorage.removeItem('RRHH');
         localStorage.removeItem('email');
         localStorage.removeItem('isAdmin');
@@ -219,26 +216,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!cod_emp) return; // No hacer nada si no hay un usuario logueado
 
         try {
-            console.log("Revalidando estado del usuario...");
+            
             const response = await axios.get(`${apiUrl}/check-status/${cod_emp}`);
             const newStatus = response.data;
 
             if (newStatus.success) {
                 // Compara el estado actual con el nuevo y actualiza si hay cambios
-                    console.log(newStatus);
                 /* if (newStatus.tipo !== tipo || newStatus.RRHH !== RRHH || newStatus.canApproveVacations !== canApproveVacations || newStatus.canApprovePermits !== canApprovePermits) { */
-                    console.log('¡El rol o los permisos del usuario han cambiado! Actualizando sesión.');
                     setTipo(newStatus.tipo);
                     setRRHH(newStatus.RRHH);
                     setCanApproveVacations(newStatus.canApproveVacations);
                     setCanApprovePermits(newStatus.canApprovePermits);
-                    sessionStorage.setItem('tipo', newStatus.tipo);
+                    localStorage.setItem('tipo', newStatus.tipo);
                     localStorage.setItem('RRHH', String(newStatus.RRHH));
                     localStorage.setItem('canApproveVacations', String(newStatus.canApproveVacations));
                     localStorage.setItem('canApprovePermits', String(newStatus.canApprovePermits));
-                /* } else {
-                    console.log("El rol y los permisos del usuario no han cambiado.");
-                } */
             }
         } catch (error) {
             console.error('Error al re-validar el estado del usuario:', error);

@@ -46,7 +46,7 @@ const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show,
     try {
       if (context === 'aprobacion') {
         if (action === 'approve') {
-          console.log("Entro en aprobar", permiso.PermisosID);
+        
           await axios.put(`${apiUrl}/permisos/${permiso.PermisosID}/approve`, {
             cod_supervisor: cod_emp
           });
@@ -57,7 +57,6 @@ const ModalDescripcionPermiso: React.FC<ModalDescripcionPermisoProps> = ({ show,
         }
       } 
       if (context === 'procesar') {
-        console.log("Entro en procesar", permiso.PermisosID);
         if (action === 'approve') {
           await axios.put(`${apiUrl}/permisos/${permiso.PermisosID}/process`, {
             cod_supervisor: cod_emp

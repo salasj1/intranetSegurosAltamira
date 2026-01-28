@@ -83,7 +83,6 @@ function AdminDashboard() {
             }
         } catch (err) {
             if (axios.isCancel(err)) {
-                console.log('Solicitud cancelada:', err.message);
             } else {
                 console.error(err);
                 setError('Error al intentar autenticar como el usuario seleccionado');

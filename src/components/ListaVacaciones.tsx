@@ -30,7 +30,6 @@ const ListaVacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones, fetchVaca
   
   useEffect(() => {
     fetchVacaciones();
-    console.log('Dias Disfrutar:', vacaciones[0]?.DiasDisfrutar);
   }, [hasPreviousRequest]);
   
   const sortedData = [...vacaciones].sort((a: Vacacion, b: Vacacion) => {

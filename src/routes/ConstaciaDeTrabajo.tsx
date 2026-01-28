@@ -42,7 +42,6 @@ function ConstaciaDeTrabajo() {
       try {
         const response = await axios.get(`${apiUrl}/constancia/${cod_emp}?mostrarsueldo=${mostrarsueldo}`);
         setconstanciaData(response.data);
-        console.log(response.data);
         setIsLoading(false);
         setShowAlert(true);
         

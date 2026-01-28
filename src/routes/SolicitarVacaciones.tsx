@@ -96,7 +96,11 @@ function SolicitarVacaciones() {
               Utilice este formulario para solicitar el disfrute y pago de sus <strong>periodos vacacionales cumplidos</strong>.
               <br/>
               Debe seleccionar la fecha de inicio de las vacaciones, el periodo mas antiguo disponible y su fecha de retorno al trabajo.
+            <span style={{ display: 'block', marginTop: '10px',fontWeight: '500', backgroundColor: 'rgba(255, 155, 24, 0.21)', padding: '8px', borderRadius: '4px' }}>
+              👉<strong>Nota:</strong> Por política de la empresa, los empleados que estan a punto de cumplir su primer periodo laboral deben estrictamente esperar a que cumpla su fecha de ingreso para solicitar vacaciones.
+            </span>
             </p>
+            
           </div>
         </div>
         {error && <Alert variant="danger" onClose={()=> setError(null)}  dismissible><AlertHeading>Error <hr/></AlertHeading>{error}</Alert>}

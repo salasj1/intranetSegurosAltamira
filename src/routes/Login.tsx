@@ -79,10 +79,8 @@ function Login() {
         try {
             const apiUrl = import.meta.env.VITE_API_URL;
             const response = await axios.post(`${apiUrl}/login`, { username: usuario, password });
-            console.log(response?.data);
             const success = await auth.login(usuario, password);
             if (!success) {
-                console.log("RESPUESTAS " + response.data.message);
                 setError(response.data.message);
             }
         } catch (err) {
@@ -104,19 +102,24 @@ function Login() {
 
     if (auth.isAuthenticated) {
         // Verificar si hay una ruta guardada a la que el usuario intentaba ir
-        const lastValidPath = localStorage.getItem("lastValidPath");
-        
-        // Si existe una ruta previa, no es la raíz, y no es login, redirigir allí
-        if (lastValidPath && lastValidPath !== '/' && lastValidPath !== '/login') {
-             return <Navigate to={lastValidPath} replace />;
-        }
-
+        // 1. Prioridad absoluta: Si es Admin, ir al dashboard de Admin
         if (auth.isAdmin) {
             return <Navigate to="/Admin" />;
         }
-        return <Navigate to="/home" />;
+
+        // 2. Si es usuario normal, validamos que tenga código de empleado cargado
+        if(auth.cod_emp) {
+            // Verificar si hay una ruta guardada a la que el usuario intentaba ir
+            const lastValidPath = localStorage.getItem("lastValidPath");
+            
+            // Si existe una ruta previa, no es la raíz, y no es login, redirigir allí
+            if (lastValidPath && lastValidPath !== '/' && lastValidPath !== '/login') {
+                 return <Navigate to={lastValidPath} replace />;
+            }
+            return <Navigate to="/home" />;
+        }
     }
-    
+
     return (
         <div ref={vantaRef} className="responsive-container">
             {isLoading ? (

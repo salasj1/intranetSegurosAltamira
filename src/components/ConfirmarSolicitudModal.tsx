@@ -33,7 +33,6 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
   useEffect(() => {
     if (error) {
       setSuccess(null);
-      console.log(error);
       if (typeof error === 'object' && (error as any)?.response?.data?.message) {
         setError((error as any)?.response?.data?.message || 'Error desconocido');
       } else {
@@ -49,7 +48,6 @@ const ConfirmarSolicitudModal: React.FC<ConfirmarSolicitudModalProps> = ({ show,
   }, [show, vacacionID]);
 
   const handleMensajeConfirmacion = async () => {
-    console.log("fechas", { fechaInicio: dayjs(fechaInicio || '').utc().startOf('day').toISOString(), fechaFin: dayjs(fechaFin || '').utc().startOf('day').toISOString(), fechaRetorno: dayjs(fechaRetorno || '').utc().startOf('day').toISOString() });
     try {
       const response = await axios.get(`${apiUrl}/vacaciones/InfoConfirmacionSolicitudVacaciones`, {
         params: {

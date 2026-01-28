@@ -87,7 +87,6 @@ const Expendiente = () => {
       const res = await axios.get(`${apiUrl}/expediente/rutograma-completo/${cod_emp}`);
       if (res.data && res.data.success && res.data.data) {
         const { global, ida, regreso } = res.data.data;
-        console.log('Rutograma cargado/actualizado desde API:', { global, ida, regreso });
         setGlobalState(prev => ({ ...prev, ...global, error: false }));
         setIda(ida);
         setRegreso(regreso);
@@ -111,7 +110,6 @@ const Expendiente = () => {
           // Si es 404, NO HACEMOS NADA.
           // Confiamos en que el estado ya se cargó desde localStorage.
           // Solo necesitamos marcar que la carga terminó sin error de sistema.
-          console.log('No se encontró rutograma en la API (404). Se mantiene el estado local.');
           setGlobalState(prev => ({ ...prev, error: false }));
           // Opcional: si aún quieres el contacto de emergencia en un borrador nuevo
           if (contactoEmergencia && !globalState.nombreReferencia) {
@@ -291,7 +289,6 @@ const Expendiente = () => {
               setTelefonoAdicional(telefonoAdic);
               setTelefonoOriginal(telefonoPrincipal);
               // Bloquear si estatusSolicitudCambio existe y es 0
-              console.log('Estatus Solicitud Cambio:', response.data.expediente.estatusSolicitudCambio);
               setBloquearCambioDatos(
                 typeof response.data.expediente.estatusSolicitudCambio !== "undefined" &&
                 response.data.expediente.estatusSolicitudCambio === 1
@@ -423,7 +420,7 @@ const Expendiente = () => {
       };
   
       try {
-        console.log("Payload Guardar Rutas:", JSON.stringify(payload)); // Para depuración
+  
         const res = await axios.post(`${apiUrl}/expediente/rutograma`, payload);
         if (res.data && res.data.success) {
           showToast('Rutas guardadas correctamente.', 'success');

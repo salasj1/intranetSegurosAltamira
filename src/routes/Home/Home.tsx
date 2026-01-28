@@ -18,14 +18,13 @@ import logoChip from '@/assets/logo-chip.png';
 import ConozcamonosModal from "../Home/components/ConozcamonosModal";
 import { useAuth } from "@/auth/AuthProvider";
 import { PiCursorClickLight } from "react-icons/pi";
-import NavidadCard from "../Home/components/NavidadCard";
+import SomosSeguros from "@/assets/Somos-seguros-altamira.png";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function Home() {
   const [vacacionesProcesadas, setVacacionesProcesadas] = useState(0);
   const [permisosProcesados, setPermisosProcesados] = useState(0);
   const { nombres, sexo} = useAuth();
-  console.log("Nombres del usuario:", nombres); // Verifica que los nombres se están recibiendo correctamente
   const [showConozcamonosModal, setShowConozcamonosModal] = useState(false); // <-- 2. Renombra el estado para claridad
   const [statsLoaded, setStatsLoaded] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
@@ -158,7 +157,7 @@ function Home() {
           </div>
           <div className={`${styles.div2} ${styles.card}`}  style={{padding: '0px'}}>
             {/* Coloca tu imagen aquí */}
-            <img src={"https://scontent.fccs3-1.fna.fbcdn.net/v/t39.30808-6/615272423_1182930100705864_4340632115878579546_n.png?_nc_cat=105&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=INyT-HZNuAwQ7kNvwGSxizZ&_nc_oc=AdnbF5DCCIgC1g2zvBmuV3Hl40jugCd-6M57XSQr0JzPMlhHiYfdmCszluAVaalLwPg&_nc_zt=23&_nc_ht=scontent.fccs3-1.fna&_nc_gid=cub9LTWxWtnoRERk1mI4xw&oh=00_AfoAFukHebNi-eE0qfm-iW1LrjW7Dh4pMsZd2l8Vlf3gAg&oe=69700B46"} alt="Imagen de la empresa" style={{objectFit:'cover'}}/>
+            <img src={SomosSeguros} alt="Imagen de la empresa" style={{objectFit:'cover'}}/>
             {/* <h4>Intranet Seguros Altamira</h4> */}
           </div>
           <div className={`${styles.div3} ${styles.card} ${styles.shortcutCard}`}>

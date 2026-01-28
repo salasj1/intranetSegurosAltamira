@@ -37,7 +37,6 @@ const ModalVerRutogramaRRHH: React.FC<ModalVerRutogramaRRHHProps> = ({
 
   const { global = {}, ida = {}, regreso = {} } = rutogramaData;
   const apiUrl = import.meta.env.VITE_API_URL;
-  console.log('rutogramaData en ModalVerRutogramaRRHH:', rutogramaData);
   const handleReturn = async () => {
     if (!comentarios.trim()) {
       setErrorComentario(true);

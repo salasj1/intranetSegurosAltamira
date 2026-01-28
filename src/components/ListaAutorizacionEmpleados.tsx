@@ -114,10 +114,9 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
       setError('');
       if(response.status===500){
         setError('Error agregando supervisión');
-        console.error('Error agregando supervisión:', response);
+
       }
       
-      console.log(error);
       fetchEmpleados();
     } catch (error) {
       setError('Error agregando supervisión');
@@ -133,7 +132,7 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
 
   const handleChangeSupervision = async (ID_SUPERVISION: number, supervisors: string[]) => {
     try{
-      console.log("CHANGE"+ID_SUPERVISION);
+      
       const response = await fetch(`${apiUrl}/empleados/supervision/supervisor`, {
         method: 'PUT',
         headers: {
@@ -161,7 +160,6 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
 
   const handleModifySupervision = async (ID_SUPERVISION: number, Tipo: string) => {
     try {
-      console.log(ID_SUPERVISION);
       const response = await fetch(`${apiUrl}/empleados/supervision/Tipo`, {
         method: 'PUT',
         headers: {
@@ -202,7 +200,6 @@ const ListaAutorizacionEmpleados: React.FC<ListaEmpleadosProps> = ({ empleados, 
   const handleChangeClick = (empleado: Empleado) => {
     
     setSelectedEmpleado(empleado);
-    console.log(selectedEmpleado?.ID_SUPERVISION);
     setShowModalChange(true);
   }
 

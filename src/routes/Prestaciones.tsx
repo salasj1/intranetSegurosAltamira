@@ -30,7 +30,6 @@ function Prestaciones() {
     const fetchPrestacionesData = async () => {
       if (!cod_emp) return;
       try {
-        console.log("cod_emp antes " + cod_emp);
         const response = await axios.get(`${apiUrl}/prestaciones/${cod_emp}`);
         response.data[0].cod_emp = response.data[0].cod_emp.substring(3);
         setPrestacionesData(response.data);

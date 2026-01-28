@@ -18,7 +18,6 @@ function ProcesarPermisos() {
   const fetchPermisos = async () => {
     try {
       const response = await axios.get(`${apiUrl}/permisos/aprobadosProcesados`);
-      console.log('Permisos recibidos:', response.data); // Verificar los datos recibidos
       setPermisos(response.data);
     } catch (error) {
       console.error('Error al obtener permisos:', error);

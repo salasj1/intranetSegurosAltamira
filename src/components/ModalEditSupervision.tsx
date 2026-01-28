@@ -82,7 +82,7 @@ interface TipoSupervision {
 
     const handleSave = async () => {
         try {
-            console.log("Tipo Supervision: ", tipo_supervision);
+            
             await handleEdit(supervision?.ID_SUPERVISION || 0, tipo_supervision || '');
             handleClose();
         } catch (error) {

@@ -314,7 +314,7 @@ const empleadosRutogramaFiltrados = empleadosRutograma.filter(emp => {
     const emp = empleados.find(e => 
       e.cod_emp.replace(/\s/g, '') === cod_emp.replace(/\s/g, '')
     );
-    console.log(emp);
+
     if (emp) {
       handleSeleccionarEmpleado(emp);
       setEmpleadoSeleccionado(emp);
@@ -532,7 +532,6 @@ const handleApproveRutograma = async () => {
 
 const handleReturnRutograma = (comentarios: string) => {
   // Lógica para devolver el rutograma con comentarios
-  console.log('Devolviendo rutograma con comentarios:', comentarios);
   toast.warning('Rutograma devuelto para corrección.');
   setShowRutogramaModal(false);
 };

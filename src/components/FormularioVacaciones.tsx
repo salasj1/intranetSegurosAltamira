@@ -159,7 +159,6 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
       setLoading(true);
       const { fechaMaximaFin, totalDias } = await calcularFechaMaximaFin(dayjs(date).toDate(), selectedOptions);
       const fechaMaxFinLocal = fechaMaximaFin ? dayjs(fechaMaximaFin).add(4, 'hour') : null;
-      console.log('Fecha máxima local:', fechaMaxFinLocal ? fechaMaxFinLocal.format('DD/MM/YYYY') : null);
       setFechaMaximaFin(fechaMaxFinLocal ? fechaMaxFinLocal.format('YYYY-MM-DD') : null);
 
       if (fechaMaximaFin) {
@@ -192,7 +191,6 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
         cod_emp,
         periodos: selectedOptions.map((option: any) => option.id)
       });
-      console.log(response.data);
       if (response.data.status === 1) {
         setErrorPeriodos(null);
       } else {
@@ -298,7 +296,6 @@ const FormularioVacaciones: React.FC<FormularioVacacionesProps> = ({ fetchVacaci
           tipo: tipoConfirmacion
         });
         const { status, resultado } = response.data;
-        console.log(status, resultado);
         if (status === 0) {
           setError(resultado);
           setSuccess(null);

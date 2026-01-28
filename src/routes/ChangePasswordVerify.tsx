@@ -46,11 +46,9 @@ function ChangePasswordVerify() {
     e.preventDefault();
     try {
       const result = await axios.post(`${apiUrl}/verify/${usuario}`);
-      console.log(result.data.usuario);
       if (result.status === 200) {
         const data = result.data.usuario;
         setUsuarioData(data);
-        console.log(data);
         setError('');
         if (data.status !== "Bloqueado") {
           setShow1(false);
@@ -137,9 +135,7 @@ function ChangePasswordVerify() {
       
       const ipResponse = await axios.get('https://api.ipify.org?format=json');
       const userIp = ipResponse.data.ip;
-      console.log("IP del usuario: ", userIp);
       const result = await axios.put(`${apiUrl}/changepassword1/${usuarioData?.cod_emp}`, { correo: usuarioData?.correo,ip: userIp  });
-      console.log(result);
       if (result.status === 200) {
         setError('');
         setMensaje('Código enviado exitosamente. Revisa tu correo empresarial');
@@ -168,7 +164,6 @@ function ChangePasswordVerify() {
     try {
       
       const result = await axios.post(`${apiUrl}/verifycode/${usuario}`, { codigoTemporal: passwordTemp });
-      console.log(result);
       if (result.status === 200) {
         setShow2(false);
         setShow3(true);
@@ -176,7 +171,6 @@ function ChangePasswordVerify() {
       } else {
         setError('Contraseña Incorrecta, intente de nuevo');
       }
-      console.log("verificado");
     } catch (err) {
       console.error(err);
       if (axios.isAxiosError(err)) {
@@ -224,7 +218,6 @@ function ChangePasswordVerify() {
   useEffect(() => {
     if (show2){
     if (usuarioData) {
-      console.log("Usuario data actualizado:", usuarioData);
       handleEnvioCodigo(); 
     }}
   }, [usuarioData]);

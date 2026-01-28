@@ -41,7 +41,7 @@ const generatePDF = (data: any) => {
       doc.text('RIF.: J-30052236-9', posrecx + 56, posrecy + 39);
 
       // Información de Pagina y nombre persona
-      console.log(data[0].nombres);
+      
       const firstName = data[0].nombres ? data[0].nombres.split(' ')[0] : 'N/A';
       const firstlastName = data[0].apellidos ? data[0].apellidos.split(' ')[0] : 'N/A';
       doc.setFontSize(12);

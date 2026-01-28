@@ -41,10 +41,7 @@ const ListaProcesarVacacaciones: React.FC<ListaVacacionesProps> = ({ vacaciones,
   const [action, setAction] = useState<'approve' | 'reject'>('approve');
   const { cod_emp } = useAuth();
   const [error, setError] = useState<string | null>('');
-  useEffect(() => {
-    vacaciones.map(item => (console.log(item)));
-  }, [vacaciones]);
-
+ 
   const sortedData = [...vacaciones].sort((a: Vacacion, b: Vacacion) => {
     if (sortConfig.key) {
       let aValue = a[sortConfig.key as keyof Vacacion];

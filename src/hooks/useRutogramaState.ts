@@ -91,7 +91,6 @@ export const useRutogramaState = (cod_emp: string | undefined) => {
     setIda(initialIdaState);
     setRegreso(initialRegresoState);
     // localStorage.removeItem(storageKey); // <-- ¡ELIMINAR ESTA LÍNEA!
-    console.log(`Estado del rutograma reseteado. Error: ${errorOccurred}`);
   }, [storageKey]);
 
 // ...existing code...
@@ -111,7 +110,6 @@ export const useRutogramaState = (cod_emp: string | undefined) => {
         regreso,
       };
       localStorage.setItem(storageKey, JSON.stringify(payload));
-      console.log('ACTUALIZADO en localStorage:', payload);
     };
     
     const saveTimeout = window.setTimeout(scheduleSave, 500);
@@ -119,7 +117,6 @@ export const useRutogramaState = (cod_emp: string | undefined) => {
   } else {
     // Si el estado es 'Pendiente' o 'Aprobado', eliminamos el borrador local.
     localStorage.removeItem(storageKey);
-    console.log('Borrador local eliminado porque el estado es:', globalState.estado);
   }
 }, [globalState, ida, regreso, storageKey]);
 

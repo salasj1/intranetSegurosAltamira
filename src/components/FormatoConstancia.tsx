@@ -23,8 +23,7 @@ const generateConstanciaPDF = (data: any, persona:string, destinatario: string) 
   doc.setFontSize(13);
   doc.setFont('calibri', 'normal');
   let y=55; 
-  console.log('destinatario Form',destinatario);
-  console.log('persona Form',persona);
+
   if (destinatario && persona=== 'juridica') {
     y=58;
     doc.text(`Estimados Señores:\n${destinatario}\nPresente.`, 15, y);

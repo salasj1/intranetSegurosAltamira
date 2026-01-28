@@ -56,9 +56,6 @@ const ListaProcesarPermisos: React.FC<ListaPermisosProps> = ({ permisos, fetchPe
     fetchPermisos();
   }, []);
 
-  useEffect(() => {
-    console.log('Permisos:', permisos); // Verificar los datos recibidos
-  }, [permisos]);
 
   const sortedData = [...permisos].sort((a, b) => {
     if (sortConfig.key) {

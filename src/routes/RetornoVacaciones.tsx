@@ -37,7 +37,6 @@ function ProcesarVacaciones() {
     const fetchVacaciones = async () => {
         try {
             const response = await axios.get(`${apiUrl}/vacaciones/vacacionesProcesadas/${cod_emp}`);
-            console.log(response.data);
             setVacaciones(response.data);
         } catch (error) {
             if (axios.isAxiosError(error)) {
