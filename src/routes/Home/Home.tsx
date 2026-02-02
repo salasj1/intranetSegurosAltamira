@@ -10,15 +10,14 @@ import { SiGoogledocs } from "react-icons/si";
 import { TbWorld } from "react-icons/tb";
 /* import useAuth from  '../auth/AuthProvider' */
 import Carrusel from "@/routes/Home/components/Carrusel";
-import panfleto from '@/assets/Panfleto.png';
-import rutas from '@/assets/rutas.png';
-import logoCostura from '@/assets/logo-costura.jpg';
-import logoCristal from '@/assets/logo-cristal.jpeg';
-import logoChip from '@/assets/logo-chip.png';
+import rutas from '@/assets/webp/rutas.webp';
+import logoCostura from '@/assets/webp/logo-costura.webp';
+import logoCristal from '@/assets/webp/logo-cristal.webp';
+import logoChip from '@/assets/webp/logo-chip.webp';
 import ConozcamonosModal from "../Home/components/ConozcamonosModal";
 import { useAuth } from "@/auth/AuthProvider";
 import { PiCursorClickLight } from "react-icons/pi";
-import SomosSeguros from "@/assets/Somos-seguros-altamira.png";
+import SomosSeguros from "@/assets/webp/somos-seguros-altamira.webp";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function Home() {
@@ -157,7 +156,7 @@ function Home() {
           </div>
           <div className={`${styles.div2} ${styles.card}`}  style={{padding: '0px'}}>
             {/* Coloca tu imagen aquí */}
-            <img src={SomosSeguros} alt="Imagen de la empresa" style={{objectFit:'cover'}}/>
+            <img src={SomosSeguros} alt="Imagen de la empresa" style={{objectFit:'cover'}} loading="eager"/>
             {/* <h4>Intranet Seguros Altamira</h4> */}
           </div>
           <div className={`${styles.div3} ${styles.card} ${styles.shortcutCard}`}>
@@ -178,7 +177,7 @@ function Home() {
           </div>
           <div className={`${styles.div5} ${styles.card}`} style={{padding: '0px'}}>
              {/* Coloca tu imagen aquí */}
-             <img src={logoCostura} alt="Imagen de la empresa 2" className={styles.bentoImageFill}  />
+             <img src={logoCostura} alt="Imagen de la empresa 2" className={styles.bentoImageFill}  loading="lazy"/>
           </div>
           <div className={`${styles.div6} ${styles.card} ${styles.shortcutCard}`}>
             <Link to="/expediente/rutograma" className={styles.shortcutLink}>
@@ -229,11 +228,12 @@ function Home() {
             onAnimationEnd={() => handleAnimationEnd('item0')}
         >
           <picture style={{ display: 'flex', width: '100%', height: '100%' }}>
-            <source media="(max-width: 768px)" srcSet={logoChip} />
+            <source media="(max-width: 768px)" srcSet={logoChip}/>
             <img 
               src={logoCristal} 
               alt="Logo de la empresa" 
               className={styles.bentoImageFill}
+              loading="lazy"
             />
           </picture>
         </div>

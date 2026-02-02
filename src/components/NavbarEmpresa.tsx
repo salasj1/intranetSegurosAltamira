@@ -6,7 +6,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas, faBell } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../auth/AuthProvider';
-import logoEmpresa from '../assets/logo-login.png';
+import logoEmpresa from '../assets/webp/logo-login.webp';
 library.add(fas, faBell);
 import { Row, Col, Button } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';

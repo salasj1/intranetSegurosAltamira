@@ -4,7 +4,7 @@ import AcordionPermisos from '../components/AcordionPermisos';
 import AcordionSolicitarPermiso from '../components/AcordionSolicitarPermisos';
 import NavbarEmpresa from '../components/NavbarEmpresa';
 import styles from '../css/SolicitarProcesos.module.css';
-import palmTree from '../assets/palm tree-rafiki.svg'; 
+import DeViaje from '../assets/a-day-off-animate.svg?react';
 import { BsFillInfoSquareFill } from "react-icons/bs";
 function SolicitarPermisos() {
   const [refresh, setRefresh] = useState(false);
@@ -89,7 +89,7 @@ function SolicitarPermisos() {
                   title="Cerrar sugerencia"
                 >✕</button>
                 
-                <img src={palmTree} alt="Vacaciones" style={{ width: '60px', marginBottom: '10px' }} />
+                <DeViaje className="animated" style={{ width: '100px', marginBottom: '10px' }} />
                 <h5 style={{ color: '#389e0d', margin: '0 0 10px 0', fontSize: '16px', fontWeight: 'bold', textAlign: 'center' }}>
                   ¿Buscas Vacaciones Regulares?
                 </h5>

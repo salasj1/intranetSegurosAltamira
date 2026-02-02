@@ -4,7 +4,7 @@ import ListaAprobacionPermisos from '../components/ListaAprobacionPermisos';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthProvider';
 import { useNavigate } from "react-router-dom";
-import palmTree from '../assets/palm tree-rafiki.svg'; // Asegúrate de importar la imagen
+import DeViaje from '../assets/a-day-off-animate.svg?react';
 import { BsFillInfoSquareFill } from "react-icons/bs";
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -81,7 +81,7 @@ function AprobarPermisos() {
             }}>
               <button onClick={() => setShowSuggestion(false)} style={{ position: 'absolute', top: '5px', right: '10px', background: 'transparent', border: 'none', cursor: 'pointer', color: '#999' }}>✕</button>
               
-              <img src={palmTree} alt="Vacaciones" style={{ width: '50px', marginBottom: '5px' }} />
+              <DeViaje className="animated" style={{ width: '100px', marginBottom: '5px' }} />
               
               <h6 style={{ color: '#389e0d', margin: '0 0 5px 0', fontWeight: 'bold', textAlign: 'center' }}>¿Buscas Aprobar Vacaciones?</h6>
               <p style={{ fontSize: '12px', textAlign: 'center', marginBottom: '10px', color: '#555' }}>Para solicitudes de vacaciones regulares.</p>

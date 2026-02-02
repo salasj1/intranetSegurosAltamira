@@ -4,24 +4,24 @@ import { Modal, Carousel } from 'react-bootstrap';
 
 
 // Importamos todas las imágenes de la carpeta
-import Diapositiva1 from '../../../assets/Conozcamonos/Diapositiva1.png';
-import Diapositiva2 from '../../../assets/Conozcamonos/Diapositiva2.png';
-import Diapositiva3 from '../../../assets/Conozcamonos/Diapositiva3.png';
-import Diapositiva4 from '../../../assets/Conozcamonos/Diapositiva4.png';
-import Diapositiva5 from '../../../assets/Conozcamonos/Diapositiva5.png';
-import Diapositiva18 from '../../../assets/Conozcamonos/Diapositiva18.png';
-import Diapositiva6 from '../../../assets/Conozcamonos/Diapositiva6.png';
-import Diapositiva7 from '../../../assets/Conozcamonos/Diapositiva7.png';
-import Diapositiva8 from '../../../assets/Conozcamonos/Diapositiva8.png';
-import Diapositiva9 from '../../../assets/Conozcamonos/Diapositiva9.png';
-import Diapositiva10 from '../../../assets/Conozcamonos/Diapositiva10.png';
-import Diapositiva11 from '../../../assets/Conozcamonos/Diapositiva11.png';
-import Diapositiva12 from '../../../assets/Conozcamonos/Diapositiva12.png';
-import Diapositiva13 from '../../../assets/Conozcamonos/Diapositiva13.png';
-import Diapositiva14 from '../../../assets/Conozcamonos/Diapositiva14.png';
-import Diapositiva15 from '../../../assets/Conozcamonos/Diapositiva15.png';
-import Diapositiva16 from '../../../assets/Conozcamonos/Diapositiva16.png';
-import Diapositiva17 from '../../../assets/Conozcamonos/Diapositiva17.png';
+import Diapositiva1 from '@/assets/Conozcamonos/Diapositiva1.webp';
+import Diapositiva2 from '@/assets/Conozcamonos/Diapositiva2.webp';
+import Diapositiva3 from '@/assets/Conozcamonos/Diapositiva3.webp';
+import Diapositiva4 from '@/assets/Conozcamonos/Diapositiva4.webp';
+import Diapositiva5 from '@/assets/Conozcamonos/Diapositiva5.webp';
+import Diapositiva18 from '@/assets/Conozcamonos/Diapositiva18.webp';
+import Diapositiva6 from '@/assets/Conozcamonos/Diapositiva6.webp';
+import Diapositiva7 from '@/assets/Conozcamonos/Diapositiva7.webp';
+import Diapositiva8 from '@/assets/Conozcamonos/Diapositiva8.webp';
+import Diapositiva9 from '@/assets/Conozcamonos/Diapositiva9.webp';
+import Diapositiva10 from '@/assets/Conozcamonos/Diapositiva10.webp';
+import Diapositiva11 from '@/assets/Conozcamonos/Diapositiva11.webp';
+import Diapositiva12 from '@/assets/Conozcamonos/Diapositiva12.webp';
+import Diapositiva13 from '@/assets/Conozcamonos/Diapositiva13.webp';
+import Diapositiva14 from '@/assets/Conozcamonos/Diapositiva14.webp';
+import Diapositiva15 from '@/assets/Conozcamonos/Diapositiva15.webp';
+import Diapositiva16 from '@/assets/Conozcamonos/Diapositiva16.webp';
+import Diapositiva17 from '@/assets/Conozcamonos/Diapositiva17.webp';
 
 // Creamos un array con las imágenes importadas
 const images = [

@@ -12,7 +12,7 @@ import Form from 'react-bootstrap/esm/Form';
 import InputGroup from 'react-bootstrap/esm/InputGroup';
 import { FaEye } from "react-icons/fa";
 import { IoMdEyeOff } from "react-icons/io";
-import img from '../assets/logo-login-2.png';
+import img from '../assets/webp/logo-login-2.webp';
 declare const VANTA: any; 
 
 function Login() {

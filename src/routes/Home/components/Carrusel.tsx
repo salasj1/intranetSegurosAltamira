@@ -1,6 +1,6 @@
 import Carousel from 'react-bootstrap/Carousel';
 import styles from '../styles/Carrusel.module.css';
-import bienvenida from '@/assets/Imagen2.png'
+import bienvenida from '@/assets/webp/32anos.webp';
 import { Link } from 'react-router-dom';
 
 interface CarruselProps {
@@ -28,6 +28,7 @@ function Carrusel({ nombres, sexo='M' }: CarruselProps) {
             about='Bienvenida'
             width={100}
             height={50}
+            loading='eager'
           />
         </div>
         <Carousel.Caption>
