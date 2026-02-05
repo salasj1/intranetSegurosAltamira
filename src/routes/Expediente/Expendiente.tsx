@@ -75,6 +75,7 @@ const Expendiente = () => {
   const [telefonoAdicional, setTelefonoAdicional] = useState<string>(''); // Nuevo estado para teléfono adicional
   const [telefonoAdicionalOriginal, setTelefonoAdicionalOriginal] = useState<string>(''); // Guardar original
   const [profesiones, setProfesiones] = useState<Profesion[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Estado para controlar el envío
   
   // Estado temporal para los datos de contacto de emergencia del expediente
   const [contactoEmergencia, setContactoEmergencia] = useState<{ nombre: string; telefono: string } | null>(null);
@@ -383,7 +384,12 @@ const Expendiente = () => {
     if (telefonoAdicional && telefonoAdicional.trim() !== '') {
       telefonoFinal = `${telefonoParaEnviar} / ${telefonoAdicional}`;
     }
-  
+    
+    if (isSubmitting) return; // Evitar envíos múltiples
+    setIsSubmitting(true); // Deshabilitar botón
+
+    const toastId = toast.loading("Enviando solicitud..."); // <-- 1. Mostrar toast de carga
+
     try {
       const res = await axios.post(`${apiUrl}/expediente/SolicitarCambioDatosPersonales`, {
         cod_emp,
@@ -400,16 +406,20 @@ const Expendiente = () => {
       });
   
       if (res.data && res.data.cambios_realizados > 0) {
-        showToast('Solicitud de cambio enviada correctamente.');
+        // <-- 2. Actualizar toast a éxito
+        toast.update(toastId, { render: "Solicitud de cambio enviada correctamente.", type: "success", isLoading: false, autoClose: 3500 });
         setBloquearCambioDatos(true);
       } else if (res.data && res.data.cambios_realizados === 0) {
-        showToast('No se detectaron cambios en los datos personales.', 'error');
+        toast.update(toastId, { render: "No se detectaron cambios en los datos personales.", type: "error", isLoading: false, autoClose: 3500 });
       } else {
-        showToast('No se pudo enviar la solicitud de cambio.', 'error');
+        toast.update(toastId, { render: "No se pudo enviar la solicitud de cambio.", type: "error", isLoading: false, autoClose: 3500 });
       }
     } catch (error) {
-      showToast('Error al enviar la solicitud de cambio.', 'error');
+      // <-- 3. Actualizar toast a error en caso de fallo
+      toast.update(toastId, { render: "Error al enviar la solicitud de cambio.", type: "error", isLoading: false, autoClose: 3500 });
       console.error(error);
+    } finally {
+      setIsSubmitting(false); // Reactivar botón
     }
   };
   
@@ -591,6 +601,7 @@ const Expendiente = () => {
           }}
           cambios={cambiosDetectados}
           profesiones={profesiones}
+          isSubmitting={isSubmitting} // Pasar el estado al modal
         />
       </main>
       </div>

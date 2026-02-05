@@ -20,6 +20,7 @@ interface ModalConfirmarCambioDatosProps {
   onConfirm: () => void;
   cambios: CambioDato[];
   profesiones?: Profesion[]; // Añadir profesiones como prop opcional
+  isSubmitting?: boolean; // <-- 1. Añadir prop para controlar el estado de envío
 }
 
 const estadoCivilMap: Record<string, string> = {
@@ -47,6 +48,7 @@ const ModalConfirmarCambioDatos: React.FC<ModalConfirmarCambioDatosProps> = ({
   onConfirm,
   cambios = [],
   profesiones = [], // Recibir profesiones
+  isSubmitting = false, // <-- 2. Recibir el prop con un valor por defecto
 }) => (
   <Modal show={show} onHide={onHide} centered size="lg" >
     <Modal.Header closeButton>
@@ -104,11 +106,16 @@ const ModalConfirmarCambioDatos: React.FC<ModalConfirmarCambioDatosProps> = ({
       <p>¿Está seguro que desea solicitar estos cambios?</p>
     </Modal.Body>
     <Modal.Footer>
-      <Button variant="secondary" onClick={onHide}>
+      <Button variant="secondary" onClick={onHide} disabled={isSubmitting}>
         Cancelar
       </Button>
-      <Button variant="primary" onClick={onConfirm} disabled={cambios.length === 0}>
-        Confirmar Solicitud
+      {/* 3. Modificar el botón de confirmar */}
+      <Button 
+        variant="primary" 
+        onClick={onConfirm} 
+        disabled={cambios.length === 0 || isSubmitting}
+      >
+        {isSubmitting ? 'Enviando...' : 'Confirmar Solicitud'}
       </Button>
     </Modal.Footer>
   </Modal>
