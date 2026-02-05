@@ -76,6 +76,12 @@ interface SolicitudRutograma {
   nombre_completo_revisor: string | null;
 }
 
+// ++ AÑADIR INTERFAZ PARA PROFESION ++
+interface Profesion {
+  id: number;
+  descripcion: string;
+}
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const RRHHExpedientes: React.FC = () => {
@@ -88,6 +94,9 @@ const RRHHExpedientes: React.FC = () => {
   const [datosPersonales, setDatosPersonales] = useState<DatosPersonales | null>(null);
   const [rutas, setRutas] = useState<RutaSolicitud[]>([]);
   const [archivos, setArchivos] = useState<Archivo[]>([]);
+
+  // ++ AÑADIR ESTADO PARA PROFESIONES ++
+  const [profesiones, setProfesiones] = useState<Profesion[]>([]);
 
   const [archivosLoading, setArchivosLoading] = useState(false);
   const [tiposTransporte, setTiposTransporte] = useState<TipoTransporte[]>([]);
@@ -191,6 +200,14 @@ useEffect(() => {
   .catch(() => {
     setTiposTransporte([]);
   });
+  // ++ AÑADIR CARGA DE PROFESIONES ++
+  axios.get(`${apiUrl}/expediente/getProfesiones`)
+    .then(res => {
+      if (res.data.success) {
+        setProfesiones(res.data.profesiones);
+      }
+    })
+    .catch(() => setProfesiones([]));
 }, [RRHH]);
 
 // Opciones para react-select
@@ -1065,7 +1082,9 @@ return (
                                   D: "Divorciado",
                                   V: "Viudo"
                                 }[sol.solicitud] || "Desconocido"
-                              : sol.solicitud}
+                              : sol.etiqueta === "Profesión"
+                                ? profesiones.find(p => String(p.id) === sol.solicitud)?.descripcion || sol.solicitud
+                                : sol.solicitud}
                           </td>
                           
                           <td className={styles.tdRRHH}><EstadoSolicitud status={sol.status} /></td>
