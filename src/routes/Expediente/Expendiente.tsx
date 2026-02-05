@@ -18,7 +18,6 @@ import ErrorPhase from './components/ErrorPhase';
 import { FaBook, FaFilm, FaQuestionCircle, FaRunning, FaShoppingCart, FaTags } from 'react-icons/fa';
 import { useRutogramaState } from '@/hooks/useRutogramaState';
 
-
 export interface DatosPersonales {
   cedula: string;
   nombres: string;
@@ -34,6 +33,7 @@ export interface DatosPersonales {
   medioTransporteOtro?: string;
   nombre: string;
   telefono: string;
+  profesion?: string;
 }
 
 export interface TipoTransporte {
@@ -46,6 +46,11 @@ export interface TipoActividad {
   id: number;
   nombre: string;
   icon?: React.ReactNode;
+}
+
+export interface Profesion {
+  id: number;
+  descripcion: string;
 }
 
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -69,6 +74,7 @@ const Expendiente = () => {
   const [, setShowModalGuardarRutas] = useState(false);
   const [telefonoAdicional, setTelefonoAdicional] = useState<string>(''); // Nuevo estado para teléfono adicional
   const [telefonoAdicionalOriginal, setTelefonoAdicionalOriginal] = useState<string>(''); // Guardar original
+  const [profesiones, setProfesiones] = useState<Profesion[]>([]);
   
   // Estado temporal para los datos de contacto de emergencia del expediente
   const [contactoEmergencia, setContactoEmergencia] = useState<{ nombre: string; telefono: string } | null>(null);
@@ -144,6 +150,7 @@ const Expendiente = () => {
     { key: 'fechaNacimiento', label: 'Fecha de Nacimiento' },
     { key: 'telefonoCelular', label: 'Teléfono Celular' },
     { key: 'direccion', label: 'Dirección' },
+    { key: 'profesion', label: 'Profesión' },
   ];
 
     const [tiposActividad] = useState<TipoActividad[]>(
@@ -183,6 +190,7 @@ const Expendiente = () => {
           ? `${obj.telefonoCelular} / ${telefonoAdicional}`
           : obj.telefonoCelular;
       case 'direccion': return obj.direccion;
+      case 'profesion': return obj.profesion || '';
       default: return '';
     }
   };
@@ -200,6 +208,20 @@ const Expendiente = () => {
   const compararDatos = () => {
     if (!datosOriginales || !datosPersonales) return [];
     const cambios = camposRequeridos.map(campo => {
+      // Para la profesión, siempre comparamos los IDs (que están en los estados)
+      if (campo.key === 'profesion') {
+        const anteriorId = String(datosOriginales.profesion || '');
+        const nuevoId = String(datosPersonales.profesion || '');
+        if (anteriorId !== nuevoId) {
+          return {
+            campo: campo.label,
+            anterior: anteriorId, // Enviamos el ID anterior
+            nuevo: nuevoId,       // Enviamos el ID nuevo
+          };
+        }
+        return null;
+      }
+
       let anterior = getCampo(datosOriginales, campo.key);
       let nuevo = getCampo(datosPersonales, campo.key);
       // Para teléfono, unir adicional si existe
@@ -247,6 +269,19 @@ const Expendiente = () => {
     }
     setShowModalConfirmar(true);
   }
+
+    useEffect(() => {
+      const fetchProfesiones = async () => {
+        try {
+          const res = await axios.get(`${apiUrl}/expediente/getProfesiones`);
+          setProfesiones(res.data.profesiones || []);
+        } catch (error) {
+          console.error('Error fetching profesiones:', error);
+        }
+      };
+  
+      fetchProfesiones();
+    }, []);
 
     useEffect(() => {
       const fetchTiposTransporte = async () => {
@@ -360,7 +395,8 @@ const Expendiente = () => {
         email: datosPersonales.email,
         fechaNacimiento: datosPersonales.fechaNacimiento,
         telefonoCelular: telefonoFinal,
-        direccion: datosPersonales.direccion
+        direccion: datosPersonales.direccion,
+        profesion: datosPersonales.profesion
       });
   
       if (res.data && res.data.cambios_realizados > 0) {
@@ -501,6 +537,8 @@ const Expendiente = () => {
                         bloquearCambioDatos={bloquearCambioDatos}
                         handleAbrirModalConfirmar={handleAbrirModalConfirmar}
                         handleNextPhase={handleNextPhase}
+                        profesiones={profesiones}
+                        setProfesiones={setProfesiones}
                       />
                     )}
                     {(phase === 2) && datosPersonales && (
@@ -552,6 +590,7 @@ const Expendiente = () => {
             handleSolicitarCambioDatos();
           }}
           cambios={cambiosDetectados}
+          profesiones={profesiones}
         />
       </main>
       </div>

@@ -53,6 +53,7 @@ interface DatosPersonales {
   fecha_ing: string;
   cargo: string;
   departamento: string;
+  profesion?: string;
 }
 interface RutaSolicitud {
   id: number;

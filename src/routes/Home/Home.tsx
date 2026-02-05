@@ -18,6 +18,7 @@ import ConozcamonosModal from "../Home/components/ConozcamonosModal";
 import { useAuth } from "@/auth/AuthProvider";
 import { PiCursorClickLight } from "react-icons/pi";
 import SomosSeguros from "@/assets/webp/somos-seguros-altamira.webp";
+import { IoMdPerson } from "react-icons/io";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function Home() {
@@ -180,10 +181,10 @@ function Home() {
              <img src={logoCostura} alt="Imagen de la empresa 2" className={styles.bentoImageFill}  loading="lazy"/>
           </div>
           <div className={`${styles.div6} ${styles.card} ${styles.shortcutCard}`}>
-            <Link to="/expediente/rutograma" className={styles.shortcutLink}>
-                <FaRoute size={100} />
+            <Link to="/expediente/datos" className={styles.shortcutLink}>
+                <IoMdPerson size={100}  />
                {/*  <img src ={logoCostura} height={50} width={50}></img> */}
-                <span style={{fontSize: '2.5rem'}}>Rutograma</span>
+                <span style={{fontSize: '2.5rem'}}>Datos personales</span>
             </Link>
           </div>
         </div>

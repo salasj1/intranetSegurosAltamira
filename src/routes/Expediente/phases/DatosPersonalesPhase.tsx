@@ -2,8 +2,11 @@ import React from 'react';
 import { Alert, Button, Card, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { LuPencilLine } from "react-icons/lu";
 import { MdInfoOutline } from "react-icons/md";
+import Select from 'react-select';
 import { useDatosPersonalesPhase } from '../hooks/useDatosPersonalesPhase';
 import style from '../styles/ExpedienteEmpleado.module.css';
+import { Profesion } from '../Expendiente';
+import { color } from 'framer-motion';
 
 type DatosPersonalesPhaseProps = {
   datosPersonales: any;
@@ -13,6 +16,8 @@ type DatosPersonalesPhaseProps = {
   bloquearCambioDatos: boolean;
   handleAbrirModalConfirmar: () => void;
   handleNextPhase: () => void;
+  profesiones: Profesion[];
+  setProfesiones: (v: Profesion[]) => void;
 };
 
 const DatosPersonalesPhase: React.FC<DatosPersonalesPhaseProps> = ({
@@ -23,6 +28,8 @@ const DatosPersonalesPhase: React.FC<DatosPersonalesPhaseProps> = ({
   bloquearCambioDatos,
   handleAbrirModalConfirmar,
   handleNextPhase,
+  profesiones,
+  setProfesiones
 }) => {
   const {
     // ...desestructura aquí lo que necesites del hook...
@@ -34,6 +41,8 @@ const DatosPersonalesPhase: React.FC<DatosPersonalesPhaseProps> = ({
     bloquearCambioDatos,
     handleAbrirModalConfirmar,
     handleNextPhase,
+    profesiones,
+    setProfesiones
     // ...otros props...
   });
 
@@ -176,6 +185,20 @@ const DatosPersonalesPhase: React.FC<DatosPersonalesPhaseProps> = ({
         </Row>
         <br/>
         <Row>
+          <Col>
+            <Form.Group controlId="formDireccion">
+              <Form.Label>Dirección de habitación de Hospedaje de la Vivienda Principal</Form.Label>
+              <Form.Control type="text" disabled={bloquearCambioDatos} placeholder="Dirección" defaultValue={datosPersonales?.direccion || ''}
+                style={{ textTransform: 'uppercase' }}
+                value={datosPersonales?.direccion || ''}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  handleFieldChange('direccion', e.target.value.toUpperCase());
+                }}  />
+            </Form.Group>
+          </Col>
+        </Row>
+        <br/>
+        <Row>
           <Col lg={3}>
             <Form.Group controlId="formTelefono">
               <Form.Label>Teléfono Celular</Form.Label>
@@ -204,19 +227,44 @@ const DatosPersonalesPhase: React.FC<DatosPersonalesPhaseProps> = ({
                   }}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTelefonoAdicional(e.target.value)}
                 />
+                
               </Form.Group>
             </Form.Group>
           </Col>
-          <Col>
-            <Form.Group controlId="formDireccion">
-              <Form.Label>Dirección de habitación de Hospedaje de la Vivienda Principal</Form.Label>
-              <Form.Control type="text" disabled={bloquearCambioDatos} placeholder="Dirección" defaultValue={datosPersonales?.direccion || ''}
-                style={{ textTransform: 'uppercase' }}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  handleFieldChange('direccion', e.target.value.toUpperCase());
-                }}  />
+          <Col >
+            <Form.Group controlId="formProfesion">
+              <Form.Label>Profesión</Form.Label>
+              <Select 
+                options={profesiones.map(p => ({ value: p.id, label: p.descripcion }))}
+                value={
+                  profesiones
+                    .map(p => ({ value: p.id, label: p.descripcion }))
+                    .find(option => String(option.value) === String(datosPersonales?.profesion)) || null
+                }
+                onChange={(option) => {
+                  handleFieldChange('profesion', option ? String(option.value) : '');
+                }}
+
+
+                isClearable
+                isDisabled={bloquearCambioDatos}
+                placeholder="Seleccione una profesión"
+                noOptionsMessage={() => "No hay opciones"}
+                styles={{
+                  option: (provided, state) => ({
+                    ...provided,
+                    backgroundColor: state.isFocused ? '#1967D2' : 'white',
+                    color: state.isFocused ? 'white' : 'black',
+                  }),
+                  singleValue: (provided) => ({
+                    ...provided,
+                    color: 'black',
+                  }),
+                }}
+              />
             </Form.Group>
           </Col>
+          
         </Row>
         <br/>
         <div >

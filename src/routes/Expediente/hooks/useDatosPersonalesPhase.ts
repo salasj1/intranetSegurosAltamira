@@ -7,6 +7,8 @@ type UseDatosPersonalesPhaseProps = {
   setTelefonoAdicional: (v: string) => void;
   bloquearCambioDatos: boolean;
   handleAbrirModalConfirmar: () => void;
+  profesiones: any[];
+  setProfesiones: (v: any[]) => void;
   handleNextPhase: () => void;
   // ...otros props si necesitas...
 };

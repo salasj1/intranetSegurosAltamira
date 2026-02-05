@@ -9,11 +9,17 @@ interface CambioDato {
   nuevo: string;
 }
 
+interface Profesion {
+  id: number;
+  descripcion: string;
+}
+
 interface ModalConfirmarCambioDatosProps {
   show: boolean;
   onHide: () => void;
   onConfirm: () => void;
   cambios: CambioDato[];
+  profesiones?: Profesion[]; // Añadir profesiones como prop opcional
 }
 
 const estadoCivilMap: Record<string, string> = {
@@ -23,9 +29,14 @@ const estadoCivilMap: Record<string, string> = {
   V: "Viudo"
 };
 
-const traducirCampo = (campo: string, valor: string) => {
+const traducirCampo = (campo: string, valor: string, profesiones: Profesion[] = []) => {
   if (campo === "Estado Civil") {
     return estadoCivilMap[valor] || valor;
+  }
+  if (campo === "Profesión") {
+    if (!valor) return "No especificada";
+    const profesionEncontrada = profesiones.find(p => String(p.id) === valor);
+    return profesionEncontrada ? profesionEncontrada.descripcion : valor;
   }
   return valor;
 };
@@ -35,6 +46,7 @@ const ModalConfirmarCambioDatos: React.FC<ModalConfirmarCambioDatosProps> = ({
   onHide,
   onConfirm,
   cambios = [],
+  profesiones = [], // Recibir profesiones
 }) => (
   <Modal show={show} onHide={onHide} centered size="lg" >
     <Modal.Header closeButton>
@@ -81,8 +93,8 @@ const ModalConfirmarCambioDatos: React.FC<ModalConfirmarCambioDatosProps> = ({
                 <tr key={idx}>
                   <td style={{ width: "40px", textAlign: "center" }}>{idx + 1}</td>
                   <td>{cambio.campo}</td>
-                  <td>{traducirCampo(cambio.campo, anterior)}</td>
-                  <td>{traducirCampo(cambio.campo, nuevo)}</td>
+                  <td>{traducirCampo(cambio.campo, anterior, profesiones)}</td>
+                  <td>{traducirCampo(cambio.campo, nuevo, profesiones)}</td>
                 </tr>
               );
             })}
