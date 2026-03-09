@@ -14,6 +14,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "strict": true,
+    "verbatimModuleSyntax": true,
     /* "noUnusedLocals": false,      // Cambiado a false para ignorar variables no usadas
     "noUnusedParameters": false,  // Cambiado a false para ignorar parámetros no usados */
     "noFallthroughCasesInSwitch": true,

@@ -1,7 +1,7 @@
 # Intranet Seguros Altamira
 
 <div align="center">
-  <img src="./src/assets/icono-IntranetSegurosAltamira.png" alt="Logo de Seguros Altamira" width="150">
+  <img src="./src/assets/icono.webp" alt="Logo de Seguros Altamira" width="150">
 </div>
 
 <div style="font-size: 1.2em;">
