@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { CSSTransition } from 'react-transition-group';
-import { Link, Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import '../css/Login.css';
 import { useAuth } from '../auth/AuthProvider';
 import axios from 'axios';
@@ -13,65 +13,72 @@ import InputGroup from 'react-bootstrap/esm/InputGroup';
 import { FaEye } from "react-icons/fa";
 import { IoMdEyeOff } from "react-icons/io";
 import img from '../assets/webp/logo-login-2.webp';
-declare const VANTA: any; 
+declare const VANTA: any;
 
 function Login() {
     const [inProp, setInProp] = useState(false);
     const [usuario, setUsuario] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(true); 
+    const [isLoading, setIsLoading] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const auth = useAuth();
+    const navigate = useNavigate();
     const nodeRef = useRef(null);
-    const vantaRef = useRef<HTMLDivElement>(null); 
-    const [vantaEffect, setVantaEffect] = useState<any>(null);
-    
+    const vantaRef = useRef<HTMLDivElement>(null);
+    // useRef en lugar de useState para evitar que la actualización
+    // dispare una re-ejecución del effect y cree un canvas duplicado.
+    const vantaEffectRef = useRef<any>(null);
+
     useEffect(() => {
-        // Inicializar Vanta.js
-        if (!vantaEffect && vantaRef.current) {
-            setVantaEffect(
-                VANTA.WAVES({
-                    el: vantaRef.current,
-                    mouseControls: true,
-                    touchControls: true,
-                    gyroControls: false,
-                    minHeight: window.innerHeight+65, // Ajustar al tamaño de la pantalla
-                    minWidth: window.innerWidth+20, // Ajustar al tamaño de la pantalla
-                    scale: 1,
-                    scaleMobile: 1.00,
-                    color: 0x36bb,
-                    waveSpeed: 1.20,
-                    zoom: 1.2
-                })
-            );
+        // Inicializar Vanta solo una vez
+        if (!vantaEffectRef.current && vantaRef.current) {
+            vantaEffectRef.current = VANTA.WAVES({
+                el: vantaRef.current,
+                mouseControls: true,
+                touchControls: true,
+                gyroControls: false,
+                minHeight: window.innerHeight,
+                minWidth: window.innerWidth,
+                scale: 1,
+                scaleMobile: 1.00,
+                color: 0x36bb,
+                waveSpeed: 1.20,
+                zoom: 1.2,
+
+
+            });
         }
 
         // Simular un pequeño retraso para cargar el fondo y el contenido
         const timeout = setTimeout(() => {
-            setIsLoading(false); // Desactivar el estado de carga
-            setInProp(true); // Activar la animación
-        }, 1000); // Ajusta el tiempo según sea necesario
+            setIsLoading(false);
+            setInProp(true);
+        }, 1000);
 
         // Actualizar el efecto al cambiar el tamaño de la pantalla
         const handleResize = () => {
-            if (vantaEffect) {
-                vantaEffect.setOptions({
+            if (vantaEffectRef.current) {
+                vantaEffectRef.current.setOptions({
                     minHeight: window.innerHeight,
                     minWidth: window.innerWidth
                 });
-                vantaEffect.resize();
+                vantaEffectRef.current.resize();
             }
         };
 
         window.addEventListener('resize', handleResize);
 
         return () => {
-            if (vantaEffect) vantaEffect.destroy();
+            if (vantaEffectRef.current) {
+                vantaEffectRef.current.destroy();
+                vantaEffectRef.current = null;
+            }
             window.removeEventListener('resize', handleResize);
             clearTimeout(timeout);
         };
-    }, vantaEffect);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // [] → se ejecuta UNA SOLA VEZ al montar el componente
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -101,20 +108,13 @@ function Login() {
     };
 
     if (auth.isAuthenticated) {
-        // Verificar si hay una ruta guardada a la que el usuario intentaba ir
-        // 1. Prioridad absoluta: Si es Admin, ir al dashboard de Admin
         if (auth.isAdmin) {
             return <Navigate to="/Admin" />;
         }
-
-        // 2. Si es usuario normal, validamos que tenga código de empleado cargado
-        if(auth.cod_emp) {
-            // Verificar si hay una ruta guardada a la que el usuario intentaba ir
+        if (auth.cod_emp) {
             const lastValidPath = localStorage.getItem("lastValidPath");
-            
-            // Si existe una ruta previa, no es la raíz, y no es login, redirigir allí
             if (lastValidPath && lastValidPath !== '/' && lastValidPath !== '/login') {
-                 return <Navigate to={lastValidPath} replace />;
+                return <Navigate to={lastValidPath} replace />;
             }
             return <Navigate to="/home" />;
         }
@@ -128,8 +128,7 @@ function Login() {
                 </div>
             ) : (
                 <>
-                    
-                    <div className="text-center" style={{ color: 'white' }}>
+                    <div className="text-center" style={{ color: 'white', position: 'relative', zIndex: 1 }}>
                         <img src={img} alt="Logo Empresa" style={{ width: '180px', height: '137.33px', marginTop: '2rem', filter: 'drop-shadow(15px 15px 10px rgb(25,50,134))' }} className='logo-text' />
                         <h1 style={{ fontFamily: 'segoe ui, sans-serif', fontSize: '3.2rem' }}>Intranet Seguros Altamira</h1>
                         <hr style={{ borderWidth: '5px', color: 'white', width: '100%', position: 'relative' }}></hr>
@@ -181,9 +180,13 @@ function Login() {
                                                 </button>
                                             </div>
                                             <div className="mb-3">
-                                                <Link to="/change-password-verify" className="btn btn-primary w-100 text-center">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-primary w-100"
+                                                    onClick={() => navigate('/change-password-verify', { state: { email: usuario } })}
+                                                >
                                                     Cambiar Contraseña
-                                                </Link>
+                                                </button>
                                             </div>
                                         </>
                                     )}

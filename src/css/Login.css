@@ -1,12 +1,14 @@
 .responsive-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: row;
-  height: 100%;
-  position: relative;
   justify-content: center;
   align-items: center;
   gap: 15%;
-  height: 111.09vh;
 }
 .logo-text {
   text-align: center;
