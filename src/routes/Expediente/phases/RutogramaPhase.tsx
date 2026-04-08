@@ -252,6 +252,7 @@ const RutogramaPhase: React.FC<RutogramaPhaseProps> = ({
           resumenDatos={resumenDatos}
           tiposTransporte={global.tiposTransporte}
           tiposActividad={global.tiposActividad}
+          isSubmitting={global.isSubmitting}
         />
       </Form>
 

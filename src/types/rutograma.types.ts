@@ -110,6 +110,7 @@ export interface RutogramaPhaseProps {
     handleNextPhase: () => void;
     loading: boolean;
     bloquearCambioDatos: boolean;
+    isSubmitting: boolean;
   };
 }
 

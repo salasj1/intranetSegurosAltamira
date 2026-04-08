@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Button, Alert, Table } from "react-bootstrap";
+import { Modal, Button, Alert, Table, Spinner } from "react-bootstrap";
 import Binoculares from "@/assets/binoculares.gif";
 import { IRutogramaPayload, TipoTransporte, TipoActividad } from "@/types/rutograma.types";
 
@@ -10,6 +10,7 @@ interface ModalConfirmarGuardarRutasProps {
   resumenDatos: IRutogramaPayload;
   tiposTransporte: TipoTransporte[];
   tiposActividad: TipoActividad[];
+  isSubmitting?: boolean;
 }
 
 const ModalConfirmarGuardarRutas: React.FC<ModalConfirmarGuardarRutasProps> = ({
@@ -19,6 +20,7 @@ const ModalConfirmarGuardarRutas: React.FC<ModalConfirmarGuardarRutasProps> = ({
   resumenDatos,
   tiposTransporte,
   tiposActividad,
+  isSubmitting = false,
 }) => {
   const { global = {}, ida = {}, regreso = {} } = resumenDatos || {};
 
@@ -250,11 +252,18 @@ const ModalConfirmarGuardarRutas: React.FC<ModalConfirmarGuardarRutasProps> = ({
         <p>¿Está seguro que desea guardar este rutograma?</p>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
+        <Button variant="secondary" onClick={onHide} disabled={isSubmitting}>
           Cancelar
         </Button>
-        <Button variant="primary" onClick={onConfirm}>
-          Confirmar Guardado
+        <Button variant="primary" onClick={onConfirm} disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+              {' '} Guardando...
+            </>
+          ) : (
+            'Confirmar Guardado'
+          )}
         </Button>
       </Modal.Footer>
     </Modal>

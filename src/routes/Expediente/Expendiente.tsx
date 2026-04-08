@@ -424,6 +424,7 @@ const Expendiente = () => {
   };
   
     const handleGuardarRutas = async () => {
+      if (isSubmitting) return; // Evitar envíos múltiples
       if (!cod_emp) {
         showToast('No se encontró el código de empleado.', 'error');
         return;
@@ -465,6 +466,7 @@ const Expendiente = () => {
         detallesActividadesRegreso: regreso.detallesActividades,
       };
   
+      setIsSubmitting(true);
       try {
   
         const res = await axios.post(`${apiUrl}/expediente/rutograma`, payload);
@@ -479,6 +481,8 @@ const Expendiente = () => {
       } catch (error: any) {
         showToast(error.response?.data?.message || 'Error al guardar las rutas.', 'error');
         console.error(error);
+      } finally {
+        setIsSubmitting(false);
       }
     };
 
@@ -570,6 +574,7 @@ const Expendiente = () => {
                           handleNextPhase,
                           loading,
                           bloquearCambioDatos,
+                          isSubmitting,
                         }}
                       />
                     )}
