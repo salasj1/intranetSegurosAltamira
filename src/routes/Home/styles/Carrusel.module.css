@@ -1,71 +1,94 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Grape+Nuts&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-.Carrusel{
+
+.Carrusel {
     margin-top: 120px;
     margin-bottom: -75px;
 }
-.divDegradado{
+
+.divDegradado {
     background-color: transparent;
     background-image: linear-gradient(130deg, #003896 70%, #f48134 80%);
 }
-.divDegradado2{
+
+.divDegradado2 {
     /* background-color: transparent; */
     background-image: linear-gradient(180deg, #003896 30%, #f48134 80%);
 }
-.imagenCarrusel{
-    background-position: top center; /* Cambia 'center center' a 'top center' */
+
+.divDegradadoCumpleanos {
+    background-image: linear-gradient(0deg, #003896 20%, #1565c0 70%, #f48134 100%);
+}
+
+.divDegradadoAniversario {
+    background-image: linear-gradient(180deg, #003896 20%, #1565c0 60%, #f48134 100%);
+}
+
+.imagenCarrusel {
+    background-position: top center;
+    /* Cambia 'center center' a 'top center' */
     background-repeat: no-repeat;
     background-size: cover;
     opacity: .3;
-    transition:  .3s, border-radius .3s, opacity .3s;
+    transition: .3s, border-radius .3s, opacity .3s;
 }
+
 .imagenCarruselGrande {
     height: 480px;
     object-fit: cover;
-    object-position: top; /* Añade esto para mostrar la parte superior de la imagen */
+    object-position: top;
+    /* Añade esto para mostrar la parte superior de la imagen */
 }
 
 @media (max-width: 240px) {
     .imagenCarruselGrande {
-        width: 100%;    
+        width: 100%;
         height: auto;
         max-height: 100%;
     }
 }
-.caption1{
+
+.caption1 {
     color: #fff !important;
-    font-family:  "Montserrat",Sans-serif;
-    font-size: 5vw; /* Ajusta el tamaño del texto según el ancho de la ventana */
+    font-family: "Montserrat", Sans-serif;
+    font-size: 5vw;
+    /* Ajusta el tamaño del texto según el ancho de la ventana */
     text-align: center;
     line-height: 80px;
     text-shadow: 5px 5px 2px #003896;
-    margin: 10px 0; /* Agrega un espacio de 10px entre las líneas del texto */
+    margin: 10px 0;
+    /* Agrega un espacio de 10px entre las líneas del texto */
 }
+
 @media (max-width: 240px) {
     .caption1 {
-        font-size: 4vw; /* Ajusta el tamaño del texto para pantallas más pequeñas */
+        font-size: 4vw;
+        /* Ajusta el tamaño del texto para pantallas más pequeñas */
     }
 }
 
 @media (max-width: 240px) {
     .caption1 {
-        font-size: 5vw; /* Ajusta el tamaño del texto para pantallas muy pequeñas */
+        font-size: 5vw;
+        /* Ajusta el tamaño del texto para pantallas muy pequeñas */
     }
 }
+
 .captionP {
-  color: #fff !important;
-  font-family: "Grape Nuts", Sans-serif;
-  font-size: 40px;
-  font-weight: 100;
-  line-height: 40px;
+    color: #fff !important;
+    font-family: "Grape Nuts", Sans-serif;
+    font-size: 40px;
+    font-weight: 100;
+    line-height: 40px;
 }
-h1{
+
+h1 {
     margin-left: 0%;
 }
 
 /* ...existing code... */
 
-h1{
+h1 {
     margin-left: 0%;
 }
 
@@ -90,21 +113,27 @@ h1{
     font-size: 1.1rem;
     backdrop-filter: blur(5px);
     transition: all 0.3s ease;
-    
+
     /* Animación de entrada */
     opacity: 0;
     animation: fadeInUp 0.8s ease-out forwards;
 }
 
 /* Retraso para que aparezcan uno después del otro */
-.carouselBtn:nth-child(1) { animation-delay: 0.5s; }
-.carouselBtn:nth-child(2) { animation-delay: 0.7s; }
+.carouselBtn:nth-child(1) {
+    animation-delay: 0.5s;
+}
+
+.carouselBtn:nth-child(2) {
+    animation-delay: 0.7s;
+}
 
 .carouselBtn:hover {
     background-color: #fff;
-    color: #003896 !important; /* Azul corporativo */
+    color: #003896 !important;
+    /* Azul corporativo */
     transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes fadeInUp {
@@ -112,6 +141,7 @@ h1{
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -125,6 +155,7 @@ h1{
         align-items: center;
         gap: 10px;
     }
+
     .carouselBtn {
         width: 80%;
         text-align: center;

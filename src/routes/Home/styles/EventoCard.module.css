@@ -1,0 +1,107 @@
+.sectionContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #003391;
+}
+
+/* Imagen de fondo */
+.backgroundLayer {
+  position: absolute;
+  inset: 0;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.35;
+  z-index: 1;
+}
+
+/* Degradado encima de la imagen para mejorar legibilidad */
+.gradientOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+      rgba(0, 33, 100, 0.82) 0%,
+      rgba(0, 51, 145, 0.65) 55%,
+      rgba(244, 129, 52, 0.55) 100%);
+  z-index: 2;
+}
+
+/* Capa de contenido */
+.contentLayer {
+  position: relative;
+  z-index: 3;
+  font-family: "Gotham", sans-serif;
+  line-height: 1.2;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  text-align: center;
+  padding: 0.6rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Badge "Celebración Especial" */
+.badge {
+  display: inline-block;
+  background: linear-gradient(90deg, #f48134, #f0c030);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(244, 129, 52, 0.5);
+  text-shadow: none;
+}
+
+.title {
+  font-weight: 200;
+  font-size: clamp(3rem, 3vw, 1.8rem);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.subtitle {
+  font-size: clamp(1.3rem, 1.1vw, 0.9rem);
+  font-weight: 400;
+  font-family: "Grape Nuts", cursive, sans-serif;
+  margin: 0;
+  max-width: 520px;
+  opacity: 0.95;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ctaButton {
+  background: linear-gradient(90deg, #f48134, #f0c030);
+  color: #fff;
+  border: none;
+  padding: 9px 28px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 14px rgba(244, 129, 52, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: none;
+  margin-top: 2px;
+}
+
+.ctaButton:hover {
+  box-shadow: 0 5px 20px rgba(244, 129, 52, 0.65);
+}

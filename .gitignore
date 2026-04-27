@@ -2,7 +2,8 @@
 .env
 
 src/routes/Expediente.tsx
-
+.claude
+.agents
 
 
 # Logs

@@ -19,6 +19,7 @@ import { useAuth } from "@/auth/AuthProvider";
 import { PiCursorClickLight } from "react-icons/pi";
 import SomosSeguros from "@/assets/webp/somos-seguros-altamira.webp";
 import { IoMdPerson } from "react-icons/io";
+import EventoCard from '@/routes/Home/components/EventoCard';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function Home() {
@@ -157,7 +158,10 @@ function Home() {
           </div>
           <div className={`${styles.div2} ${styles.card}`} style={{ padding: '0px' }}>
             {/* Coloca tu imagen aquí */}
-            <img src={SomosSeguros} alt="Imagen de la empresa" style={{ objectFit: 'cover' }} loading="eager" />
+            <EventoCard
+              parentFolderId={import.meta.env.VITE_DIA_EMPLEADO_FOLDER_ID}
+            />
+            {/* <img src={SomosSeguros} alt="Imagen de la empresa" style={{ objectFit: 'cover' }} loading="eager" /> */}
             {/* <h4>Intranet Seguros Altamira</h4> */}
           </div>
           <div className={`${styles.div3} ${styles.card} ${styles.shortcutCard}`}>
@@ -188,7 +192,7 @@ function Home() {
             </Link>
           </div>
         </div>
-        {/* <NavidadCard/> */}
+
 
         <section className={styles.heroFullBleed}>
           <div

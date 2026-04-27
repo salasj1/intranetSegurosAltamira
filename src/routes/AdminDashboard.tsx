@@ -65,6 +65,7 @@ function AdminDashboard() {
                 localStorage.setItem('cargo_empleado', response.data.des_cargo);
                 localStorage.setItem('cod_emp', response.data.cod_emp);
                 localStorage.setItem('fecha_ing', response.data.fecha_ing);
+                localStorage.setItem('fecha_nac', response.data.fecha_nac ?? '');
                 localStorage.setItem('des_depart', response.data.des_depart);
                 localStorage.setItem('tipo', response.data.tipo);
                 localStorage.setItem('RRHH', response.data.RRHH.toString());

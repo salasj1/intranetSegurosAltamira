@@ -10,8 +10,9 @@ interface AuthContextType {
     nombre_completo: string | null;
     sexo: string | '';
     cargo_empleado: string | null;
-    cod_emp: string ; 
+    cod_emp: string ;
     fecha_ing: string | null;
+    fecha_nac: string | null;
     des_depart: string | null;
     tipo: string | null;
     RRHH: number | null;
@@ -34,6 +35,7 @@ const AuthContext = createContext<AuthContextType>({
     sexo: '',
     cod_emp: '',
     fecha_ing: null,
+    fecha_nac: null,
     des_depart: null,
     tipo: null,
     RRHH: null,
@@ -56,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [cargo_empleado, setCargoEmpleado] = useState<string | null>(null);
     const [cod_emp, setCodEmp] = useState<string | ''>(localStorage.getItem('cod_emp') || '');
     const [fecha_ing, setFechaIng] = useState<string | null>(null);
+    const [fecha_nac, setFechaNac] = useState<string | null>(null);
     const [des_depart, setDesDepart] = useState<string | null>(null);
     const [tipo, setTipo] = useState<string | null>(localStorage.getItem('tipo'));
     const [RRHH, setRRHH] = useState<number | null>(Number(localStorage.getItem('RRHH')));
@@ -72,6 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const storedCargoEmpleado = localStorage.getItem('cargo_empleado');
         const storedCodEmp = localStorage.getItem('cod_emp');
         const storedFechaIng = localStorage.getItem('fecha_ing');
+        const storedFechaNac = localStorage.getItem('fecha_nac');
         const storedDesDepart = localStorage.getItem('des_depart');
         const storedTipo = localStorage.getItem('tipo');
         const storedRRHH = localStorage.getItem('RRHH');
@@ -89,6 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setCargoEmpleado(storedCargoEmpleado);
             setCodEmp(storedCodEmp);
             setFechaIng(storedFechaIng);
+            setFechaNac(storedFechaNac);
             setDesDepart(storedDesDepart);
             setTipo(storedTipo);
             setRRHH(parseInt(storedRRHH || '0'));
@@ -111,6 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setCargoEmpleado(response.data.des_cargo);
                 setCodEmp(response.data.cod_emp);
                 setFechaIng(response.data.fecha_ing);
+                setFechaNac(response.data.fecha_nac ?? null);
                 setDesDepart(response.data.des_depart);
                 setTipo(response.data.tipo);
                 setRRHH(response.data.RRHH);
@@ -127,6 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem('cargo_empleado', response.data.des_cargo);
                 localStorage.setItem('cod_emp', response.data.cod_emp);
                 localStorage.setItem('fecha_ing', response.data.fecha_ing);
+                localStorage.setItem('fecha_nac', response.data.fecha_nac ?? '');
                 localStorage.setItem('des_depart', response.data.des_depart);
                 localStorage.setItem('tipo', response.data.tipo);
                 localStorage.setItem('RRHH', response.data.RRHH);
@@ -155,6 +162,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setCargoEmpleado(response.data.des_cargo);
                 setCodEmp(response.data.cod_emp);
                 setFechaIng(response.data.fecha_ing);
+                setFechaNac(response.data.fecha_nac ?? null);
                 setDesDepart(response.data.des_depart);
                 setTipo(response.data.tipo);
                 setRRHH(response.data.RRHH);
@@ -167,6 +175,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem('cargo_empleado', response.data.des_cargo);
                 localStorage.setItem('cod_emp', response.data.cod_emp);
                 localStorage.setItem('fecha_ing', response.data.fecha_ing);
+                localStorage.setItem('fecha_nac', response.data.fecha_nac ?? '');
                 localStorage.setItem('des_depart', response.data.des_depart);
                 localStorage.setItem('tipo', response.data.tipo);
                 localStorage.setItem('RRHH', response.data.RRHH.toString());
@@ -192,6 +201,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSexo('');
         setCodEmp('');
         setFechaIng(null);
+        setFechaNac(null);
         setDesDepart(null);
         setTipo(null);
         setRRHH(null);
@@ -205,6 +215,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('cargo_empleado');
         localStorage.removeItem('cod_emp');
         localStorage.removeItem('fecha_ing');
+        localStorage.removeItem('fecha_nac');
         localStorage.removeItem('des_depart');
         localStorage.removeItem('tipo');
         localStorage.removeItem('RRHH');
@@ -252,8 +263,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         nombre_completo, 
         sexo, 
         cargo_empleado, 
-        cod_emp, 
-        fecha_ing, 
+        cod_emp,
+        fecha_ing,
+        fecha_nac,
         des_depart, 
         tipo, 
         RRHH,
