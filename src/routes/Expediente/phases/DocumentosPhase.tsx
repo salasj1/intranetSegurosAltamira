@@ -47,21 +47,21 @@ const DocumentosPhase: React.FC<DocumentosPhaseProps> = ({
   const [validatedFiles, setValidatedFiles] = useState(false);
   const [, setUploading] = useState(false);
   const [driveCache, setDriveCache] = useState<Record<string, { name: string, webContentLink: string } | null>>({});
-  const [errorLoading, setErrorLoading] = useState(false); 
+  const [errorLoading, setErrorLoading] = useState(false);
   useEffect(() => {
     const fetchTiposDocumentos = async () => {
       try {
         const res = await axios.get(`${apiUrl}/google-drive/tiposDocumentos/Empleado/${cod_emp}`);
         setTiposDocumentos(res.data || []);
         setTiposConVencimiento((res.data || []).filter((t: any) => t.fechaVencimiento === true || t.fechaVencimiento === 1).map((t: any) => t.nombre));
-        
+
       } catch (error) {
         console.error('Error fetching tipos de documentos:', error);
         setErrorLoading(true);
       }
     };
     fetchTiposDocumentos();
-    }, [cod_emp]);
+  }, [cod_emp]);
 
   if (errorLoading) {
     return <ErrorPhase />;
@@ -75,19 +75,19 @@ const DocumentosPhase: React.FC<DocumentosPhaseProps> = ({
     setFileInputs([0]);
     setValidatedFiles(false);
     setDriveFile(null);
-  
+
     if (!event.target.value || !datosPersonales) return;
-  
+
     // Quita espacios de la cédula
     const cedulaLimpia = datosPersonales.cedula.replace(/\D/g, '');
     const cacheKey = `${cedulaLimpia}_${event.target.value}`;
-  
+
     // Si ya está en caché, úsalo
     if (driveCache[cacheKey] !== undefined) {
       setDriveFile(driveCache[cacheKey]);
       return;
     }
-  
+
     setCheckingDrive(true);
     try {
       const res = await axios.get(`${apiUrl}/google-drive/buscar-documento`, {
@@ -131,11 +131,16 @@ const DocumentosPhase: React.FC<DocumentosPhaseProps> = ({
 
   // Subir archivos
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const selectedFiles = [...files];
-    if (event.target.files && event.target.files.length > 0) {
-      selectedFiles[index] = event.target.files[0];
-      setFiles(selectedFiles);
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (file.type !== 'application/pdf') {
+      showToast('Solo se permiten archivos PDF. Por favor selecciona un archivo .pdf', 'error');
+      event.target.value = '';
+      return;
     }
+    const selectedFiles = [...files];
+    selectedFiles[index] = file;
+    setFiles(selectedFiles);
   };
 
   const handleUploadSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -276,15 +281,15 @@ const DocumentosPhase: React.FC<DocumentosPhaseProps> = ({
     }
     setUploading(false);
   };
-  
+
   return (
     <Form className="container" noValidate validated={validatedFiles} onSubmit={handleUploadSubmit}  >
       <Card border="primary" className="mb-3" style={{ padding: '20px', boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.3)' }}>
-        <h2 style={{display:'flex',alignItems:'center', color: 'rgb(3, 76, 185)'}}><IoDocumentText /> Documentos</h2>
-        <hr/>
-        <Form.Group controlId="formFile" className="mb-3" style={{  color: 'rgb(255, 255, 255)' , background:'rgb(3, 76, 185)',fontWeight: 'bold',boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.3)', padding: '20px', borderRadius: '10px'}} >
+        <h2 style={{ display: 'flex', alignItems: 'center', color: 'rgb(3, 76, 185)' }}><IoDocumentText /> Documentos</h2>
+        <hr />
+        <Form.Group controlId="formFile" className="mb-3" style={{ color: 'rgb(255, 255, 255)', background: 'rgb(3, 76, 185)', fontWeight: 'bold', boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.3)', padding: '20px', borderRadius: '10px' }} >
           <Form.Label><h4>Seleccionar Documento</h4></Form.Label>
-          <Form.Select id="SeleccionDocumento" aria-label="Default select example" className="mb-3" onChange={e => {handleDocumentChange(e);}}>
+          <Form.Select id="SeleccionDocumento" aria-label="Default select example" className="mb-3" onChange={e => { handleDocumentChange(e); }}>
             <option value="">Seleccione un documento</option>
             {tiposDocumentos.map((tipo) => (
               <option key={tipo.id} value={tipo.nombre}>
@@ -295,8 +300,8 @@ const DocumentosPhase: React.FC<DocumentosPhaseProps> = ({
         </Form.Group>
         {selectedDocument && (
           <Form.Group controlId="formFileUpload" className="mb-3" >
-            <br/>
-            <Form.Label style={{  color: 'rgb(51, 51, 51)' , fontWeight: 'bold'}}>{tiposDocumentos.find(tipo => tipo.nombre === selectedDocument)?.label || selectedDocument}</Form.Label>
+            <br />
+            <Form.Label style={{ color: 'rgb(51, 51, 51)', fontWeight: 'bold' }}>{tiposDocumentos.find(tipo => tipo.nombre === selectedDocument)?.label || selectedDocument}</Form.Label>
             <Row>
               {tiposConVencimiento.includes(selectedDocument || '') && (!driveFile && !checkingDrive) && (
                 <Col lg={3}>
@@ -325,7 +330,7 @@ const DocumentosPhase: React.FC<DocumentosPhaseProps> = ({
                       style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}
                     >
                       <IoDocumentText style={{ fontSize: '2.5rem', color: '#198754' }} />
-                      <div style={{paddingTop: '20px'}}>
+                      <div style={{ paddingTop: '20px' }}>
                         <span>
                           <b>{driveFile.name}</b> ya está cargado en Google Drive.
                         </span>
@@ -397,7 +402,7 @@ const DocumentosPhase: React.FC<DocumentosPhaseProps> = ({
                 ) : (
                   <>
                     <br />
-                    <Form.Control style={{marginBottom: '10px'}}
+                    <Form.Control style={{ marginBottom: '10px' }}
                       type="file"
                       ref={(el: HTMLInputElement | null) => fileInputRefs.current[index] = el}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFileChange(e, index)}
@@ -415,7 +420,7 @@ const DocumentosPhase: React.FC<DocumentosPhaseProps> = ({
                 )}
               </div>
             ))}
-            {selectedDocument === "OTROS ARCHIVOS" && 
+            {selectedDocument === "OTROS ARCHIVOS" &&
               <Button variant="secondary" onClick={() => setFileInputs([...fileInputs, fileInputs.length])}>
                 Agregar otro archivo
               </Button>

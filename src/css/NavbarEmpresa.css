@@ -31,9 +31,10 @@
 .lista-Opciones-Nav{
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     gap: 15px;
+    align-self: stretch;
 }
 
 .imagenEmpresa {
@@ -54,10 +55,13 @@
     white-space: nowrap; /* Evita que el texto se envuelva */
     margin: 0 5px; /* Añade espacio entre los enlaces */
     padding-left: 0 !important;
-    padding-right: 2px !important;
+    padding-right: 0 !important;
     color: #383838;
+    
 }
-
+.nav-item{
+    justify-self: center;
+}
 .navbar-nav a {
     font-weight: 600;
     font-family: "-apple-system", "BlinkMacSystemFont", "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
@@ -142,6 +146,91 @@ img {
     text-wrap: wrap;
     width: 120px;
     font-size: 19px !important;
+    position: relative;
+    display: flex !important;
+    align-items: center;
+}
+
+/* Subrayado naranja animado — Nav.Link normales */
+.textoNavlink::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 100%;
+    height: 4px;
+    background-color: #ff7b00;
+    border-radius: 2px 2px 0 0;
+    transform: translateX(-50%) scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.textoNavlink:hover::after {
+    transform: translateX(-50%) scaleX(1);
+}
+
+.textoNavlink.active::after {
+    transform: translateX(-50%) scaleX(1);
+}
+
+/* Cerrar Sesión no lleva subrayado */
+.right-div .textoNavlink::after {
+    content: none;
+}
+
+/* Subrayado naranja animado — solo toggles de PRIMER NIVEL (Consultas, Procesos)
+   Selector estricto para no afectar los sub-dropdowns anidados (Vacaciones, Permisos, Expediente)
+   (usa ::before porque Bootstrap ocupa ::after para la flecha ▼) */
+.lista-Opciones-Nav > .col > .nav-item.dropdown > .nav-link.dropdown-toggle {
+    position: relative;
+    display: flex !important;
+    align-items: center;
+    padding-bottom: 0 !important;
+}
+
+.lista-Opciones-Nav > .col > .nav-item.dropdown > .nav-link.dropdown-toggle::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 100%;
+    height: 4px;
+    background-color: #ff7b00;
+    border-radius: 2px 2px 0 0;
+    transform: translateX(-50%) scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.lista-Opciones-Nav > .col > .nav-item.dropdown > .nav-link.dropdown-toggle:hover::before,
+.lista-Opciones-Nav > .col > .nav-item.dropdown > .nav-link.dropdown-toggle.show::before {
+    transform: translateX(-50%) scaleX(1);
+}
+
+.lista-Opciones-Nav > .col > .nav-dropdown-active > .nav-link.dropdown-toggle::before {
+    transform: translateX(-50%) scaleX(1);
+}
+
+/* Altura fija en desktop: los links ocupan exactamente el alto del logo,
+   así bottom:0 del ::after/::before coincide con el borde inferior del navbar.
+   Solo se aplica a los links de la barra (no a Cerrar Sesión que está en columna). */
+@media screen and (min-width: 1025px) {
+    .lista-Opciones-Nav .textoNavlink,
+    .lista-Opciones-Nav > .col > .nav-item.dropdown > .nav-link.dropdown-toggle,
+    .NavbarEmpresa .navbar-nav > .col > .textoNavlink {
+        height: 100px;
+    }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1024px) {
+    .lista-Opciones-Nav .textoNavlink,
+    .lista-Opciones-Nav > .col > .nav-item.dropdown > .nav-link.dropdown-toggle,
+    .NavbarEmpresa .navbar-nav > .col > .textoNavlink {
+        height: 75px;
+    }
 }
 
 .navbar-expand .navbar-nav .dropdown-menu {
@@ -367,6 +456,33 @@ img {
 @media screen and (max-width: 1268px) {
     .contenedor-user-info{
         gap:15px;
+    }
+}
+
+/* Ocultar cargo en pantallas donde RRHH + Control de Supervisión desborda */
+@media screen and (min-width: 992px) and (max-width: 1380px) {
+    .cargo-info {
+        display: none;
+    }
+    .lista-Opciones-Nav {
+        gap: 6px;
+    }
+    .textoNavlink {
+        font-size: 17px !important;
+        width: auto;
+    }
+    .nav-link {
+        font-size: 18px;
+        margin: 0 5px;
+    }
+    .navbar-nav a {
+        font-size: 18px;
+    }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1150px) {
+    .contenedor-user-info {
+        display: none;
     }
 }
 

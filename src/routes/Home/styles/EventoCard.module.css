@@ -7,14 +7,19 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background-color: #003391;
+  background: linear-gradient(135deg,
+      rgba(0, 33, 100, 0.82) 0%,
+      rgba(0, 51, 145, 0.65) 55%,
+      rgba(247, 102, 5, 0.55) 90%);
 }
 
 /* Imagen de fondo */
 .backgroundLayer {
   position: absolute;
-  inset: 0;
-  background-position: center center;
+  inset: 0px;
+  top: -35px;
+
+  background-position: 50% 0%;
   background-repeat: no-repeat;
   background-size: cover;
   opacity: 0.35;
@@ -38,7 +43,8 @@
   z-index: 3;
   font-family: "Gotham", sans-serif;
   line-height: 1.2;
-  color: #fff;
+  /* color: linear-gradient(90deg, #f48134, #f0c030); */
+  color: #ffffff;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
   width: 100%;
   text-align: center;
@@ -48,6 +54,8 @@
   align-items: center;
   gap: 6px;
 }
+
+
 
 /* Badge "Celebración Especial" */
 .badge {
@@ -66,9 +74,10 @@
 
 .title {
   font-weight: 200;
-  font-size: clamp(3rem, 3vw, 1.8rem);
+  font-size: clamp(1.5rem, 5vw, 3rem);
   margin: 0;
-  line-height: 1.1;
+  line-height: 0.9;
+  padding-top: 20px;
 }
 
 .subtitle {

@@ -215,6 +215,17 @@ function NavbarEmpresa() {
                                                     Directorio de Empleados
                                                 </Nav.Link>
                                             </Col>
+                                            <Col>
+                                                <Nav.Link
+                                                    href={`https://drive.google.com/drive/folders/${import.meta.env.VITE_MANUALES_FOLDER_ID}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="textoNavlink"
+                                                    style={{justifySelf:'center'}}
+                                                >
+                                                    Manuales
+                                                </Nav.Link>
+                                            </Col>
                                             </div>
                                             {/* <Col  >
 
@@ -224,7 +235,7 @@ function NavbarEmpresa() {
                                             </Col>
  */}
                                             {auth.RRHH === 1 ? (
-                                                <Col>
+                                                <Col style={{ paddingRight: '0' }}>
                                                     <Nav.Link as={Link} to='/ControlSupervision' className={isActive('/ControlSupervision') ? 'active textoNavlink' : 'textoNavlink'}>
                                                         Control de Supervisión
                                                     </Nav.Link>
@@ -237,7 +248,7 @@ function NavbarEmpresa() {
                                                     <div className="contenedor-user-info">
                                                         <div className='user-info' >{`${auth.nombres?.split(' ')[0]?.charAt(0).toUpperCase() + auth.nombres?.split(' ')[0]?.slice(1).toLowerCase() || ''} ${auth.apellidos?.split(' ')[0]?.charAt(0).toUpperCase() + auth.apellidos?.split(' ')[0]?.slice(1).toLowerCase() || ''}`}</div>
                                                         <div
-                                                            className={`user-info${(auth.cargo_empleado && auth.cargo_empleado.length > 2) ? ' small-text' : ''}`}
+                                                            className={`user-info cargo-info${(auth.cargo_empleado && auth.cargo_empleado.length > 2) ? ' small-text' : ''}`}
                                                         >
                                                             {auth.cargo_empleado || 'Cargo del Empleado'}
                                                         </div>

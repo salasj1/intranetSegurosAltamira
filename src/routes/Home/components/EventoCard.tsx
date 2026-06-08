@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import styles from '../styles/EventoCard.module.css';
 import EventoGalleryModal from './EventoGalleryModal';
-import SomosAltamira from '@/assets/webp/somos-seguros-altamira.webp';
+import galeriaFotoFondo from '@/assets/webp/galeria.webp';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -31,10 +31,10 @@ const EventoCard: React.FC<EventoCardProps> = ({ parentFolderId }) => {
       {/* Imagen de fondo */}
       <div
         className={styles.backgroundLayer}
-        style={{ backgroundImage: `url("${SomosAltamira}")` }}
+        style={{ backgroundImage: `url("${galeriaFotoFondo}")` }}
       />
       {/* Overlay degradado para legibilidad */}
-      <div className={styles.gradientOverlay} />
+      {/* <div className={styles.gradientOverlay} /> */}
 
       {/* Contenido */}
       <div className={styles.contentLayer}>
@@ -46,15 +46,17 @@ const EventoCard: React.FC<EventoCardProps> = ({ parentFolderId }) => {
         >
           Celebración Especial
         </motion.span>
+        <div style={{ height: "100px" }}>
+          <motion.h2
+            className={styles.title}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+          >
+            {titulo}
+          </motion.h2>
+        </div>
 
-        <motion.h2
-          className={styles.title}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-        >
-          {titulo}
-        </motion.h2>
 
         <motion.button
           className={styles.ctaButton}

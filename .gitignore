@@ -1,11 +1,9 @@
 .github
 .env
-
+CLAUDE.md
 src/routes/Expediente.tsx
 .claude
 .agents
-
-
 # Logs
 logs
 *.log

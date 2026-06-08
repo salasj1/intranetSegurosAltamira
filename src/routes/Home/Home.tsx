@@ -4,7 +4,7 @@ import styles from "@/routes/Home/styles/Home.module.css";
 import CountUp from "../../components/react-bits/CountUp";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { FaFileContract, FaReceipt, FaHandHoldingUsd, FaBuilding, FaBullseye, FaLinkedin, FaInstagram, FaFacebook } from "react-icons/fa";
+import { FaFileContract, FaReceipt, FaHandHoldingUsd, FaBuilding, FaBullseye, FaLinkedin, FaInstagram, FaFacebook, FaShieldAlt, FaBook } from "react-icons/fa";
 import { FaRoute } from 'react-icons/fa';
 import { SiGoogledocs } from "react-icons/si";
 import { TbWorld } from "react-icons/tb";
@@ -147,19 +147,19 @@ function Home() {
             <h3>Indicadores del personal</h3>
             <div className={styles.statsContainer}>
               <div className={styles.statItem}>
-                <CountUp to={vacacionesProcesadas} duration={2} separator="." />
+                <CountUp  to={vacacionesProcesadas} duration={2} separator="." />
                 <span>Total de Vacaciones procesadas</span>
               </div>
               <div className={styles.statItem}>
-                <CountUp to={permisosProcesados} duration={2} separator="." />
-                <span>Total de Permisos procesados</span>
+                <CountUp  to={permisosProcesados} duration={2} separator="." />
+                <span>Total de Permisos Aprobados</span>
               </div>
             </div>
           </div>
           <div className={`${styles.div2} ${styles.card}`} style={{ padding: '0px' }}>
             {/* Coloca tu imagen aquí */}
             <EventoCard
-              parentFolderId={import.meta.env.VITE_DIA_EMPLEADO_FOLDER_ID}
+          parentFolderId={import.meta.env.VITE_GALERIA_ID}
             />
             {/* <img src={SomosSeguros} alt="Imagen de la empresa" style={{ objectFit: 'cover' }} loading="eager" /> */}
             {/* <h4>Intranet Seguros Altamira</h4> */}
@@ -185,10 +185,32 @@ function Home() {
             <img src={logoCostura} alt="Imagen de la empresa 2" className={styles.bentoImageFill} loading="lazy" />
           </div>
           <div className={`${styles.div6} ${styles.card} ${styles.shortcutCard}`}>
+            <a
+              href={`https://drive.google.com/drive/folders/${import.meta.env.VITE_SEGURIDAD_FOLDER_ID}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.shortcutLink}
+            >
+              <FaShieldAlt size={70} />
+              <span style={{ fontSize: '1.65rem' }}>Seguridad y Salud Laboral</span>
+            </a>
+          </div>
+          <div className={`${styles.div7} ${styles.card} ${styles.shortcutCard}`}>
+            
+            <a
+              href={`https://drive.google.com/drive/folders/${import.meta.env.VITE_MANUALES_FOLDER_ID}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.shortcutLink}
+            >
+              <FaBook size={60} />
+              <span style={{ fontSize: '1.4rem' }}>Manuales</span>
+            </a>
+          </div>
+          <div className={`${styles.div8} ${styles.card} ${styles.shortcutCard}`} id="">
             <Link to="/expediente/datos" className={styles.shortcutLink}>
-              <IoMdPerson size={100} />
-              {/*  <img src ={logoCostura} height={50} width={50}></img> */}
-              <span style={{ fontSize: '2.5rem' }}>Datos personales</span>
+              <IoMdPerson size={75} style={{marginBottom:'-10px'}}/>
+              <span style={{ fontSize: '1.35rem' }}>Cambiar Datos personales</span>
             </Link>
           </div>
         </div>
