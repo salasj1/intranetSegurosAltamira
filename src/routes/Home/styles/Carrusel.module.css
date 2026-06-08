@@ -163,3 +163,351 @@ h1 {
         font-size: 1rem;
     }
 }
+
+/* ───────── Celebración cumpleaños ───────── */
+.fxLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.fxSparkles  { z-index: 6; }
+.fxBalloons  { z-index: 10; }
+.fxConfetti  { z-index: 12; }
+
+.balloonTrack {
+  position: absolute;
+  bottom: -180px;
+  animation: balloonRise linear infinite;
+  will-change: transform;
+}
+.balloonSway {
+  animation: balloonSway ease-in-out infinite alternate;
+  will-change: transform;
+  filter: drop-shadow(0 4px 8px rgba(0, 30, 80, 0.25));
+}
+@keyframes balloonRise {
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(var(--drift, 0), calc(-100vh - 180px), 0); }
+}
+@keyframes balloonSway {
+  from { transform: translateX(calc(var(--sway, 16px) * -0.5)); }
+  to   { transform: translateX(calc(var(--sway, 16px) * 0.5)); }
+}
+
+.confettiTrack {
+  position: absolute;
+  top: -40px;
+  animation: confettiFall linear infinite;
+  will-change: transform;
+}
+.confettiSpin {
+  animation: confettiSpin linear infinite;
+  will-change: transform;
+  transform: rotate(var(--start-rot, 0deg));
+}
+@keyframes confettiFall {
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(var(--drift, 0), calc(480px + 80px), 0); }
+}
+@keyframes confettiSpin {
+  from { transform: rotate(var(--start-rot, 0deg)); }
+  to   { transform: rotate(calc(var(--start-rot, 0deg) + 360deg)); }
+}
+
+.shape0 { border-radius: 1px; }
+.shape1 { border-radius: 999px; }
+.shape2 { border-radius: 50%; }
+.shape3 { background: transparent !important; border: 2px solid; border-radius: 50%; }
+.shape4 { border-radius: 2px; transform: skewX(-15deg); }
+
+.sparkle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, rgba(255, 234, 219, 0.8) 35%, transparent 70%);
+  box-shadow: 0 0 12px rgba(255, 234, 219, 0.6);
+  animation: twinkle infinite alternate ease-in-out;
+}
+@keyframes twinkle {
+  from { opacity: 0.15; transform: scale(0.6); }
+  to   { opacity: 1;    transform: scale(1.2); }
+}
+
+.burstOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  pointer-events: none;
+  overflow: hidden;
+}
+.burstPiece {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 2px;
+  transform-origin: center;
+  animation: burst 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes burst {
+  0%   { opacity: 1; transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) translateY(0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) translateY(var(--burst-dist, -260px)) scale(0.4); }
+}
+
+.divDegradadoCumpleanos {
+  position: relative;       /* ← añadir */
+  overflow: hidden;          /* ← añadir, evita que globos rebasen */
+  background-image:linear-gradient(135deg, rgb(0, 56, 150) 10%, rgb(21, 101, 192) 45%, rgb(244, 129, 52) 95%);
+  height: 480px;
+}
+.caption1 {
+  position: relative;       /* ← añadir */
+  z-index:40;              /* ← añadir, para estar encima de globos */
+}
+
+.captionP {
+  position: relative;       /* ← añadir */
+  z-index:40;              /* ← añadir, para estar encima de globos */
+}
+.imagenTorta {
+  position: relative;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  width: min(450px, 36vw);
+  object-fit: contain;
+  opacity: 1;             /* sin transparencia */
+  z-index: 5;             /* encima del fondo, debajo de globos/texto */
+  filter: drop-shadow(0 18px 32px rgba(0, 30, 80, 0.55))
+          drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+  animation: tortaFloat 4s ease-in-out infinite alternate,
+             tortaIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center bottom;
+  pointer-events: none;
+}
+
+@keyframes tortaFloat {
+  from { transform: translate(-50%, calc(-50% - 6px)) rotate(-1.2deg); }
+  to   { transform: translate(-50%, calc(-50% + 6px)) rotate(1.2deg); }
+}
+@keyframes tortaIn {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 40px)) scale(0.85); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ───────── Aniversario laboral ───────── */
+.divDegradadoAniversario {
+  position: relative;
+  overflow: hidden;
+  background-image: linear-gradient(180deg, #003896 20%, #1565c0 60%, #f48134 100%);
+  height: 480px;
+}
+
+.imagenPodio {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  z-index: 0;
+  opacity: 1;
+}
+
+/* Halo dorado detrás del trofeo */
+.podioSpotlight {
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  height: 380px;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 222, 150, 0.30) 0%, rgba(244, 129, 52, 0.12) 30%, transparent 65%);
+  filter: blur(6px);
+  animation: spotlightPulse 3s ease-in-out infinite alternate;
+}
+@keyframes spotlightPulse {
+  from { opacity: 0.55; transform: translate(-50%, -50%) scale(0.95); }
+  to   { opacity: 1;    transform: translate(-50%, -50%) scale(1.08); }
+}
+
+/* Trofeo */
+.trofeoWrap {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  z-index: 22;
+  display: grid;
+  place-items: end center;
+  pointer-events: none;
+  width: auto;
+  height: 70%;
+}
+.trofeoImg {
+  width: auto;
+  height: 100%;
+  max-height: 420px;
+  max-width: 45vw;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 24px 40px rgba(0, 10, 40, 0.55))
+    drop-shadow(0 8px 14px rgba(0, 0, 0, 0.4))
+    drop-shadow(0 0 24px rgba(255, 200, 120, 0.5));
+  animation:
+    trofeoRise 1s cubic-bezier(0.16, 1, 0.3, 1) both,
+    trofeoFloat 4.5s 1s ease-in-out infinite alternate;
+  transform-origin: center bottom;
+}
+@keyframes trofeoRise {
+  0%   { opacity: 0; transform: translateY(110%) scale(0.85); }
+  60%  { opacity: 1; }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes trofeoFloat {
+  from { transform: translateY(-6px) rotate(-1deg); }
+  to   { transform: translateY(6px) rotate(1deg); }
+}
+
+/* Glow giratorio detrás del trofeo */
+.trofeoGlow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      from 0deg,
+      rgba(255, 222, 150, 0.18) 0deg, transparent 12deg,
+      rgba(255, 222, 150, 0.18) 24deg, transparent 36deg,
+      rgba(255, 222, 150, 0.18) 48deg, transparent 60deg,
+      rgba(255, 222, 150, 0.18) 72deg, transparent 84deg,
+      rgba(255, 222, 150, 0.18) 96deg, transparent 108deg,
+      rgba(255, 222, 150, 0.18) 120deg, transparent 132deg,
+      rgba(255, 222, 150, 0.18) 144deg, transparent 156deg,
+      rgba(255, 222, 150, 0.18) 168deg, transparent 180deg,
+      rgba(255, 222, 150, 0.18) 192deg, transparent 204deg,
+      rgba(255, 222, 150, 0.18) 216deg, transparent 228deg,
+      rgba(255, 222, 150, 0.18) 240deg, transparent 252deg,
+      rgba(255, 222, 150, 0.18) 264deg, transparent 276deg,
+      rgba(255, 222, 150, 0.18) 288deg, transparent 300deg,
+      rgba(255, 222, 150, 0.18) 312deg, transparent 324deg,
+      rgba(255, 222, 150, 0.18) 336deg, transparent 348deg
+    );
+  z-index: -1;
+  pointer-events: none;
+  animation: glowRotate 24s linear infinite, glowFadeIn 1.5s 0.8s ease-out both;
+  mask: radial-gradient(circle, black 20%, transparent 70%);
+  -webkit-mask: radial-gradient(circle, black 20%, transparent 70%);
+}
+@keyframes glowRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes glowFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Manos aplaudiendo */
+.manos {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 34%;
+  z-index: 30;
+  pointer-events: none;
+  background-image: url('@/assets/webp/manos.webp');
+  background-repeat: no-repeat;
+  background-size: 200% 100%;
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.4));
+}
+.manosLeft {
+  left: 0;
+  background-position: left center;
+  animation:
+    manosEnterLeft 0.9s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both,
+    clapLeft 0.55s 1.1s ease-in-out infinite alternate;
+  transform-origin: left center;
+}
+.manosRight {
+  right: 0;
+  background-position: right center;
+  animation:
+    manosEnterRight 0.9s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both,
+    clapRight 0.55s 1.1s ease-in-out infinite alternate;
+  transform-origin: right center;
+}
+@keyframes manosEnterLeft  { from { opacity: 0; transform: translateX(-40%); } to { opacity: 1; transform: translateX(0); } }
+@keyframes manosEnterRight { from { opacity: 0; transform: translateX(40%);  } to { opacity: 1; transform: translateX(0); } }
+@keyframes clapLeft  { from { transform: translateX(0) scaleX(1) rotate(0); } to { transform: translateX(8px) scaleX(0.96) rotate(2deg);  } }
+@keyframes clapRight { from { transform: translateX(0) scaleX(1) rotate(0); } to { transform: translateX(-8px) scaleX(0.96) rotate(-2deg); } }
+
+/* Caption renombrado para aniversario (no toca .caption1 ni .captionP) */
+.caption1Aniversario {
+  color: #fff;
+  font-family: "Montserrat", sans-serif;
+  font-size: clamp(1.6rem, 3.4vw, 3rem);
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.05;
+  text-shadow: 3px 3px 0 #003896, 0 8px 24px rgba(0, 0, 0, 0.45);
+  margin: 0;
+  position: relative;
+  top:-275px;
+  z-index: 40;
+  animation: fadeUpAnniv 0.9s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  width: 100%;
+}
+.yearsPop {
+  display: inline-block;
+  background: linear-gradient(180deg, #ffd29b 0%, #f48134 60%, #fd8719 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  font-size: 1.25em;
+  font-weight: 900;
+  filter: drop-shadow(0 3px 0 #003896) drop-shadow(0 8px 18px rgba(0,0,0,0.35));
+  animation: yearsZoom 1s 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center;
+}
+@keyframes yearsZoom {
+  0%   { opacity: 0; transform: scale(0.4) rotate(-8deg); }
+  60%  { opacity: 1; transform: scale(1.18) rotate(2deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+/* ───────── Listón decorativo (subtítulo aniversario) ───────── */
+.listonWrap {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  width: min(960px, 96%);
+  z-index: 38;
+  pointer-events: none;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
+  animation: listonPopIn 0.9s 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.listonSvg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.listonText {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16% 14px;
+  font-family: 'Grape Nuts', cursive;
+  font-size: clamp(0.9rem, 2vw, 1.5rem);
+  line-height: 1.1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@keyframes listonPopIn {
+  0%   { opacity: 0; transform: translate(-50%, 24px) scale(0.92); }
+  60%  { opacity: 1; transform: translate(-50%, -4px) scale(1.02); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}

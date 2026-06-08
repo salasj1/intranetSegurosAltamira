@@ -1,14 +1,9 @@
-import { useEffect, useState } from "react";
-
+import { useEffect } from "react";
 import ListaProcesarVacacaciones from "../components/ListaProcesarVacaciones";
 import NavbarEmpresa from "../components/NavbarEmpresa";
-import axios from "axios";
-import { Alert, AlertHeading } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
-import { Mosaic } from "react-loading-indicators";
-import stylesLoading from "../css/loading.module.css";
-const apiUrl = import.meta.env.VITE_API_URL;
+
 export interface Vacacion {
     VacacionID: number;
     diasDisfrutar: number;
@@ -28,64 +23,25 @@ export interface Vacacion {
     ci: string;
     departamento: string;
     cargo: string;
+    labelPeriodo: string | null;
 }
 
 function ProcesarVacaciones() {
-    
-    const [vacaciones, setVacaciones] = useState<Vacacion[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const {  RRHH } = useAuth();
+    const { RRHH } = useAuth();
     const navigate = useNavigate();
-    useEffect(() => {
-        if (RRHH !== 1 ) {
-        navigate('/home'); 
-        }
-    }, [RRHH,  navigate]);
-    const fetchVacaciones = async () => {
-        setIsLoading(true);
-        try {
-            const response = await axios.get(`${apiUrl}/vacacionesaprobadas`);
-            setVacaciones(response.data);   
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.error('Error fetching vacaciones:', error.message);
-                if (error.response) {
-                    console.error('Response data:', error.response.data);
-                    console.error('Response status:', error.response.status);
-                    console.error('Response headers:', error.response.headers);
-                } else if (error.request) {
-                    console.error('Request data:', error.request);
-                } else {
-                    console.error('Error message:', error.message);
-                }
-            } else {
-                console.error('Error:', error);
-            }
-            setError('Error al cargar los datos de las vacaciones');
-        }
-        setIsLoading(false);
-    };
 
     useEffect(() => {
-        fetchVacaciones();
-    }, []);
+        if (RRHH !== 1) {
+            navigate('/home');
+        }
+    }, [RRHH, navigate]);
 
     return (
         <>
             <NavbarEmpresa />
             <div className="canvas">
                 <h1>Procesar Vacaciones</h1>
-                {error && <Alert variant="danger" onClose={() => setError(null)} dismissible>
-                    <AlertHeading>Error <hr /></AlertHeading>{error}
-                </Alert>}
-                {isLoading ? (
-                    <div className={stylesLoading.loadingDocument}>
-                        <Mosaic color={["#003391","#1A5FFA","#33CCCC","#1A3FFA"]} size="large" text="" textColor="#0d1bff" />
-                    </div>
-                ) : (
-                    <ListaProcesarVacacaciones vacaciones={vacaciones} fetchVacaciones={fetchVacaciones} />
-                )}
+                <ListaProcesarVacacaciones />
             </div>
         </>
     );

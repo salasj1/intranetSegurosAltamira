@@ -1,4 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+
+function useMasonryColumns(): number {
+  const [cols, setCols] = useState(5);
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      if (w <= 800) setCols(2);
+      else if (w <= 1100) setCols(3);
+      else if (w <= 1400) setCols(4);
+      else setCols(5);
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+  return cols;
+}
 import { createPortal } from 'react-dom';
 import { Modal } from 'react-bootstrap';
 import { Mosaic } from 'react-loading-indicators';
@@ -7,11 +24,14 @@ import {
   fetchEventFolders,
   fetchEventPhotos,
   getOptimizedUrl,
+  getDriveVideoUrl,
   DriveFolder,
   DriveImage,
 } from '@/data/eventoPhotos';
 import styles from '../styles/EventoGalleryModal.module.css';
-import { FaPlay, FaFolder } from 'react-icons/fa';
+import { FaFolder } from 'react-icons/fa';
+import VideoAutoplayCard, { resetVideoQueue } from '@/components/VideoAutoplayCard';
+import LazyImage from '@/components/LazyImage';
 import { IoArrowBack, IoArrowForward } from 'react-icons/io5';
 
 interface Props {
@@ -22,6 +42,7 @@ interface Props {
 }
 
 const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, eventTitle }) => {
+  const numColumns = useMasonryColumns();
   const [view, setView] = useState<'folders' | 'photos'>('folders');
   const [folders, setFolders] = useState<DriveFolder[]>([]);
   const [loadingFolders, setLoadingFolders] = useState(false);
@@ -35,8 +56,8 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
   const [selectedPhoto, setSelectedPhoto] = useState<DriveImage | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [imageLoading, setImageLoading] = useState(false);
+  const [lightboxLoadingMore, setLightboxLoadingMore] = useState(false);
 
-  // Índice de la foto actual en el array
   const currentIndex = selectedPhoto ? photos.findIndex(p => p.id === selectedPhoto.id) : -1;
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex < photos.length - 1;
@@ -51,9 +72,10 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
     }
   }, [isOpen, parentFolderId]);
 
-  // Resetear a vista de carpetas al cerrar
+  // Resetear al cerrar
   useEffect(() => {
     if (!isOpen) {
+      resetVideoQueue();
       setView('folders');
       setSelectedFolder(null);
       setPhotos([]);
@@ -61,15 +83,52 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
       setHasMore(true);
       setSelectedPhoto(null);
       setZoomLevel(1);
+      setLightboxLoadingMore(false);
     }
   }, [isOpen]);
 
-  // Resetear zoom y activar loading al cambiar de foto
+  // Resetear zoom y loading al cambiar de foto
   useEffect(() => {
     setZoomLevel(1);
     if (selectedPhoto) setImageLoading(true);
     else setImageLoading(false);
   }, [selectedPhoto]);
+
+  // Bloquear scroll del body
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isOpen]);
+
+  const loadMorePhotos = async (token: string): Promise<DriveImage[]> => {
+    if (loadingPhotos || !selectedFolder) return [];
+    setLoadingPhotos(true);
+    try {
+      const data = await fetchEventPhotos(selectedFolder.id, token, 30);
+      setPhotos(prev => {
+        const existingIds = new Set(prev.map(p => p.id));
+        return [...prev, ...data.files.filter(f => !existingIds.has(f.id))];
+      });
+      setNextPageToken(data.nextPageToken);
+      setHasMore(!!data.nextPageToken);
+      return data.files;
+    } finally {
+      setLoadingPhotos(false);
+    }
+  };
+
+  const handleLightboxNext = async () => {
+    if (hasNext) {
+      setSelectedPhoto(photos[currentIndex + 1]);
+    } else if (hasMore && nextPageToken) {
+      setLightboxLoadingMore(true);
+      const newFiles = await loadMorePhotos(nextPageToken);
+      setLightboxLoadingMore(false);
+      if (newFiles.length > 0) setSelectedPhoto(newFiles[0]);
+    } else {
+      setSelectedPhoto(photos[0]);
+    }
+  };
 
   // Navegación con teclado (←/→) en el lightbox
   useEffect(() => {
@@ -77,11 +136,11 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
     const handleKeyDown = (e: KeyboardEvent) => {
       const idx = photos.findIndex(p => p.id === selectedPhoto.id);
       if (e.key === 'ArrowLeft' && idx > 0) setSelectedPhoto(photos[idx - 1]);
-      else if (e.key === 'ArrowRight' && idx < photos.length - 1) setSelectedPhoto(photos[idx + 1]);
+      else if (e.key === 'ArrowRight') handleLightboxNext();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedPhoto, photos]);
+  }, [selectedPhoto, photos, hasNext, hasMore, nextPageToken]);
 
   const handleFolderClick = async (folder: DriveFolder) => {
     setSelectedFolder(folder);
@@ -108,33 +167,21 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
     setHasMore(true);
   };
 
-  const loadMorePhotos = async (token: string) => {
-    if (loadingPhotos || !selectedFolder) return;
-    setLoadingPhotos(true);
-    try {
-      const data = await fetchEventPhotos(selectedFolder.id, token, 30);
-      setPhotos((prev) => [...prev, ...data.files]);
-      setNextPageToken(data.nextPageToken);
-      setHasMore(!!data.nextPageToken);
-    } finally {
-      setLoadingPhotos(false);
-    }
-  };
-
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
-    if (scrollHeight - scrollTop <= clientHeight + 50 && !loadingPhotos && hasMore && nextPageToken) {
+    const scrollableHeight = scrollHeight - clientHeight;
+    const scrolled75 = scrollableHeight > 0 && scrollTop / scrollableHeight >= 0.75;
+    if (scrolled75 && !loadingPhotos && hasMore && nextPageToken) {
       loadMorePhotos(nextPageToken);
     }
   };
 
-  // Bloquear scroll del body
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
+  const photoColumns = useMemo(
+    () => Array.from({ length: numColumns }, (_, col) =>
+      photos.filter((_, idx) => idx % numColumns === col)
+    ),
+    [photos, numColumns]
+  );
 
   return (
     <>
@@ -206,41 +253,41 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
           {view === 'photos' && (
             <>
               <div className={styles.pinterestGrid}>
-                {photos.map((photo) => (
-                  <div
-                    key={photo.id}
-                    className={`${styles.pinWrapper} ${styles.pinCard}`}
-                    onClick={() => setSelectedPhoto(photo)}
-                  >
-                    <img
-                      src={getOptimizedUrl(photo.thumbnailLink, 600)}
-                      alt="Foto del evento"
-                      loading="lazy"
-                      className={styles.pinImage}
-                      referrerPolicy="no-referrer"
-                    />
-                    {photo.mimeType && photo.mimeType.startsWith('video/') && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
-                          fontSize: '3rem',
-                          color: '#ffffff',
-                          filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.6))',
-                          pointerEvents: 'none',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <FaPlay />
-                      </div>
-                    )}
-                    <div className={styles.hoverOverlay}>
-                      <span>{photo.mimeType?.startsWith('video/') ? 'Ver video' : 'Ver foto'}</span>
-                    </div>
+                {photoColumns.map((col, colIdx) => (
+                  <div key={colIdx} className={styles.masonryColumn}>
+                    {col.map((photo) => {
+                      const isVideo = photo.mimeType?.startsWith('video/');
+                      const thumbnail = getOptimizedUrl(photo.thumbnailLink, 600) || undefined;
+
+                      return (
+                        <div key={photo.id} className={styles.pinCard}>
+                          {isVideo ? (
+                            <VideoAutoplayCard
+                              src={getDriveVideoUrl(photo.id)}
+                              thumbnail={thumbnail}
+                              onClick={() => setSelectedPhoto(photo)}
+                              videoClass={styles.pinVideo}
+                              autoplayOnVisible={photo.durationMs !== undefined && photo.durationMs <= 6000}
+                            />
+                          ) : (
+                            <div onClick={() => setSelectedPhoto(photo)} style={{ cursor: 'pointer' }}>
+                              <LazyImage
+                                src={getOptimizedUrl(photo.thumbnailLink, 600) || ''}
+                                alt="Foto del evento"
+                                className={styles.pinImage}
+                                referrerPolicy="no-referrer"
+                                onClick={() => setSelectedPhoto(photo)}
+                              />
+                            </div>
+                          )}
+                          {!isVideo && (
+                            <div className={styles.hoverOverlay} onClick={() => setSelectedPhoto(photo)}>
+                              <span>Ver foto</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 ))}
               </div>
@@ -262,46 +309,57 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
         </Modal.Body>
       </Modal>
 
-      {/* Lightbox renderizado en document.body para evitar que el transform del card padre lo afecte */}
       {selectedPhoto && createPortal(
-        <div className={styles.lightbox} onClick={() => setSelectedPhoto(null)}>
+        <div className={styles.lightbox} onClick={() => !lightboxLoadingMore && setSelectedPhoto(null)}>
           <button className={styles.closeLightbox} onClick={() => setSelectedPhoto(null)}>
             Cerrar ✕
           </button>
 
-          {/* Botón anterior */}
           <button
             className={`${styles.navBtn} ${styles.navBtnLeft}`}
             onClick={(e) => { e.stopPropagation(); setSelectedPhoto(photos[currentIndex - 1]); }}
-            disabled={!hasPrev}
+            disabled={!hasPrev || lightboxLoadingMore}
             title="Foto anterior (←)"
           >
             <IoArrowBack size={80} />
           </button>
 
-          {/* Botón siguiente */}
           <button
             className={`${styles.navBtn} ${styles.navBtnRight}`}
-            onClick={(e) => { e.stopPropagation(); setSelectedPhoto(photos[currentIndex + 1]); }}
-            disabled={!hasNext}
+            onClick={(e) => { e.stopPropagation(); handleLightboxNext(); }}
+            disabled={lightboxLoadingMore}
             title="Foto siguiente (→)"
           >
             <IoArrowForward size={80} />
           </button>
 
-          {/* Contador de fotos */}
           <div className={styles.photoCounter} onClick={(e) => e.stopPropagation()}>
-            {currentIndex + 1} / {photos.length}
+            {currentIndex + 1} / {photos.length}{hasMore ? '+' : ''}
           </div>
 
-          {selectedPhoto.mimeType && selectedPhoto.mimeType.startsWith('video/') ? (
+          {lightboxLoadingMore ? (
+            <div
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Mosaic color={['#ffffff']} size="medium" text="" textColor="#ffffff" />
+              <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem' }}>Cargando más...</span>
+            </div>
+          ) : selectedPhoto.mimeType && selectedPhoto.mimeType.startsWith('video/') ? (
             <div className={styles.fullImageContainer} onClick={(e) => e.stopPropagation()}>
               <iframe
+                key={selectedPhoto.id}
                 src={`https://drive.google.com/file/d/${selectedPhoto.id}/preview`}
-                className={styles.fullImage}
-                allow="autoplay; fullscreen"
-                title="Video Player"
-                style={{ border: 'none', width: '180vw', height: '80vh', aspectRatio: '16/9' }}
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+                style={{
+                  width: '90vw',
+                  maxWidth: '1200px',
+                  height: '80vh',
+                  border: 'none',
+                  borderRadius: '4px',
+                  display: 'block',
+                }}
               />
             </div>
           ) : (
@@ -322,7 +380,7 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
                   </div>
                 )}
                 <img
-                  src={getOptimizedUrl(selectedPhoto.thumbnailLink, 2000)}
+                  src={getOptimizedUrl(selectedPhoto.thumbnailLink, 1400) || undefined}
                   alt="Foto completa"
                   referrerPolicy="no-referrer"
                   onLoad={() => setImageLoading(false)}
@@ -340,7 +398,6 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
                 />
               </div>
 
-              {/* Controles de zoom */}
               <div className={styles.zoomControls} onClick={(e) => e.stopPropagation()}>
                 <button
                   className={styles.zoomBtn}
