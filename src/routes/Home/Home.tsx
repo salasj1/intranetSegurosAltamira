@@ -20,6 +20,7 @@ import { PiCursorClickLight } from "react-icons/pi";
 import SomosSeguros from "@/assets/webp/somos-seguros-altamira.webp";
 import { IoMdPerson } from "react-icons/io";
 import EventoCard from '@/routes/Home/components/EventoCard';
+import ball from '@/assets/ball.jpg';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function Home() {
@@ -257,8 +258,8 @@ function Home() {
             <picture style={{ display: 'flex', width: '100%', height: '100%' }}>
               <source media="(max-width: 768px)" srcSet={logoChip} />
               <img
-                src={logoCristal}
-                alt="Logo de la empresa"
+                src={ball}
+                alt="Balón mundial SA"
                 className={styles.bentoImageFill}
                 loading="lazy"
               />
@@ -298,7 +299,7 @@ function Home() {
 
             onClick={() => setShowConozcamonosModal(true)} // <-- 4. Añade el evento onClick
           >
-            <h1 style={{ color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.18)" }}>Conózcamonos
+            <h1 style={{ color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.18)" }}>Conozcámonos
               <PiCursorClickLight style={{ marginTop: 30 }} />
             </h1>
             <p className={styles.text3}

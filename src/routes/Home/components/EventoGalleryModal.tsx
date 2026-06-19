@@ -23,7 +23,7 @@ import loadingStyles from '@/css/loading.module.css';
 import {
   fetchEventFolders,
   fetchEventPhotos,
-  getOptimizedUrl,
+  getDriveThumbnailUrl,
   getDriveVideoUrl,
   DriveFolder,
   DriveImage,
@@ -90,8 +90,16 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
   // Resetear zoom y loading al cambiar de foto
   useEffect(() => {
     setZoomLevel(1);
-    if (selectedPhoto) setImageLoading(true);
-    else setImageLoading(false);
+    if (selectedPhoto) {
+      setImageLoading(true);
+      const tipo = selectedPhoto.mimeType?.startsWith('video/') ? '🎬 VIDEO' : '🖼️ IMAGEN';
+      console.groupCollapsed(`%c🔍 Drive File ID — ${tipo}`, 'color:#1A5FFA;font-weight:bold;font-size:13px');
+      console.log('%cID del archivo:', 'color:#888', selectedPhoto.id);
+      console.log('%cAbrir en Drive:', 'color:#888', `https://drive.google.com/file/d/${selectedPhoto.id}/view`);
+      console.groupEnd();
+    } else {
+      setImageLoading(false);
+    }
   }, [selectedPhoto]);
 
   // Bloquear scroll del body
@@ -257,7 +265,7 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
                   <div key={colIdx} className={styles.masonryColumn}>
                     {col.map((photo) => {
                       const isVideo = photo.mimeType?.startsWith('video/');
-                      const thumbnail = getOptimizedUrl(photo.thumbnailLink, 600) || undefined;
+                      const thumbnail = getDriveThumbnailUrl(photo.id, 600);
 
                       return (
                         <div key={photo.id} className={styles.pinCard}>
@@ -272,7 +280,7 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
                           ) : (
                             <div onClick={() => setSelectedPhoto(photo)} style={{ cursor: 'pointer' }}>
                               <LazyImage
-                                src={getOptimizedUrl(photo.thumbnailLink, 600) || ''}
+                                src={getDriveThumbnailUrl(photo.id, 600)}
                                 alt="Foto del evento"
                                 className={styles.pinImage}
                                 referrerPolicy="no-referrer"
@@ -380,7 +388,7 @@ const EventoGalleryModal: React.FC<Props> = ({ isOpen, onClose, parentFolderId, 
                   </div>
                 )}
                 <img
-                  src={getOptimizedUrl(selectedPhoto.thumbnailLink, 1400) || undefined}
+                  src={getDriveThumbnailUrl(selectedPhoto.id, 1400)}
                   alt="Foto completa"
                   referrerPolicy="no-referrer"
                   onLoad={() => setImageLoading(false)}

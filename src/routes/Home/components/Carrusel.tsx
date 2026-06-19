@@ -4,6 +4,7 @@ import bienvenida from '@/assets/webp/32anos.webp';
 import cumpleanosImg from '@/assets/webp/imagen-torta.webp';
 import podioImg from '@/assets/webp/podio.webp';
 import trofeoImg from '@/assets/webp/trofeo.webp';
+import worldcupImg from '@/assets/webp/worldcup.webp';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthProvider';
 import { useState, useEffect } from 'react';
@@ -172,7 +173,7 @@ function Carrusel({ nombres, sexo = 'M' }: CarruselProps) {
         <div className={styles.divDegradado2}>
           <img
             className={`${styles.imagenCarrusel} ${styles.imagenCarruselGrande}`}
-            src={bienvenida}
+            src={worldcupImg}
             alt='bienvenida'
             about='Bienvenida'
             width={100}
