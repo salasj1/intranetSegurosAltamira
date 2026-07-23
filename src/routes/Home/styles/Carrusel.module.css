@@ -34,10 +34,25 @@
 }
 
 .imagenCarruselGrande {
-    height: 480px;
+    height: 500px;
     object-fit: cover;
-    object-position: top;
+    object-position:  50%;
     /* Añade esto para mostrar la parte superior de la imagen */
+}
+@media (max-height: 900px) {
+    .imagenCarruselGrande {
+        height: 480px;
+        
+        /* Ajusta la altura para pantallas más pequeñas */
+    }
+}
+
+@media (max-height: 650px) {
+    .imagenCarruselGrande {
+        height: 420px;
+        
+        /* Ajusta la altura para pantallas más pequeñas */
+    }
 }
 
 @media (max-width: 240px) {

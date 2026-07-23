@@ -4,7 +4,8 @@ import bienvenida from '@/assets/webp/32anos.webp';
 import cumpleanosImg from '@/assets/webp/imagen-torta.webp';
 import podioImg from '@/assets/webp/podio.webp';
 import trofeoImg from '@/assets/webp/trofeo.webp';
-import worldcupImg from '@/assets/webp/worldcup.webp';
+/* import worldcupImg from '@/assets/webp/worldcup.webp'; */
+import bandera from '@/assets/webp/bandera.webp';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthProvider';
 import { useState, useEffect } from 'react';
@@ -170,10 +171,10 @@ function Carrusel({ nombres, sexo = 'M' }: CarruselProps) {
 
     return (
       <Carousel.Item>
-        <div className={styles.divDegradado2}>
+        <div >
           <img
-            className={`${styles.imagenCarrusel} ${styles.imagenCarruselGrande}`}
-            src={worldcupImg}
+            className={` ${styles.imagenCarruselGrande}`}
+            src={bandera}
             alt='bienvenida'
             about='Bienvenida'
             width={100}
@@ -183,15 +184,14 @@ function Carrusel({ nombres, sexo = 'M' }: CarruselProps) {
         </div>
         <Carousel.Caption>
           <div>
-            <h1 className={styles.caption1}>
-              ¡Bienvenid{sexo === 'F' ? 'a' : 'o'}{nombre ? ',' : ''} {nombre}!
-            </h1>
-            <p
+            <h1 className={styles.caption1} style={{top: '-45px', justifySelf:'right', fontSize: '2.8rem'}}>
+              ¡Bienvenid{sexo === 'F' ? 'a' : 'o'}{nombre ? ',' : ''} {nombre}!</h1>
+            {/* <p
               className={styles.captionP}
               style={{ textShadow: '2px 2px 6px rgba(0,0,0,0.6)' }}
             >
               Nos alegra tenerte en la Intranet de Seguros Altamira.
-            </p>
+            </p> */}
           </div>
         </Carousel.Caption>
       </Carousel.Item>
@@ -199,7 +199,7 @@ function Carrusel({ nombres, sexo = 'M' }: CarruselProps) {
   };
 
   return (
-    <Carousel className={styles.Carrusel} pause={'hover'}>
+    <Carousel className={styles.Carrusel} >
       {renderPrimerSlide()}
       <Carousel.Item>
         <div className={styles.divDegradado}>
